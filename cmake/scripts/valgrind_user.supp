@@ -1,0 +1,529 @@
+#
+# This script is for the suppression of errors from valgrind memcheck.
+# Currently it suppresses errors from calling 
+#    mkl lapacke
+#    libhdf5 
+#    libcgns
+#    libmpi
+# \qiaolx
+#
+{  
+   intel_mkl_serv_load_dll_Addr_1
+   Memcheck:Leak
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:mkl_serv_load_dll
+   fun:mkl_trans_mkl_domatcopy
+   fun:LAPACKE_dge_trans
+   fun:LAPACKE_dgetrf_work
+}
+
+{
+   intel_mkl_serv_load_dll_Addr_2
+   Memcheck:Leak
+   fun:malloc
+   fun:_dl_new_object
+   fun:_dl_map_object_from_fd
+   fun:_dl_map_object
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:mkl_serv_load_dll
+   fun:mkl_trans_mkl_domatcopy
+   fun:LAPACKE_dge_trans
+   fun:LAPACKE_dgetrf_work
+}
+
+{
+   intel_mkl_serv_load_dll_Addr_3
+   Memcheck:Leak
+   fun:calloc
+   fun:_dl_new_object
+   fun:_dl_map_object_from_fd
+   fun:_dl_map_object
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:mkl_serv_load_dll
+   fun:mkl_trans_mkl_domatcopy
+   fun:LAPACKE_dge_trans
+   fun:LAPACKE_dgetrf_work
+}
+
+{
+   intel_mkl_serv_load_dll_Addr_4
+   Memcheck:Leak
+   fun:malloc
+   fun:add_to_global
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:mkl_serv_load_dll
+   fun:mkl_trans_mkl_domatcopy
+   fun:LAPACKE_dge_trans
+   fun:LAPACKE_dgetrf_work
+}
+
+{
+   intel_mkl_serv_load_dll_Addr_5
+   Memcheck:Leak
+   fun:malloc
+   fun:expand_dynamic_string_token
+   fun:_dl_map_object
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:mkl_serv_load_dll
+   fun:mkl_trans_mkl_domatcopy
+   fun:LAPACKE_dge_trans
+   fun:LAPACKE_dgetrf_work
+}
+
+
+{
+   hdf5_Cond_H5MM_xstrdup
+   Memcheck:Cond
+   fun:*H5MM_xstrdup*
+}
+
+
+{
+   hdf5_Addr16_H5MM_xstrdup
+   Memcheck:Addr16
+   fun:*H5MM_xstrdup*
+}
+
+{
+   hdf5_Addr8_H5MM_xstrdup
+   Memcheck:Addr8
+   fun:*H5MM_xstrdup*
+}
+
+{
+   cgns_Cond_intel_sse_fun
+   Memcheck:Cond
+   fun:*_intel_*sse*
+   obj:*/*lib*/libcgns*
+}
+
+{
+   cgns_Addr16_intel_sse_fun
+   Memcheck:Addr16
+   fun:*_intel_*sse*
+   obj:*/*lib*/libcgns*
+}
+
+{
+   cgns_Addr8_intel_sse_fun
+   Memcheck:Addr8
+   fun:*_intel_*sse*
+   obj:*/*lib*/libcgns*
+}
+
+{
+   cgns_Value8_intel_sse_fun
+   Memcheck:Value8
+   fun:*_intel_*sse*
+   obj:*/*lib*/libcgns*
+}
+
+{
+   hdf5_Value8_intel_sse_fun
+   Memcheck:Value8
+   fun:*_intel_*sse*
+   obj:*/*lib*/libhdf5*
+}
+
+{
+   hdf5_Cond_intel_sse_fun
+   Memcheck:Cond
+   fun:*_intel_*sse*
+   obj:*/*lib*/libhdf5*
+}
+
+{
+   hdf5_Addr16_intel_sse_fun
+   Memcheck:Addr16
+   fun:*_intel_*sse*
+   obj:*/*lib*/libhdf5*
+}
+
+{
+   hdf5_Addr8_intel_sse_fun
+   Memcheck:Addr8
+   fun:*_intel_*sse*
+   obj:*/*lib*/libhdf5*
+}
+
+{
+   hdf5_Value8_intel_sse_fun
+   Memcheck:Value8
+   fun:*_intel_*sse*
+   obj:*/*lib*/libcgns*
+}
+
+{
+   cgns_Value8_obj
+   Memcheck:Value8
+   obj:*/*lib*/libcgns*
+}
+
+{
+   cgns_Addr8_obj
+   Memcheck:Addr8
+   obj:*/*lib*/libcgns*
+}
+
+
+{
+   hdf5_Cond_obj
+   Memcheck:Cond
+   obj:/*lib*/libhdf5*
+}
+
+{
+   hdf5_Con_intel_H5FL_fun
+   Memcheck:Cond
+   fun:*_intel_*
+   fun:*H5FL_blk_*
+}
+
+{
+   hdf5_Value8_intel_H5FL_fun
+   Memcheck:Value8
+   fun:*_intel_*
+   fun:*H5FL_blk_*
+}
+
+
+{
+   hdf5_Addr16_obj
+   Memcheck:Addr16
+   obj:*/*lib*/libhdf5*
+}
+
+{
+   hdf5_Addr8_obj
+   Memcheck:Addr8
+   obj:*/*lib*/libhdf5*
+}
+
+{
+   hdf5_Value8_obj
+   Memcheck:Value8
+   obj:*/*lib*/libhdf5*
+}
+
+{
+   hdf5_Cond_obj
+   Memcheck:Cond
+   obj:*libhdf5.so.8.0.2
+}
+
+{
+   hdf5_Cond_intel_H5_fun
+   Memcheck:Cond
+   fun:*_intel_*
+   fun:*H5*
+}
+
+{
+   hdf5_Value8_intel_H5_fun
+   Memcheck:Value8
+   fun:*_intel_*
+   fun:*H5*
+}
+
+
+{
+   cgns_Addr16_obj
+   Memcheck:Addr16
+   obj:/*lib*/libcgns*
+}
+
+{
+   cgns_Cond_obj
+   Memcheck:Cond
+   obj:/*lib*/libcgns*
+}
+
+{
+   cgns_Addr4_intel_sse2_cgns_fun
+   Memcheck:Addr4
+   fun:*_intel_sse2_*
+   obj:*/*lib*/libcgns*
+}
+
+{
+   cgns_Addr4_intel_sse2_hdf5_fun
+   Memcheck:Addr4
+   fun:*_intel_sse2_*
+   obj:*/*lib*/libhdf5*
+}
+
+{
+   cgns_Cond_cg_open_fun
+   Memcheck:Cond
+   fun:*calloc*
+   fun:*cgi_malloc*
+   fun:*cg_open*
+
+}
+
+{
+   hdf5_Param_write_count_fun
+   Memcheck:Param
+   write(count)
+   fun:*_write_nocancel*
+   fun:*H5*
+}
+
+{
+   hdf5_Param_write_buf_fun
+   Memcheck:Param
+   write(buf)
+   fun:*_write_nocancel*
+   fun:*H5*
+}
+
+{
+   hdf5_Param_lseek_offset_fun
+   Memcheck:Param
+   lseek(offset)
+   fun:*_lseek_nocancel*
+   fun:*H5*
+}
+
+{
+   hdf5_Value8_intel_sse2_
+   Memcheck:Value8
+   fun:*_intel_sse2_*
+   fun:*H5_term_library*
+}
+
+{
+   hdf5_Cond_intel_sse2_
+   Memcheck:Cond
+   fun:*_intel_sse2_*
+}
+
+{
+   hdf5_Value8_H5_term_library_fun
+   Memcheck:Value8
+   fun:*H5_term_library*
+}
+
+
+{
+   hdf5_Value8_too_many
+   Memcheck:Value8
+   obj:/*lib*/libhdf5*
+}
+
+{
+   hdf5_Cond_H5_term_library
+   Memcheck:Cond
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libhdf5*
+}
+
+{
+   hdf5_Value8_H5_term_library_obj
+   Memcheck:Value8
+   obj:/*lib*/libhdf5* 
+   obj:/*lib*/libc-2.*
+}
+
+{
+   hdf5_Cond_libc-2_x4_hdf5
+   Memcheck:Cond
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libhdf5*
+}
+
+{
+   hdf5_Value8_libc-2_x4_hdf5
+   Memcheck:Value8
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libhdf5*
+}
+
+{
+   hdf5_Cond_libc-2_x3_hdf5
+   Memcheck:Cond
+   obj:/*lib*/libc-2.*  
+   obj:/*lib*/libc-2.* 
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libhdf5* 
+}
+
+{
+   hdf5_Value8_libc-2_x3_hdf5
+   Memcheck:Value8
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libhdf5*
+}
+
+{
+   hdf5_Cond_libc-2_x2_hdf5
+   Memcheck:Cond
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libhdf5*
+}
+
+{
+   hdf5_Value8_libc-2_x2_hdf5
+   Memcheck:Value8
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libc-2.*
+   obj:/*lib*/libhdf5*
+}
+
+
+#{
+#   openmpi_Leak_malloc_4
+#   Memcheck:Leak
+#   fun:malloc
+#   obj:*
+#   obj:*
+#   obj:*
+#   obj:*
+#   obj:*/*lib*/libmpi.*
+#}
+#
+#
+#{  
+#   openmpi_Leak_malloc_3
+#   Memcheck:Leak
+#   fun:malloc
+#   obj:*
+#   obj:*
+#   obj:*
+#   obj:*/*lib*/libmpi.*
+#}
+#
+#{   
+#   openmpi_Leak_malloc_2
+#   Memcheck:Leak
+#   fun:malloc
+#   obj:*
+#   obj:*
+#   obj:*/*lib*/libmpi.*
+#}
+#
+#{   
+#   openmpi_Leak_malloc_1
+#   Memcheck:Leak
+#   fun:malloc
+#   obj:*
+#   obj:*/*lib*/libmpi.*
+#}
+#   
+#
+#{   
+#   openmpi_Leak_malloc_0
+#   Memcheck:Leak
+#   fun:malloc
+#   obj:*/*lib*/libmpi.*
+#}
+#
+#{   
+#   openmpi_Leak_calloc_3
+#   Memcheck:Leak
+#   fun:calloc
+#   obj:*
+#   obj:*
+#   obj:*
+#   obj:*/*lib*/libmpi.*
+#}
+#
+#{
+#   openmpi_Leak_calloc_2
+#   Memcheck:Leak
+#   fun:calloc
+#   obj:*
+#   obj:*
+#   obj:*/*lib*/libmpi.*
+#}
+#
+#{
+#   openmpi_Leak_calloc_1
+#   Memcheck:Leak
+#   fun:calloc
+#   obj:*
+#   obj:*/*lib*/libmpi.*
+#}
+#
+#
+#{
+#   openmpi_Leak_calloc_0
+#   Memcheck:Leak
+#   fun:calloc
+#   obj:*/*lib*/libmpi.*
+#}
+#
+#
+#{
+#   openmpi_Leak_malloc_libopen
+#   Memcheck:Leak
+#   fun:malloc
+#   obj:*/*lib*/libopen*
+#}
+#
+#{
+#   openmpi_Leak_calloc_libopen
+#   Memcheck:Leak
+#   fun:calloc
+#   obj:*/*lib*/libopen*
+#}
+#
+#{
+#   openmpi_Leak_2_fun_libopen
+#   Memcheck:Leak
+#   fun:*
+#   fun:*
+#   obj:*/*lib*/libopen*
+#}
+#
+#{
+#   openmpi_Leak_calloc_ld
+#   Memcheck:Leak
+#   fun:calloc
+#   obj:*/*lib*/ld-2.12* 
+#   obj:*/*lib*/ld-2.12*
+#}
+#
+#{
+#   openmpi_Leak_malloc_ld
+#   Memcheck:Leak
+#   fun:malloc
+#   obj:*/*lib*/ld-2.12*
+#   obj:*/*lib*/ld-2.12*
+#}
+#

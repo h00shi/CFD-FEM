@@ -1,0 +1,28 @@
+##****************************************************************************80
+##! 
+##! try to find package doxygen using module
+##! \qiaolx
+##! exports 
+##!   DOXYGEN_BIN_DIR
+##!   DOXYGEN_EXECUTABLE
+##!   DOXYGEN_FOUND
+##****************************************************************************80
+FIND_PATH(DOXYGEN_BIN_DIR
+  NAMES doxygen
+  PATHS 
+    /opt/CMT/doxygen-1.8.8/bin
+  )
+
+
+MARK_AS_ADVANCED(
+  DOXYGEN_BIN_DIR
+  )
+
+
+SET(DOXYGEN_FOUND FALSE)
+IF(DOXYGEN_BIN_DIR)
+  SET(DOXYGEN_FOUND TRUE)
+  SET(DOXYGEN_EXECUTABLE ${DOXYGEN_BIN_DIR}/doxygen)
+  MESSAGE(STATUS "Found doxygen: ${DOXYGEN_EXECUTABLE}")
+ENDIF()
+

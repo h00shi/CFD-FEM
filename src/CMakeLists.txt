@@ -1,0 +1,3 @@
+ADD_SUBDIRECTORY(DataStructures)
+ADD_SUBDIRECTORY(Surreal)
+ADD_SUBDIRECTORY(SystemUtils)

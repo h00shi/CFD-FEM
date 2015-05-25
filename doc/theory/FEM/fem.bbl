@@ -1,0 +1,11 @@
+\begin{thebibliography}{1}
+
+\bibitem{nastase07}
+Cristian~R. Nastase and Dimitri~J. Mavriplis.
+\newblock A parallel hp-multigrid solver for three-dimensional discontinuous
+  galerkin discretizations of the euler equations.
+\newblock In {\em Proceedings of 45th Aerospace Sciences Meeting and Exhibit,
+  Reno NV}, 2007.
+\newblock {AIAA} Paper 2007--0512.
+
+\end{thebibliography}

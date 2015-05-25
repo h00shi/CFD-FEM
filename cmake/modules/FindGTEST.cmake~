@@ -1,0 +1,42 @@
+##****************************************************************************80
+##! 
+##! try to find package gtest
+##! \qiaolx
+##! exports 
+##!   GTEST
+##!   GTEST_MAIN
+##!   GTEST_INCLUDE_DIR
+##****************************************************************************80
+
+FIND_PATH(GTEST_INCLUDE_DIR
+  NAMES gtest.h
+  PATHS 
+    $ENV{GTEST_ROOT}/include/gtest
+  )
+
+FIND_LIBRARY(GTEST 
+  NAMES gtest
+  PATHS
+    $ENV{GTEST_ROOT}/lib
+  )
+
+FIND_LIBRARY(GTEST_MAIN
+  NAMES gtest_main
+  PATHS
+    $ENV{GTEST_ROOT}/lib
+  )
+
+MARK_AS_ADVANCED(
+  GTEST_INCLUDE_DIR
+  GTEST
+  GTEST_MAIN
+  )
+
+
+SET(GTEST_FOUND FALSE)
+IF(GTEST_INCLUDE_DIR AND GTEST AND GTEST_MAIN)
+  SET(GTEST_FOUND TRUE)
+  MESSAGE(STATUS "Found GTEST: ${GTEST}")
+  MESSAGE(STATUS "Found GTEST_MAIN: ${GTEST_MAIN}") 
+ENDIF()
+

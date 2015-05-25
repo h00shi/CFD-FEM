@@ -1,0 +1,17 @@
+\contentsline {chapter}{\numberline {1}Introduction}{4}
+\contentsline {chapter}{\numberline {2}Finite-element Methods}{6}
+\contentsline {section}{\numberline {2.1}Method of Weighted Residuals}{6}
+\contentsline {subsection}{\numberline {2.1.1}Galerkin's Method}{8}
+\contentsline {subsection}{\numberline {2.1.2}Briefly on Galerkin's Method and Continuity}{11}
+\contentsline {subsection}{\numberline {2.1.3}Other MWR Based Methods}{11}
+\contentsline {subsection}{\numberline {2.1.4}A simple example of Galerkin's method for an ODE}{12}
+\contentsline {section}{\numberline {2.2}Classical Finite-element Methods}{13}
+\contentsline {subsection}{\numberline {2.2.1}Implementation}{15}
+\contentsline {subsubsection}{Global Matrix assembly}{16}
+\contentsline {chapter}{\numberline {3}Mesh Data Structures}{18}
+\contentsline {section}{\numberline {3.1}Introduction}{18}
+\contentsline {section}{\numberline {3.2}Element Types}{19}
+\contentsline {subsection}{\numberline {3.2.1}1-D Bar}{19}
+\contentsline {subsection}{\numberline {3.2.2}2-D Triangle}{19}
+\contentsline {section}{\numberline {3.3}Mesh Connectivity}{19}
+\contentsline {chapter}{Bibliography}{22}

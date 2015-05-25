@@ -1,0 +1,106 @@
+\documentclass[10pt]{report}
+\listfiles
+\usepackage{amssymb}
+\usepackage{amsmath}
+\DeclareMathOperator*{\Max}{Max}
+\usepackage{stmaryrd}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{appendix}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{amsthm}
+\usepackage[small]{caption}
+\usepackage{cancel}
+\usepackage{tikz} 
+\usepackage{pgf}
+
+%\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,positioning,fit,petri}
+
+%%%% My Commands
+\numberwithin{equation}{section}
+%\usepackage[noprefix]{nomencl}
+\newcommand{\eqnref}[1]{equation (\ref{#1})}                % Eq. (no)
+\newcommand{\figref}[1]{Figure \ref{#1}}                % Figure (no)
+\newcommand{\tblref}[1]{Table \ref{#1}}                % Table (no)
+\newcommand{\secref}[1]{Section \ref{#1}}                % Section (no)
+\newcommand{\incfig}{\centering\includegraphics*}  % Centered figure
+\newcommand{\algref}[1]{Algorithm (\ref{#1})}
+%DG integrals
+\newcommand{\pd}[2]{\frac{ \partial #1}{\partial #2}}
+\newcommand{\diff}[2]{\frac{d #1}{d #2}}
+\newcommand{\fpd}[3]{\frac{ \partial #1}{\partial #2}_{\left [ #3\right] } }
+\newcommand{\volint}[1]{ \sum_{k\in \mathcal{T}_{h}}\int_{\Omega_k} #1 d\Omega_{k} }  
+\newcommand{\surfint}[1]{\sum_{i\in \mathcal{I}_{h}}\int_{\Gamma^{i}} #1 ds}
+\newcommand{\esurfint}[1]{ \sum_{k\in \mathcal{T}_{h}}\oint_{\partial \Omega_{k} \backslash \Gamma^{b}} #1 ds}
+\newcommand{\bsurfint}[1]{\sum_{b\in \mathcal{B}_{h}}\int_{\Gamma^{b}} #1 ds}
+\newcommand{\bsurfintd}[1]{\sum_{b\in \mathcal{B}_{h}}\int_{\Gamma^{D}} #1 ds}
+\newcommand{\bsurfintn}[1]{\sum_{b\in \mathcal{B}_{h}}\int_{\Gamma^{N}} #1 ds}
+\newcommand{\frechd}[3]{ #1^{'}_{\left[ #2 \right]} \left( #3\right)} 
+\newcommand{\adjd}[3]{ \pd{#1}{#2}_{\left[ #3 \right]}} 
+\newcommand{\adjds}[2]{ #1_{#2}}
+\newcommand{\frechds}[2]{ #1^{'}_{\left[#2 \right]} }
+\newcommand{\innerp}[1]{\left< #1 \right>_{\Omega}}
+\newcommand{\sinnerp}[1]{\left< #1 \right>_{\Gamma}}
+% Operators
+\newcommand{\diver}[1]{\nabla \cdot #1}
+\newcommand{\laplace}[1]{\nabla^{2} #1}
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\avg}[1]{\left\{ #1 \right\} }
+\newcommand{\jump}[1]{\llbracket #1 \rrbracket}
+\newcommand{\mat}[1]{\left[ #1 \right]}
+\newcommand{\paren}[1]{\left( #1 \right)}
+\newcommand{\sparen}[1]{\left[ #1 \right]}
+\newcommand{\sbracket}[1]{\left [ #1 \right] }
+\newcommand{\twonorm}[1]{\parallel #1 \parallel_{2}}
+\newcommand{\norm}[1]{\Vert  #1 \Vert}
+\newcommand{\bignorm}[1] {\biggl \Vert  #1 \biggr \Vert}
+\newcommand{\honenorm}[1]{\parallel #1 \parallel_{H^{1}}}
+%variables
+\newcommand{\hb}[1]{ {\bf #1}_{h} } % \hb for discrete symbol _{h} and bolded for vector in fields
+% Fluxes 
+\newcommand{\fc}{\vec{{\bf F}}_{c} \paren{\hb{u}}   }
+\newcommand{\fv}{\vec{{\bf F}}_{v} \paren{\hb{u},\nabla \hb{u}} }
+\newcommand{\fav}{\vec{{\bf F}}_{ad} \paren{ \epsilon,\hb{u},\nabla \hb{u} } }
+\newcommand{\hc}{\mathcal{H}_{c} \paren{ \hb{u}^{+},\hb{u}^{-},\hb{v}^{+},\hb{v}^{-},\vec{n} } }  
+\newcommand{\hv}{\mathcal{H}_{v} \paren{ \hb{u}^{+},\hb{u}^{-},\hb{v}^{+}, \hb{v}^{-},\nabla \hb{u}^{+},\nabla \hb{u}^{-},\vec{n} } }
+\newcommand{\hav}{\mathcal{H}_{ad}\paren{ \epsilon^{+},\epsilon^{-},\hb{u}^{+},\hb{u}^{-}, \hb{v}^{+},\hb{v}^{-},\nabla \hb{u}^{+},\nabla \hb{u}^{-},\vec{n} } }
+\newcommand{\hcb}{\mathcal{H}_{c}^{b} \paren{ \hb{u}^{b} \paren{ \hb{u}^{+} },\vec{n} } } 
+\newcommand{\hvb}{\mathcal{H}_{v}^{b} \paren{ \hb{u}^{b} \paren{\hb{u}^{+}},\hb{v}^{+},\nabla \hb{u}^{+},\vec{n} } }
+\newcommand{\havb}{\mathcal{H}_{ad}^{b} \paren{ \epsilon^{+}, \hb{u}^{b}\paren{ \hb{u}^{+}},{\bf v}_{h}^{+}, \nabla \hb{u}^{+},\vec{n} } }
+% Proof environments
+\newtheorem{prop}{Propositiion}
+
+%Vocab
+\newcommand{\node}{\texit{node}}
+\newcommand{\elem}{\texit{element}}
+\newcommand{\real}{\mathbb{R}}
+% Constants
+\newcommand{\half}[0]{\frac{1}{2}}                % Eq. (no)	
+\newcommand{\gm}[0]{\paren{\gamma - 1}} 
+\newcommand{\figwidth}{.47\textwidth} % small version .47, large version .6
+\newcommand{\lfigwidth}{.68\textwidth} %small version .68, large verison .75
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+ \title{Discontinuous Galerkin Methods}
+ \date{\today}
+ \author{Nick Burgess \\
+  \emph{STC Corp. and U.S. Army Aeroflightdynamics Directorate}}
+\maketitle
+
+% Generate and print the lists
+ \tableofcontents        % table of contents
+ \listoffigures          % List of Figures
+ \listoftables           % List of Tables
+ % comment out line below if you have no program listings
+ %\mylistoflistings      % List of program listings
+ % Bring in the chapter files
+\include{chapt_1/chapter_1} % chapter 1
+\include{chapt_2/chapter_2}
+\include{chapt_3/chapter_3}
+\bibliographystyle{unsrt}
+\addcontentsline{toc}{chapter}{\bibname} % make reference section show up in TOC
+
+% reads in the sample BibTex file supplied; change to your bib file name
+\bibliography{fem}
+\end{document}

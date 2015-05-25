@@ -1,0 +1,184 @@
+\documentclass[letterpaper]{article}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{stmaryrd}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{pslatex}   % Good fonts psType 1 or \usepackage{mathptmx}
+\usepackage{varioref}  % smart page, figure, table, and equation referencing
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{cancel}
+%\usepackage{fancy headings}
+
+  \newcommand{\eqnref}[1]{Eq. (\ref{#1})}                % Eq. (no)
+  \newcommand{\figref}[1]{Figure \ref{#1}}                % Figure (no)
+  \newcommand{\tblref}[1]{Table \ref{#1}}                % Table (no)
+  \newcommand{\secref}[1]{Section \ref{#1}}                % Section (no)
+  \newcommand{\incfig}{\centering\includegraphics*}  % Centered figure
+
+%DG integrals
+\newcommand{\pd}[2]{\frac{ \partial #1}{\partial #2}}
+\newcommand{\volint}[1]{ \sum_{e \in \mathcal{T}_{h}}\int_{\Omega_k} #1 d\Omega_{e} }  
+\newcommand{\surfint}[1]{\sum_{i\in \mathcal{I}_{h}}\int_{\Gamma^{i}} #1 ds}
+\newcommand{\bsurfint}[1]{\sum_{b\in \mathcal{B}_{h}}\int_{\Gamma^{b}} #1 ds}
+% Operators
+\newcommand{\frechd}[2]{ #1'_{\left[ #2 \right]} }%\left( #3\right)} 
+\newcommand{\diver}[1]{\nabla \cdot #1}
+\newcommand{\abs}[1]{\left \lvert #1 \right \rvert}
+\newcommand{\avg}[1]{\left\{ #1 \right\} }
+\newcommand{\jump}[1]{\llbracket #1 \rrbracket}
+\newcommand{\mat}[1]{\left[ #1 \right]}
+\newcommand{\paren}[1]{\left( #1 \right)}
+\newcommand{\sparen}[1]{\left[ #1 \right]}
+\newcommand{\twonorm}[1]{\parallel #1 \parallel_{2}}
+%variables
+\newcommand{\hb}[1]{ {\bf #1}_{h} } % \hb for discrete symbol _{h} and bolded for vector in fields
+% Fluxes 
+\newcommand{\fc}{\vec{{\bf F}}_{c} \paren{\hb{u}}   }
+\newcommand{\fv}{\vec{{\bf F}}_{v} \paren{\hb{u},\nabla \hb{u}} }
+\newcommand{\fav}{\vec{{\bf F}}_{ad} \paren{ \epsilon,\hb{u},\nabla \hb{u} } }
+\newcommand{\ec}{\vec{{\bf E}}_{c} \paren{\hb{u}}   }
+\newcommand{\ev}{\vec{{\bf E}}_{v} \paren{\hb{u},\nabla \hb{u}} }
+\newcommand{\eav}{\vec{{\bf E}}_{ad} \paren{ \epsilon,\hb{u},\nabla \hb{u} } }
+
+\newcommand{\hc}{\mathcal{H}_{c} \paren{ \hb{u}^{+},\hb{u}^{-},\vec{n} } }  
+\newcommand{\hv}{\mathcal{H}_{v} \paren{ \hb{u},\hb{u}^{-},\phi_{i}^{+}, \phi_{i}^{-},\nabla \hb{u}^{+},\nabla \hb{u}^{-},
+\vec{n} } }
+\newcommand{\hav}{\mathcal{H}_{ad}\paren{ \epsilon^{+},\epsilon^{-},\hb{u}^{+},\hb{w}^{+}, \hb{w}^{-},\hb{u}^{-},\nabla \hb{u}^{+},\nabla \hb{u}^{-},\vec{n} } }
+\newcommand{\hcb}{\mathcal{H}_{c}^{b} \paren{ \hb{u}^{b} \paren{ \hb{u}^{+} },\vec{n} } } 
+\newcommand{\hvb}{\mathcal{H}_{v}^{b} \paren{ \hb{u}^{b} \paren{\hb{u}^{+}},\phi_{i}^{+},\nabla \hb{u}^{+},\vec{n} } }
+\newcommand{\havb}{\mathcal{H}_{ad}^{b} \paren{ \epsilon^{+}, \hb{u}^{b}\paren{ \hb{u}^{+}},{\bf w}^{+}, \nabla \hb{u}^{+},\vec{n} } }
+%Non-linear variables
+\newcommand{\Resid}[1] {{\bf R}(#1)}
+\newcommand{\Residp}[1] {{\bf R}_{p}(#1)}
+%FIgures
+\newcommand{\figwidth}{.48\textwidth}
+\newcommand{\lfigwidth}{.68\textwidth} %small version .68, large version .75
+%%% Footer
+%\lfoot[\fancyplain{}{}]{Approved for public release \\ distribution unlimited.}
+\newcommand{\createav}{CREATE\textsuperscript{TM}-AV }
+
+\title{SU/PG Implementation}
+\author{Nicholas K. Burgess}
+\begin{document}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+Implementing the SU/PG method is a variant of the continuous Galerkin method, which enforces stability by adding a term to the test function.  This method is written as 
+\begin{equation}\label{eq:weaksupg}
+ \begin{split}
+& \volint{\phi_{i}\pd{\hb{u}}{t} } - \volint{\nabla \phi_{i} \cdot \left( \fc - \fv \right)  + \phi_{i} {\bf S}\paren{ \hb{u}, \nabla \hb{u} } }+ \\
+& \volint{ \nabla \phi_{i}\cdot \pd{ \vec{ {\bf F}}_{c}\paren{\hb{u} }  }{\hb{u} }\sparen{\tau} 
+\paren{ \pd{\hb{u}}{t} + \nabla \cdot \paren{ \fc - \fv }  +  {\bf S}\paren{  \hb{u}, \nabla \hb{u} }}  } + \\ 
+& \bsurfint{ \vec{n} \cdot  \paren{\fc - \fv } }
+\end{split}
+\end{equation}
+The above equation involves gradients of test functions $\phi_{i}$ in the physical space $\vec{x} \in \mathbb{R}^{d}$ where $d$ is the number of physical dimensions.  The basis functions are normally defined in a reference space with $\vec{\xi} \in [-1,1]^{d}$.  One can define the physical coordinates $\vec{x}$ using a mapping function $\vec{x} \paren{\vec{\xi}} : [-1,1]^{d} \mapsto \mathbb{R}^{d}$.  This definition allows one to write the gradient in the physical space as 
+\begin{equation}
+\nabla = \pd{\vec{\xi} }{\vec{x}} \cdot \nabla_{\vec{\xi}}
+\end{equation}
+However, the relation $\vec{\xi}(\vec{x})$ is unknown.  Therefore, one normally uses the following relationship
+\begin{equation}
+\begin{split}
+& \pd{\vec{x}}{\vec{\xi}} :=\sparen{J} \\
+& \pd{\vec{x}}{\vec{\xi}}:= \sparen{J}^{-1} 
+\end{split}
+\end{equation}
+Therefore the gradiient in the physical space can be written as
+\begin{equation}
+\nabla = \sparen{J}^{-1} \nabla_{\vec{\xi}}
+\end{equation}
+
+Now consider the dot product of the gradient (i.e. divergence) with a vector $\vec{ {\bf F} }$ is written as
+\begin{equation}
+\begin{split}
+& \nabla \cdot \vec{{\bf F}} = \sparen{J}^{-1}\nabla_{\xi} \cdot \vec{{\bf F}} \\
+& \nabla \cdot \vec{{\bf F}} = \pd{\xi_{j}}{x_{i}}\pd{ }{\xi_{j}}   {\bf F}_{i}
+\end{split}
+\end{equation}
+which can be re-arranged as 
+\begin{equation}
+ \nabla \cdot \vec{{\bf F}} =\pd{ }{\xi_{j}}  \pd{\xi_{j}}{x_{i}}{\bf F}_{i}
+\end{equation}
+If one defines a new flux-vector ${\bf E}_{j} =  \pd{\xi_{j}}{x_{i}}{\bf F}_{i} $.  The equation simply can be written as 
+\begin{equation}
+{\bf E}_{j} = n_{i}{\bf F}_{i}
+\end{equation}
+When programing this method one uses the above equation and sets $n_{i} =  \pd{\xi_{j}}{x_{i}}$ for a particular ${\bf E}_{j}$.  Now considering that the divergence operator is just the dot product of the gradient with a vector one can re-write many of the operation in \eqnref{eq:weaksupg} in the spirit of the above manipulations.  So \eqnref{eq:weaksupg} can be re-written as 
+\begin{equation}\label{eq:weaksupg2}
+\begin{split}
+& \volint{\phi_{i}\pd{  \hb{u} } {t} } - \volint{\nabla_{\vec{\xi}} \phi_{i} \cdot \left( \ec - \ev \right)  + \phi_{i} {\bf S}\paren{ \hb{u}, \nabla \hb{u} } }  + \\
+& \volint{ \nabla_{\vec{\xi}} \phi_{i}\cdot \pd{ \vec{ {\bf E}}_{c}\paren{\hb{u} }  }{\hb{u} }\sparen{\tau} 
+\paren{ \pd{\hb{u}}{t} + \nabla_{\vec{\xi}} \cdot \paren{ \ec - \ev }  +  {\bf S}\paren{  \hb{u}, \nabla \hb{u} }}  } + \\ 
+& \bsurfint{ \vec{n} \cdot  \paren{\fc - \fv } }
+\end{split}
+\end{equation}
+Examing equation indicates how many functions are required to compute the SU/PG residual.  In practice one needs only a few functions that when used in the proper sequence can generate the SU/PG residual.  To simplify the concepts we will write the discretization in terms a general fluxes ${\bf F}$ and ${\bf E}$ both of which can in general depend on $\hb{u}$ and $\nabla\hb{u}$.  
+\begin{equation}
+\begin{split}
+& \volint{\phi_{i}\pd{  \hb{u} } {t} } - \volint{\nabla_{\vec{\xi}} \phi_{i} \cdot \vec{{\bf E}}  + \phi_{i} {\bf S}\paren{ \hb{u}, \nabla \hb{u} } }  + \\
+& \volint{ \nabla_{\vec{\xi}} \phi_{i}\cdot \pd{ \vec{ {\bf E}}_{c}\paren{\hb{u} }  }{\hb{u} }\sparen{\tau} 
+\paren{ \pd{\hb{u}}{t} + \nabla_{\vec{\xi}} \cdot \vec{{\bf E}}   +  {\bf S}\paren{  \hb{u}, \nabla \hb{u} }}  } + \\ 
+& \bsurfint{ \vec{n} \cdot  \vec{{\bf F} } }
+\end{split}
+\end{equation}
+Due to the non-linearity of the fluxes the methods of computing the divergence is as follows
+\begin{equation}
+\nabla_{\vec{\xi}}\cdot \vec{\bf E} = \pd{\vec{\bf E}}{\hb{u}}\cdot \nabla_{\vec{\xi}}\hb{u} + 
+\end{equation}
+If one carelly examines these equations one can deduce that all operations required by the SU/PG method effectively become computations of the form
+\begin{equation}
+{\bf E}_{j} = n_{i}{\bf F}_{i}
+\end{equation}
+and operations of the flux jacobian of ${\bf E}$ on a vector $V$ over the number of equations.
+\begin{equation}
+\pd{{\bf E}}{\hb{u}}\cdot {\bf V} = n_{i}\pd{{\bf F}_{i}}{\hb{u}} \cdot {\bf V}
+\end{equation}
+Finally a method is required to compute the product $\sparen{\tau} {\bf V}$.  However, since an explicit expression is only availible for $\sparen{\tau}^{_1}$.  Therefore, $\sparen{\tau}$ is never explicitly formed rather it's product onto a vector is formed by recalling
+\begin{equation}
+\sparen{\tau}V = \paren{\sparen{\tau}^{-1}}^{-1}V = W
+\end{equation}
+which is simpliy the solution of 
+\begin{equation}
+\sparen{\tau}^{-1}W = V;
+\end{equation}
+Thus the product of $\sparen{\tau}$V is implemented as a linear solve operation.  The SU/PG residual is formed using the following algorithm
+\begin{algorithm}[!h]
+\caption{:SU/PG Residual Formation Algorithm}
+\label{algsupg}
+\begin{algorithmic}
+\STATE ${\bf R}(:) = 0$ 
+\FOR{qp = 0; qp $<$ nqp; qp++}
+\STATE $\nabla \cdot {\bf F} = 0$
+\FOR{j = 0; j $<$ d; j++}
+\STATE Form $\vec{n} = \sparen{J(:,d)}^{-1}$
+\STATE Compute ${\bf E}_{j} = \vec{{\bf F}}\cdot \vec{n}$
+\FOR{i = 0; i $<$ NDOF; i++}
+\STATE ${\bf R}_{i} += \pd{\phi_{i}}{\xi_{j}}{\bf E}_{j}w_{q}(qp)Det(J)$
+\ENDFOR
+\STATE Compute $\nabla \cdot \vec{\bf F} += \pd{{\bf E}_{j}}{\hb{u}}\pd{\hb{u}}{\xi_{j}}$ 
+\ENDFOR
+\STATE Compute $\sparen{\tau}^{-1}$
+\STATE Compute $\sparen{\tau}\nabla \cdot \vec{\bf F}$ via solving $\sparen{\tau}^{-1}{\bf x} = \nabla \cdot \nabla\vec{\bf F}$
+\FOR{j = 0; j $<$ d; j++}
+\STATE Form $\vec{n} = \sparen{J(:,d)}^{-1}$
+\STATE Compute $D = \pd{{\bf E}_{j}}{\hb{u}}{\bf x}$
+\FOR{i = 0; i $<$ NDOF; i++}
+\STATE ${\bf R}_{i} += \pd{\phi_{i}}{\xi_{j}}{\bf D}w_{q}(qp)Det(J)$
+\ENDFOR
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+ 
+Examination of the algorithm shows that one requires only 3 functions:
+\begin{enumerate}
+\item Compute ${\bf E}_{j} $
+\item Compute $\pd{{\bf E}_{j}}{\hb{u}}\cdot {\bf y}$
+\item Compute $\sparen{\tau}$. 
+\end{enumerate}
+While it may seem that there is a missing function for inverting the $\tau$ matrix, this functionality has been provided as part of the square matrix class.  
+\end{document}
