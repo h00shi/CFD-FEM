@@ -490,7 +490,7 @@ TEST(SquareMatrix, surreal_eval_inv) {
   unit(0,0) = q[0]*q[1];
   unit(0,1) = q[1]*q[2];
   unit(0,2) = q[3]*q[0];
-  unit(0,3) = q[2]/q[1];
+   unit(0,3) = q[2]/q[1];
 
   unit(1,0) = q[1]*q[1];
   unit(1,1) = q[3]*q[2];
@@ -506,7 +506,7 @@ TEST(SquareMatrix, surreal_eval_inv) {
   unit(3,1) = q[2]*q[1];
   unit(3,2) = q[3]*q[2];
   unit(3,3) = q[0]/q[3];
-
+  
   unit.invert();
 
   Array2D<double> ExpINVResult(MATRIX_N,MATRIX_N);

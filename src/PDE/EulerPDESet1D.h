@@ -332,7 +332,7 @@ public:
   void EigenSystem(const Array1D<realT>& n, 
 		   const Array1D<realT>& vg, 
 		   const Array1D<FTtype>& q,
-		   SquareMatrix<intT, FTtype>& EigSys)
+		   SquareMatrix<FTtype>& EigSys)
   {
     
     //---> Local Variables
@@ -359,7 +359,7 @@ public:
       
     //---------------- First put [|Lambda|]*[T]^{-1} in LamTinv ----------------
     /*---> NOTE: HEY YOU READING THE CODE!  When reading this translate dby"*"
-      as 1.0/* where * is always the name of the local variable you want
+      as 1.0/() where () is always the name of the local variable you want
       to divide by.  Division is expensive...so I'm trying to avoid it.  
       I'm also trying to make this readable */
     

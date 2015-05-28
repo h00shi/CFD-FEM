@@ -17,11 +17,10 @@
 #include "Array2D.h"
 #include "Array3D.h"
 #include "Array4D.h"
-#include "Surreal_lazy.h"
+#include "Surreal.h"
 #include "SquareMatrix.h"
 #include "Equation.h"
 
-template < typename intT, class realT>
 class Element {
 private:
 
@@ -30,50 +29,51 @@ protected:
   /*---> The following variables are intended to be accessed from the derived 
     classes. */
   
-  intT p; /*!< The degree of polynomials to store, 
+  intT p_; /*!< The degree of polynomials to store, 
 	    specifies how many polyomails to store */
-  intT pmap; /*!< The degree of the mapping that transforms from standard 
+  intT pmap_; /*!< The degree of the mapping that transforms from standard 
 	       to physical space */
-  intT deg; /*!< The degree of polynomial to integrate, 
+  intT deg_; /*!< The degree of polynomial to integrate, 
 	      specifies how many points are required for integration  */
-  intT ndof; /*!< The number of degrees of freedom, this standard element has*/
-  intT ndof_map; /*!< The number of degrees of freedom, for mapping */
-  intT nqp; /*!< The number of quadrature points */
-  intT nqp_face; /*< The number of face quadrature points */
-  intT ndim; /*!< The number of dimensions physical dimensions */
-  intT ndof_face; /*!< The number of degrees of freedom on a notional face */
-  Array2D<realT> xiq; /*!< The quadrature points \f$ \xi_{q} \f$ */
-  Array1D<realT> wq; /*!< The quadrature weights \f$ w_{q} \f$*/
-  Array2D<realT> xiq_face; /*!< Face quadrature points */
-  Array1D<realT> wq_face; /*!< Face quadrature weights */
-  Array2D<realT> phi; /*!< The basis functions evaluated at the quadrature 
+  intT ndof_; /*!< The number of degrees of freedom, this standard element has*/
+  intT ndof_map_; /*!< The number of degrees of freedom, for mapping */
+  intT nqp_; /*!< The number of quadrature points */
+  intT nqp_face_; /*< The number of face quadrature points */
+  intT ndim_; /*!< The number of dimensions physical dimensions */
+  intT ndof_face_; /*!< The number of degrees of freedom on a notional face */
+  Array2D<realT> xiq_; /*!< The quadrature points \f$ \xi_{q} \f$ */
+  Array1D<realT> wq_; /*!< The quadrature weights \f$ w_{q} \f$*/
+  Array2D<realT> xiq_face_; /*!< Face quadrature points */
+  Array1D<realT> wq_face_; /*!< Face quadrature weights */
+  Array2D<realT> phi_; /*!< The basis functions evaluated at the quadrature 
 			points: 
 			\f$ \phi_{i}\left(\xi_{q}\right) \f$  */
-  Array3D<realT> dphi_dxi; /*!< The spatial derivative of the basis functions 
+  Array3D<realT> dphi_dxi_; /*!< The spatial derivative of the basis functions 
 			     evaluated at the quadrature points:
 			     \f$ \frac{d \phi}{d \xi}\vert_{\xi_{q}} \f$ */
-  Array2D<realT> phi_map; /*!< The mapping basis functions evaluated at the 
+  Array2D<realT> phi_map_; /*!< The mapping basis functions evaluated at the 
 			    quadrature points */
-  Array3D<realT> dphi_map; /*!< The spatial derivative of the mapping basis 
+  Array3D<realT> dphi_map_; /*!< The spatial derivative of the mapping basis 
 			     functions at the quadrature points */
   
-  Array3D<realT> phi_face; /*!< The basis functions evaluated at the quadrature 
-			points: 
-			\f$ \phi_{i}\left(\xi_{q}\right) \f$, on faces of 
-			standard element. */
-  Array4D<realT> dphi_dxi_face; /*!< The spatial derivative of the basis 
+  Array3D<realT> phi_face_; /*!< The basis functions evaluated at the 
+			      quadrature 
+			      points: 
+			      \f$ \phi_{i}\left(\xi_{q}\right) \f$, on faces of 
+			      standard element. */
+  Array4D<realT> dphi_dxi_face_; /*!< The spatial derivative of the basis 
 				  functions evaluated at the quadrature points:
 				  \f$ \frac{d \phi}{d \xi}\vert_{\xi_{q}} \f$,
 				on faces of standard element. */
-  Array3D<realT> phi_map_face; /*!< The mapping basis functions evaluated 
+  Array3D<realT> phi_map_face_; /*!< The mapping basis functions evaluated 
 				 at the quadrature points, on faces of 
 			       standard element. */
-  Array4D<realT> dphi_map_face; /*!< The spatial derivative of the mapping 
+  Array4D<realT> dphi_map_face_; /*!< The spatial derivative of the mapping 
 				  basis functions at the quadrature points on
 				faces of standar element. */
-  Array3D<realT> dphi_ds; /*!< Derivative of the dim - 1 parameterization*/ 
+  Array3D<realT> dphi_ds_; /*!< Derivative of the dim - 1 parameterization*/ 
 
-  Array2D<realT> face_dof_map;/*!< Mapping face local dofs to element
+  Array2D<realT> face_dof_map_;/*!< Mapping face local dofs to element
 				global dofs */
   
 public:
@@ -86,9 +86,7 @@ public:
 //! \date $Date: 2013-10-28 10:08:01 -0700 (Mon, 28 Oct 2013) $
 //! 
 //****************************************************************************80
-  Element() {
-
-  }// End Element
+  Element(){}; 
 
 //****************************************************************************80
 //!
@@ -99,13 +97,11 @@ public:
 //! \date $Date: 2013-10-28 10:08:01 -0700 (Mon, 28 Oct 2013) $
 //! 
 //****************************************************************************80
-  ~Element() {
-
-  } // End ~Element
+  ~Element(){}; 
   
 //****************************************************************************80
 //!
-//! \brief project_qp : Takes in coefficients and does a projection to the
+//! \brief ProjectToQP : Takes in coefficients and does a projection to the
 //!                  quadrature points.  
 //! \details
 //! \nick 
@@ -118,7 +114,7 @@ public:
 //!          \f$ q = \sum_{i} \phi_{i}\left(\xi_{qp}\right) \hat{coeff}_{i} \f$
 //****************************************************************************80
   template<class qtype>
-  void project_qp(const intT& nfld, const int& qp, 
+  void ProjectToQP(const intT& nfld, const int& qp, 
 	       const Array2D<realT>& qcoeff, Array1D<qtype>& q)
   {
     
@@ -126,18 +122,18 @@ public:
     q.set_value(0.0);
     
     for (intT f = 0; f < nfld; f++) { // pde_loop
-      for(intT dof = 0; dof < ndof; dof++) { // mode_loop 
+      for(intT dof = 0; dof < ndof_; dof++) { // mode_loop 
 	//---> Do projection as a sum
-	q(f) += qcoeff(f, dof)*phi(qp, dof);
+	q(f) += qcoeff(f, dof)*phi_(qp, dof);
 	
       }// End pde_loop
     }// End mode_loop 
     
-  }// End project
+  }// ProjectToQP
 
 //****************************************************************************80
 //!
-//! \brief project_grad_qp : Takes in coefficients and does a projection of the 
+//! \brief ProjectGradToQP : Takes in coefficients and does a projection of the 
 //!                          gradients to the quadrature point specified
 //! \details
 //! \nick 
@@ -149,24 +145,24 @@ public:
 //! \param[out] dq The resulting graident
 //****************************************************************************80
   template<class qtype>
-  void project_grad_qp(const intT& nfld, const int& qp, 
+  void ProjectGradToQP(const intT& nfld, const int& qp, 
 		       const Array2D<realT>& qcoeff, Array2D<qtype>& dq)
   {
     //---> Initialize dq array to zero
     dq.set_value(0.0);
     for (intT f = 0; f < nfld; f++) { //pde_loop 
-      for(intT d = 0; d < ndim; d++) {//dimension_loop
-	for(intT i = 0; i < ndof; i++) { //mode_loop 
-	  dq(f,d) += qcoeff(f,i)*dphi_dxi(qp,d,i);
+      for(intT d = 0; d < ndim_; d++) {//dimension_loop
+	for(intT i = 0; i < ndof_; i++) { //mode_loop 
+	  dq(f,d) += qcoeff(f,i)*dphi_dxi_(qp,d,i);
 	} // End dimension_loop
       } // End pde_loop
     } // mode_loop
     
-  }// End project_grad
+  }// End ProjectGradToQP
 
 //****************************************************************************80
 //!
-//! \brief project_qp_face : Takes in coefficients and does a projection to the
+//! \brief ProjectToFaceQP: Takes in coefficients and does a projection to the
 //!                  quadrature points on a face.  
 //! \details
 //! \nick 
@@ -180,25 +176,25 @@ public:
 //!              \f$ q = \sum_{i} \phi_{i}\left(\xi_{qp}\right) \hat{coeff}_{i} \f$
 //****************************************************************************80
   template<class qtype>
-  void project_qp_face(const intT& side, const intT& nfld, const int& qp, 
+  void ProjectToFaceQP(const intT& side, const intT& nfld, const int& qp, 
 		       const Array2D<realT>& qcoeff, Array1D<qtype>& q)
   {
     
     //---> Initialize q array to zero
     q.set_value(0.0);
     for (intT f = 0; f < nfld; f++) { // pde_loop
-      for(intT i = 0; i < ndof; i++) { // mode_loop 
+      for(intT i = 0; i < ndof_; i++) { // mode_loop 
 	//---> Do projection as a sum
-	q(f) += qcoeff(f,i)*phi_face(side, qp, i);
+	q(f) += qcoeff(f,i)*phi_face_(side, qp, i);
 	
       }// End pde_loop
     }// End mode_loop 
     
-  }// End project_qp_face
+  }// End ProjectToFaceQP
 
 //****************************************************************************80
 //!
-//! \brief project_grad_qp_face : Takes in coefficients and does a projection 
+//! \brief ProjectGradToFaceQP : Takes in coefficients and does a projection 
 //!                          of the gradients to the quadrature point specified.
 //! \details
 //! \nick 
@@ -211,25 +207,25 @@ public:
 //! \param[out] dq The resulting graident
 //****************************************************************************80
   template<class qtype>
-  void project_grad_qp_face(const intT& side, const intT& nfld, const int& qp, 
+  void ProjectGradToFaceQP(const intT& side, const intT& nfld, const int& qp, 
 		       const Array2D<realT>& qcoeff, Array2D<qtype>& dq)
   {
     //---> Initialize dq array to zero
     dq.set_value(0.0);
     for (intT f = 0; f < nfld; f++) { //pde_loop 
-      for(intT d = 0; d < ndim; d++) {//dimension_loop
-	for(intT i = 0; i < ndof; i++) { //mode_loop 
-	  dq(f,d) += qcoeff(f,i)*dphi_dxi_face(side, qp, d, i);
+      for(intT d = 0; d < ndim_; d++) {//dimension_loop
+	for(intT i = 0; i < ndof_; i++) { //mode_loop 
+	  dq(f,d) += qcoeff(f,i)*dphi_dxi_face_(side, qp, d, i);
 	} // End dimension_loop
       } // End pde_loop
     } // mode_loop
     
-  }// End project_grad_qp_face
+  }// End ProjectGradToFaceQP
 
 
 //****************************************************************************80
 //!
-//! \brief void comp_map : Computes element mapping data 
+//! \brief void ComputeJinv : Computes element mapping data 
 //! \details
 //! \nick 
 //! \version $Rev: 6 $
@@ -239,24 +235,24 @@ public:
 //! \param[out] Jinv \f$ \frac{d x}{d \xi}\left(\xi_{qp}\right)  \f$ 
 //! \param[out] DetJ \f$ Det\left(\frac{d x}{d \xi}\left(\xi_{qp}\right)\right) \f$
 //****************************************************************************80
-  void comp_map(const intT& qp, const Array2D<realT>& xcoeff, 
+  void ComputeJinv(const intT& qp, const Array2D<realT>& xcoeff, 
 		Array2D<realT>& Jinv, realT& DetJ)
   {
     //---> Local Variables
     Array2D<realT> J;
     //---> Allocate and initialize J matrix
-    J.initialize(ndim, ndim);
+    J.initialize(ndim_, ndim_);
     J.set_value(0.0);
     
-    for (intT dr = 0; dr < ndim; dr++) { //pde_loop 
-      for(intT dc = 0; dc < ndim; dc++) {//dimension_loop
-	for(intT i = 0; i < ndof_map; i++) { //mode_loop 
-	  J(dr,dc) += xcoeff(dc,i)*dphi_map(qp,dr,i);
+    for (intT dr = 0; dr < ndim_; dr++) { //pde_loop 
+      for(intT dc = 0; dc < ndim_; dc++) {//dimension_loop
+	for(intT i = 0; i < ndof_map_; i++) { //mode_loop 
+	  J(dr,dc) += xcoeff(dc,i)*dphi_map_(qp,dr,i);
 	} // End dimension_loop
       } // End pde_loop
     } // mode_loop
  
-    switch (ndim) {// Determinant computation
+    switch (ndim_) {// Determinant computation
     case 1: //---> 1-D
       DetJ = J(0,0);
       Jinv(0,0) = 1.0/J(0,0);
@@ -298,11 +294,11 @@ public:
     }// End Determinant computation
 
     return;
-  }// End comp_map
+  }// End ComputeJinv
 
 //****************************************************************************80
 //!
-//! \brief void comp_map_face : Computes element mapping data at a face 
+//! \brief void ComputeJinvFace : Computes element mapping data at a face 
 //!        quadrature point.  
 //! \details
 //! \nick 
@@ -314,25 +310,25 @@ public:
 //! \param[out] Jinv \f$ \frac{d x}{d \xi}\left(\xi_{qp}\right)  \f$ 
 //! \param[out] DetJ \f$ Det\left(\frac{d x}{d \xi}\left(\xi_{qp}\right)\right) \f$
 //****************************************************************************80
-  void comp_map_face(const int& side, const intT& qp, 
+  void ComputeJinvFace(const int& side, const intT& qp, 
 		     const Array2D<realT>& xcoeff, 
 		     Array2D<realT>& Jinv, realT& DetJ)
   {
     //---> Local Variables
     Array2D<realT> J;
     //---> Allocate and initialize J matrix
-    J.initialize(ndim, ndim);
+    J.initialize(ndim_, ndim_);
     J.set_value(0.0);
     
-    for (intT dr = 0; dr < ndim; dr++) { //pde_loop 
-      for(intT dc = 0; dc < ndim; dc++) {//dimension_loop
-	for(intT i = 0; i < ndof_map; i++) { //mode_loop 
-	  J(dr,dc) += xcoeff(dc,i)*dphi_map_face(side, qp, dr, i);
+    for (intT dr = 0; dr < ndim_; dr++) { //pde_loop 
+      for(intT dc = 0; dc < ndim_; dc++) {//dimension_loop
+	for(intT i = 0; i < ndof_map_; i++) { //mode_loop 
+	  J(dr,dc) += xcoeff(dc,i)*dphi_map_face_(side, qp, dr, i);
 	} // End dimension_loop
       } // End pde_loop
     } // mode_loop
  
-    switch (ndim) {// Determinant computation
+    switch (ndim_) {// Determinant computation
     case 1: //---> 1-D
       DetJ = J(0,0);
       Jinv(0,0) = 1.0/J(0,0);
@@ -374,12 +370,12 @@ public:
     }// End Determinant computation
 
     return;
-  }// End comp_map_face
+  }// End ComputeJinvFace
 
 //****************************************************************************80
 //!
-//! \brief comp_face_map : Computes the mapping of a face at a face quadrature 
-//!        point. 
+//! \brief ComputeFaceVectors : Computes the mapping of a face at a face 
+//!        quadrature point. 
 //! \details
 //! \nick 
 //! \version $Rev$
@@ -390,21 +386,22 @@ public:
 //! \param[out] norm Face normal vector
 //! \param[out] tang Face tangent vector 
 //****************************************************************************80
-  void comp_face_map(const intT& side, const intT& qp, const 
+  void ComputeFaceVectors(const intT& side, const intT& qp, const 
 		     Array2D<realT>& xcoeff, Array1D<realT>& norm, 
 		     Array1D<realT>& tang)
   {
-    Array2D<realT> dxds(ndim, ndim - 1);
+    Array2D<realT> dxds(ndim_, ndim_ - 1);
     dxds.set_value(0.0);
-    for (intT dr = 0; dr < ndim; dr++) { //dim_loop 
-      for(intT dc = 0; dc < ndim - 1; dc++) {//dimension_loop
-	for(intT i = 0; i < ndof_face; i++) { //mode_loop 
-	  dxds(dr, dc) += xcoeff(dr, face_dof_map(side, i) )*dphi_ds(qp, dc, i);
+    for (intT dr = 0; dr < ndim_; dr++) { //dim_loop 
+      for(intT dc = 0; dc < ndim_ - 1; dc++) {//dimension_loop
+	for(intT i = 0; i < ndof_face_; i++) { //mode_loop 
+	  dxds(dr, dc) += xcoeff(dr, face_dof_map_(side, i) ) * 
+	    dphi_ds_(qp, dc, i);
 	} // End dimension_loop
       } // End pde_loop
     } // mode_loop
   
-    switch(ndim){ // normal, tangent
+    switch(ndim_){ // normal, tangent
     case 1:
       if( side == 0 ) { norm(0) = -1.0; }
       else if( side == 1 ){ norm(0) = 1.0; }
@@ -430,11 +427,11 @@ public:
       break;
     }// End normal, tangent
  
-  }// End comp_face_map
+  }// End ComputeFaceVectors
 
 //****************************************************************************80
 //!
-//! \brief integrate_func : Integrates and abitrary function func(q)
+//! \brief IntegrateFunction : Integrates and abitrary function func(q)
 //! \details  This function integrates some function func over the element. 
 //!           From an objecti oriented point of view the element owns the 
 //!           integrate but not neccesarily the function, hence we bring the
@@ -449,7 +446,7 @@ public:
 //! \param[out] integral The resulting of integrating the function i.e 
 //! \f$ \int_{-1}^{1} func(q(\xi)) Det(J) d\xi \f$ 
 //****************************************************************************80
-  void integrate_func(const intT& nfld,
+  void IntegrateFunction(const intT& nfld,
                       const Array2D<realT>& qcoeff,
                       const Array2D<realT>& xcoeff,
                       void(*func)(const Array1D<realT>&, Array1D<realT>& ),
@@ -457,30 +454,30 @@ public:
   {
     //---> Local Variables
     Array1D<realT> q(nfld);
-    Array2D<realT> Jinv(ndim,ndim);
+    Array2D<realT> Jinv(ndim_,ndim_);
     realT DetJ;
     Array1D<realT> res(nfld);
     
     //---> Set res and integral to zero
     integral.set_value(0);
 
-    for (intT j = 0; j < nqp ; j++){// quad_loop 
+    for (intT j = 0; j < nqp_ ; j++){// quad_loop 
       //---> Obtain function argument from coefficients and basis at quad_points
-      project_qp(nfld, j, qcoeff, q);
+      ProjectToQP(nfld, j, qcoeff, q);
 
       //---> Evaluate function at quadrature point j
       func(q, res);
 
       //Evaluate mapping at the quadrature point
-      comp_map(j, xcoeff, Jinv, DetJ);
+      ComputeJinv(j, xcoeff, Jinv, DetJ);
 
       //---> Loop over the fields and integrate the function for each field
       for (intT f = 0; f < nfld; f++){// field_loop 
-        integral(f) += res(f)*wq(j)*DetJ;
+        integral(f) += res(f)*wq_(j)*DetJ;
       } // End field_loop
     } // End quad_loop 
     return;
-  } // End integrate_func
+  } // End IntegrateFunction
 
 //****************************************************************************80
 //!
@@ -503,38 +500,38 @@ public:
     intT nf = PDE.get_nfld();
     Array1D<realT> q(nf);
     Array1D<realT> flux(nf);
-    Array1D<realT> norm(ndim);
-    Array1D<realT> vg(ndim);
+    Array1D<realT> norm(ndim_);
+    Array1D<realT> vg(ndim_);
     Array1D<realT> dq(nf);
     Array1D<realT> divF(nf);
-    Array2D<realT> dqdxi(nf,ndim);
-    Array2D<realT> Jinv(ndim,ndim);
-    SquareMatrix<intT, realT> tauinv(nf);
+    Array2D<realT> dqdxi(nf,ndim_);
+    Array2D<realT> Jinv(ndim_,ndim_);
+    SquareMatrix< realT> tauinv(nf);
     realT DetJ;
     
     //---> Set integral Value to zero
     resid.set_value(0.0);
     vg.set_value(0.0);
           
-    for (intT qp = 0; qp < nqp ; qp++){// quad_loop
+    for (intT qp = 0; qp < nqp_ ; qp++){// quad_loop
       //---> Obtain function argument from coefficients and basis at quad_points
-      project_qp<realT>(nf, qp, qcoeff, q);
+      ProjectToQP<realT>(nf, qp, qcoeff, q);
    
       //---> Evaluate mapping at the quadrature point
-      comp_map(qp, xcoeff, Jinv, DetJ);
+      ComputeJinv(qp, xcoeff, Jinv, DetJ);
       
       //---> Compute dq/d(xi) at a the quadrature point 
-      project_grad_qp<realT>(nf, qp, qcoeff, dqdxi);
+      ProjectGradToQP<realT>(nf, qp, qcoeff, dqdxi);
 
       //---> Set Divergence of F to zero
       divF.set_value(0.0);
 
       //---------------------- (-d(phi)/d(xi_{d})*F_{d}) -----------------------
       
-      for (intT d = 0; d < ndim; d++){// Dimension loop
+      for (intT d = 0; d < ndim_; d++){// Dimension loop
 	
 	//---> Put the col of Jinv into normal vector
-	for (intT d1 = 0; d1 < ndim; d1++){ // Dimension loop-2
+	for (intT d1 = 0; d1 < ndim_; d1++){ // Dimension loop-2
 	  norm(d1) = Jinv(d1,d);
 	}// End Dimension loop-2
 	
@@ -546,8 +543,8 @@ public:
 
 	//---> Assemble - d(dphi)/d(xi_{d})*F_{d}
 	for (intT f = 0; f < nf; f++) {// Field loop 
-	  for(intT dof = 0; dof < ndof; dof++){// DoF loop 
-	    resid(f,dof) -= (dphi_dxi(qp,d,dof)*flux(f))*DetJ*wq(qp);
+	  for(intT dof = 0; dof < ndof_; dof++){// DoF loop 
+	    resid(f,dof) -= (dphi_dxi_(qp,d,dof)*flux(f))*DetJ*wq_(qp);
 	  } // End Dof loop 
 	} // End Field loop 
 	
@@ -565,12 +562,12 @@ public:
       //---> Form [tau]^{-1}
       tauinv.set_value(0.0);
       
-      for( intT dof = 0; dof < ndof; dof++){ // DoF loop 
+      for( intT dof = 0; dof < ndof_; dof++){ // DoF loop 
 	//---> Form put grad(phi_dof) into norm by the following loop
-	for( intT d = 0; d < ndim; d++) {
+	for( intT d = 0; d < ndim_; d++) {
 	  norm(d) = 0.0;
-	  for( intT d1 = 0; d1 < ndim; d1++){
-	    norm(d) += Jinv(d,d1)*dphi_dxi(qp, d1, dof);
+	  for( intT d1 = 0; d1 < ndim_; d1++){
+	    norm(d) += Jinv(d,d1)*dphi_dxi_(qp, d1, dof);
 	  }
 	}
 
@@ -584,9 +581,9 @@ public:
            
       //---------------- (d(phi)/d(xi_{d})*d(F_{d})/d(q)*tau*Rt(q,dq)) ---------
    
-      for (intT d = 0; d < ndim; d++){// Dimension loop-2
+      for (intT d = 0; d < ndim_; d++){// Dimension loop-2
 	//---> Put the col of Jinv into normal vector
-	for (intT d1 = 0; d1 < ndim; d1++){ // Dimension loop
+	for (intT d1 = 0; d1 < ndim_; d1++){ // Dimension loop
 	  norm(d1) = Jinv(d1,d);
 	}// End Dimension loop
 
@@ -594,8 +591,8 @@ public:
 	PDE.template DerivFluxDotVecTimesX<realT>(norm, vg, q, flux, divF);
 	//---> Assemble  d(dphi)/d(xi_{d})*d(F_{d})(dq)*[tau]*R(q,dqdx);
 	for (intT f = 0; f < nf; f++) {// Field loop 
-	  for(intT dof = 0; dof < ndof; dof++) { // Dof loop 
-	    resid(f,dof) += (dphi_dxi(qp,d,dof)*divF(f))*DetJ*wq(qp);
+	  for(intT dof = 0; dof < ndof_; dof++) { // Dof loop 
+	    resid(f,dof) += (dphi_dxi_(qp,d,dof)*divF(f))*DetJ*wq_(qp);
 	    
 	  }// End Field loop 
 	}// End DoF loop 
@@ -629,22 +626,21 @@ public:
     intT nf = PDE.get_nfld();
     Array1D<realT> q(nf), qb(nf);
     Array1D<realT> flux(nf);
-    Array1D<realT> norm(ndim);
-    Array1D<realT> tang(ndim);
-    Array1D<realT> vg(ndim);
-    realT fDetJ;
+    Array1D<realT> norm(ndim_);
+    Array1D<realT> tang(ndim_);
+    Array1D<realT> vg(ndim_);
     
     //---> Set grid velocity to zero
     resid.set_value(0.0); 
     vg.set_value(0.0);
     
-    for (intT qp = 0; qp < nqp_face ; qp++){// quad_loop
+    for (intT qp = 0; qp < nqp_face_ ; qp++){// quad_loop
            
       //---> Obtain function argument from coefficients and basis at quad_points
-      project_qp_face<realT>(side, nf, qp, qcoeff, q);
+      ProjectToFaceQP<realT>(side, nf, qp, qcoeff, q);
       
       //---> Evaluate face mapping at the quadrature point
-      comp_face_map(side, qp, xcoeff, norm, tang);
+      ComputeFaceVectors(side, qp, xcoeff, norm, tang);
       
       //---> Obtain boundary state-vector
       PDE.template get_bc_q<realT>(bc_type, norm, tang, vg, q, qb);
@@ -654,10 +650,10 @@ public:
       PDE.template FluxDotVec<realT>(norm, vg, qb, flux);
        
       for (intT f = 0; f < nf; f++) { // field_loop
-	for(intT dof = 0; dof < ndof; dof++) { // dof_loop 
+	for(intT dof = 0; dof < ndof_; dof++) { // dof_loop 
 	  /*---> Note norm is not a unit vector magnitude of face area term
 	   present in the flux vector*/
-	  resid(f,dof) += phi_face(side, qp, dof)*flux(f)*wq_face(qp);
+	  resid(f,dof) += phi_face_(side, qp, dof)*flux(f)*wq_face_(qp);
 	} // End dof_loop
       }// End field_loop
       
@@ -689,13 +685,13 @@ public:
     static const intT nf = PDE_type<intT,realT>::nfld;
     Array1D< Surreal<realT, nf> > q(nf);
     Array1D< Surreal<realT, nf> > flux(nf);
-    Array1D<realT> norm(ndim);
-    Array1D<realT> vg(ndim);
+    Array1D<realT> norm(ndim_);
+    Array1D<realT> vg(ndim_);
     Array1D< Surreal<realT, nf> > dq(nf);
     Array1D< Surreal<realT, nf> > divF(nf);
-    Array2D< Surreal<realT, nf> > dqdxi(nf,ndim);
-    Array2D<realT> Jinv(ndim,ndim);
-    SquareMatrix<intT, Surreal<realT, nf> > tauinv(nf);
+    Array2D< Surreal<realT, nf> > dqdxi(nf,ndim_);
+    Array2D<realT> Jinv(ndim_,ndim_);
+    SquareMatrix< Surreal<realT, nf> > tauinv(nf);
     realT DetJ;
        
     //---> Set integral Value to zero
@@ -703,15 +699,15 @@ public:
     fjac.set_value(0.0);
     vg.set_value(0.0);
           
-    for (intT qp = 0; qp < nqp ; qp++){// quad_loop
+    for (intT qp = 0; qp < nqp_ ; qp++){// quad_loop
       //---> Obtain function argument from coefficients and basis at quad_points
-      project_qp< Surreal<realT,nf> >(nf, qp, qcoeff, q);
+      ProjectToQP< Surreal<realT,nf> >(nf, qp, qcoeff, q);
    
       //---> Evaluate mapping at the quadrature point
-      comp_map(qp, xcoeff, Jinv, DetJ);
+      ComputeJinv(qp, xcoeff, Jinv, DetJ);
       
       //---> Compute dq/d(xi) at a the quadrature point 
-      project_grad_qp< Surreal<realT,nf> >(nf, qp, qcoeff, dqdxi);
+      ProjectGradToQP< Surreal<realT,nf> >(nf, qp, qcoeff, dqdxi);
 
       //---> Set Divergence of F to zero
       divF.set_value(0.0);
@@ -722,10 +718,10 @@ public:
       }// End Deriv init
       //----------------------- Derivative w.r.t. q ----------------------------
       //---------------------- (-d(phi)/d(xi_{d})*F_{d}) -----------------------
-      for (intT d = 0; d < ndim; d++){// Dimension loop
+      for (intT d = 0; d < ndim_; d++){// Dimension loop
 	
 	//---> Put the col of Jinv into normal vector
-	for (intT d1 = 0; d1 < ndim; d1++){ // Dimension loop-2
+	for (intT d1 = 0; d1 < ndim_; d1++){ // Dimension loop-2
 	  norm(d1) = Jinv(d1,d);
 	}// End Dimension loop-2
 	
@@ -737,18 +733,18 @@ public:
 
 	//---> Assemble - d(dphi)/d(xi_{d})*F_{d}
 	for (intT f = 0; f < nf; f++) {// Field loop 
-	  for(intT dof = 0; dof < ndof; dof++){// DoF loop 
-	    resid(f,dof) -= (dphi_dxi(qp,d,dof)*flux(f).Value())*DetJ*wq(qp);
+	  for(intT dof = 0; dof < ndof_; dof++){// DoF loop 
+	    resid(f,dof) -= (dphi_dxi_(qp,d,dof)*flux(f).Value())*DetJ*wq_(qp);
 	  } // End Dof loop 
 	} // End Field loop
 	  
 	//---> Jacobian;
 	for (intT f = 0; f < nf; f++) {// Field loop 
 	  for(intT fc = 0; fc < nf; fc++){// Col Field loop 
-	    for(intT dof = 0; dof < ndof; dof++){ // DoF loop
-	      for(intT dofc = 0; dofc < ndof; dofc++){// Col DoF loop 
-		fjac(f,fc,dof,dofc) -= dphi_dxi(qp,d,dof)*flux(f).Deriv(fc) * 
-		  phi(qp,dofc)*DetJ*wq(qp);
+	    for(intT dof = 0; dof < ndof_; dof++){ // DoF loop
+	      for(intT dofc = 0; dofc < ndof_; dofc++){// Col DoF loop 
+		fjac(f,fc,dof,dofc) -= dphi_dxi_(qp,d,dof)*flux(f).Deriv(fc) * 
+		  phi_(qp,dofc)*DetJ*wq_(qp);
 	      }// End Col DoF loop
 	    }// End Dof Loop
 	  } // End Col Field loop
@@ -769,12 +765,12 @@ public:
       //---> Form [tau]^{-1}
       tauinv.set_value(0.0);
       
-      for( intT dof = 0; dof < ndof; dof++){ // DoF loop 
+      for( intT dof = 0; dof < ndof_; dof++){ // DoF loop 
 	//---> Form put grad(phi_dof) into norm by the following loop
-	for( intT d = 0; d < ndim; d++) {
+	for( intT d = 0; d < ndim_; d++) {
 	  norm(d) = 0.0;
-	  for( intT d1 = 0; d1 < ndim; d1++){
-	    norm(d) += Jinv(d,d1)*dphi_dxi(qp, d1, dof);
+	  for( intT d1 = 0; d1 < ndim_; d1++){
+	    norm(d) += Jinv(d,d1)*dphi_dxi_(qp, d1, dof);
 	  }
 	}
 
@@ -788,9 +784,9 @@ public:
            
       //---------------- (d(phi)/d(xi_{d})*d(F_{d})/d(q)*tau*Rt(q,dq)) ---------
    
-      for (intT d = 0; d < ndim; d++){// Dimension loop-2
+      for (intT d = 0; d < ndim_; d++){// Dimension loop-2
 	//---> Put the col of Jinv into normal vector
-	for (intT d1 = 0; d1 < ndim; d1++){ // Dimension loop
+	for (intT d1 = 0; d1 < ndim_; d1++){ // Dimension loop
 	  norm(d1) = Jinv(d1,d);
 	}// End Dimension loop
 
@@ -799,18 +795,18 @@ public:
 	  (norm, vg, q, flux, divF);
 	//---> Assemble  d(dphi)/d(xi_{d})*d(F_{d})(dq)*[tau]*R(q,dqdx);
 	for (intT f = 0; f < nf; f++) {// Field loop 
-	  for(intT dof = 0; dof < ndof; dof++) { // Dof loop 
-	    resid(f,dof) += (dphi_dxi(qp,d,dof)*divF(f).Value())*DetJ*wq(qp);
+	  for(intT dof = 0; dof < ndof_; dof++) { // Dof loop 
+	    resid(f,dof) += (dphi_dxi_(qp,d,dof)*divF(f).Value())*DetJ*wq_(qp);
 	  }// End Field loop 
 	}// End DoF loop 
 	
 	//---> Jacobian;
 	for (intT f = 0; f < nf; f++) {// Field loop 
 	  for(intT fc = 0; fc < nf; fc++){// Col Field loop 
-	    for(intT dof = 0; dof < ndof; dof++){ // DoF loop
-	      for(intT dofc = 0; dofc < ndof; dofc++){// Col DoF loop 
-		fjac(f,fc,dof,dofc) -= dphi_dxi(qp,d,dof)*divF(f).Deriv(fc) * 
-		  phi(qp,dofc)*DetJ*wq(qp);
+	    for(intT dof = 0; dof < ndof_; dof++){ // DoF loop
+	      for(intT dofc = 0; dofc < ndof_; dofc++){// Col DoF loop 
+		fjac(f,fc,dof,dofc) -= dphi_dxi_(qp,d,dof)*divF(f).Deriv(fc) * 
+		  phi_(qp,dofc)*DetJ*wq_(qp);
 	      }// End Col DoF loop
 	    }// End Dof Loop
 	  } // End Col Field loop
@@ -825,11 +821,11 @@ public:
       }// End Deriv init
 
       //---> Loop over dimensions
-      for(intT dim = 0; dim < ndim; dim++){//Out dimension loop
+      for(intT dim = 0; dim < ndim_; dim++){//Out dimension loop
 	
 	//---> Initalize dqdxi array to value only
 	for(intT f = 0; f < nf; f++) { // Field init
-	  for(intT d = 0; d < ndim; d++){ // Dimension init
+	  for(intT d = 0; d < ndim_; d++){ // Dimension init
 	    dqdxi(f,d) = dqdxi(f,d).Value();
 	  } // End Dimension init
 	} // End Field init
@@ -839,9 +835,9 @@ public:
 	  dqdxi(f,dim).set_deriv(f,1.0);
 	}// End Deriv init
 	
-	for (intT d = 0; d < ndim; d++){// Dimension loop
+	for (intT d = 0; d < ndim_; d++){// Dimension loop
 	  //---> Put the col of Jinv into normal vector
-	  for (intT d1 = 0; d1 < ndim; d1++){ // Dimension loop-2
+	  for (intT d1 = 0; d1 < ndim_; d1++){ // Dimension loop-2
 	    norm(d1) = Jinv(d1,d);
 	  }// End Dimension loop-2
 	  
@@ -855,10 +851,10 @@ public:
 	  //---> Jacobian;
 	  for (intT f = 0; f < nf; f++) {// Field loop 
 	    for(intT fc = 0; fc < nf; fc++){// Col Field loop 
-	      for(intT dof = 0; dof < ndof; dof++){ // DoF loop
-		for(intT dofc = 0; dofc < ndof; dofc++){// Col DoF loop 
-		  fjac(f,fc,dof,dofc) -= dphi_dxi(qp,d,dof)*flux(f).Deriv(fc) * 
-		    dphi_dxi(qp,dim,dofc)*DetJ*wq(qp);
+	      for(intT dof = 0; dof < ndof_; dof++){ // DoF loop
+		for(intT dofc = 0; dofc < ndof_; dofc++){// Col DoF loop 
+		  fjac(f,fc,dof,dofc) -= dphi_dxi_(qp,d,dof)*flux(f).Deriv(fc)* 
+		    dphi_dxi_(qp,dim,dofc)*DetJ*wq_(qp);
 		}// End Col DoF loop
 	      }// End Dof Loop
 	    } // End Col Field loop
@@ -879,12 +875,12 @@ public:
 	//---> Form [tau]^{-1}
 	tauinv.set_value(0.0);
       
-	for( intT dof = 0; dof < ndof; dof++){ // DoF loop 
+	for( intT dof = 0; dof < ndof_; dof++){ // DoF loop 
 	  //---> Form put grad(phi_dof) into norm by the following loop
-	  for( intT d = 0; d < ndim; d++) {
+	  for( intT d = 0; d < ndim_; d++) {
 	    norm(d) = 0.0;
-	    for( intT d1 = 0; d1 < ndim; d1++){
-	      norm(d) += Jinv(d,d1)*dphi_dxi(qp, d1, dof);
+	    for( intT d1 = 0; d1 < ndim_; d1++){
+	      norm(d) += Jinv(d,d1)*dphi_dxi_(qp, d1, dof);
 	    }
 	  }
 
@@ -898,9 +894,9 @@ public:
            
 	//--------------- (d(phi)/d(xi_{d})*d(F_{d})/d(q)*tau*Rt(q,dq)) --------
    
-	for (intT d = 0; d < ndim; d++){// Dimension loop-2
+	for (intT d = 0; d < ndim_; d++){// Dimension loop-2
 	  //---> Put the col of Jinv into normal vector
-	  for (intT d1 = 0; d1 < ndim; d1++){ // Dimension loop
+	  for (intT d1 = 0; d1 < ndim_; d1++){ // Dimension loop
 	    norm(d1) = Jinv(d1,d);
 	  }// End Dimension loop
 
@@ -910,10 +906,10 @@ public:
 	  //---> Jacobian;
 	  for (intT f = 0; f < nf; f++) {// Field loop 
 	    for(intT fc = 0; fc < nf; fc++){// Col Field loop 
-	      for(intT dof = 0; dof < ndof; dof++){ // DoF loop
-		for(intT dofc = 0; dofc < ndof; dofc++){// Col DoF loop 
-		  fjac(f,fc,dof,dofc) -= dphi_dxi(qp,d,dof)*divF(f).Deriv(fc) * 
-		    dphi_dxi(qp, dim, dofc)*DetJ*wq(qp);
+	      for(intT dof = 0; dof < ndof_; dof++){ // DoF loop
+		for(intT dofc = 0; dofc < ndof_; dofc++){// Col DoF loop 
+		  fjac(f,fc,dof,dofc) -= dphi_dxi_(qp,d,dof)*divF(f).Deriv(fc)* 
+		    dphi_dxi_(qp, dim, dofc)*DetJ*wq_(qp);
 		}// End Col DoF loop
 	      }// End Dof Loop
 	    } // End Col Field loop
@@ -951,23 +947,22 @@ public:
     static const intT nf = PDE_type<intT,realT>::nfld;
     Array1D< Surreal<realT,nf> > q(nf), qb(nf);
     Array1D< Surreal<realT,nf> > flux(nf);
-    Array1D<realT> norm(ndim);
-    Array1D<realT> tang(ndim);
-    Array1D<realT> vg(ndim);
-    realT fDetJ;
+    Array1D<realT> norm(ndim_);
+    Array1D<realT> tang(ndim_);
+    Array1D<realT> vg(ndim_);
     
     //---> Set grid velocity to zero
     resid.set_value(0.0); 
     fjac.set_value(0.0);
     vg.set_value(0.0);
     
-    for (intT qp = 0; qp < nqp_face ; qp++){// quad_loop
+    for (intT qp = 0; qp < nqp_face_ ; qp++){// quad_loop
            
       //---> Obtain function argument from coefficients and basis at quad_points
-      project_qp_face< Surreal<realT,nf> >(side, nf, qp, qcoeff, q);
+      ProjectToFaceQP< Surreal<realT,nf> >(side, nf, qp, qcoeff, q);
       
       //---> Evaluate face mapping at the quadrature point
-      comp_face_map(side, qp, xcoeff, norm, tang);
+      ComputeFaceVectors(side, qp, xcoeff, norm, tang);
       
       //---> Set derivative of q
       for(intT f = 0; f < nf; f++){// Deriv init
@@ -983,20 +978,20 @@ public:
       PDE.template FluxDotVec< Surreal<realT,nf> >(norm, vg, qb, flux);
        
       for (intT f = 0; f < nf; f++) { // field_loop
-	for(intT dof = 0; dof < ndof; dof++) { // dof_loop 
+	for(intT dof = 0; dof < ndof_; dof++) { // dof_loop 
 	  /*---> Note norm is not a unit vector magnitude of face area term
 	   present in the flux vector*/
-	  resid(f,dof) += phi_face(side, qp, dof)*flux(f).Value()*wq_face(qp);
+	  resid(f,dof) += phi_face_(side, qp, dof)*flux(f).Value()*wq_face_(qp);
 	} // End dof_loop
       }// End field_loop
       
       //---> Jacobian;
       for (intT f = 0; f < nf; f++) {// Field loop 
 	for(intT fc = 0; fc < nf; fc++){// Col Field loop 
-	  for(intT dof = 0; dof < ndof; dof++){ // DoF loop
-	    for(intT dofc = 0; dofc < ndof; dofc++){// Col DoF loop 
-	      fjac(f, fc, dof, dofc) += phi_face(side, qp, dof) *
-		flux(f).Deriv(fc)*phi_face(side, qp, dofc)*wq_face(qp);
+	  for(intT dof = 0; dof < ndof_; dof++){ // DoF loop
+	    for(intT dofc = 0; dofc < ndof_; dofc++){// Col DoF loop 
+	      fjac(f, fc, dof, dofc) += phi_face_(side, qp, dof) *
+		flux(f).Deriv(fc)*phi_face_(side, qp, dofc)*wq_face_(qp);
 	    }// End Col DoF loop
 	  }// End Dof Loop
 	} // End Col Field loop
@@ -1009,7 +1004,7 @@ public:
 
 //****************************************************************************80
 //!
-//! \brief volume : Computes the volume of an element given the mapping 
+//! \brief Volume : Computes the volume of an element given the mapping 
 //!                 coefficients.
 //! \details
 //! \author Nick Burgess
@@ -1018,24 +1013,58 @@ public:
 //! \param[in] xcoeff The mapping coefficients
 //! \return vol The element volume
 //****************************************************************************80
-  realT volume(const Array2D<realT>& xcoeff)
+  realT Volume(const Array2D<realT>& xcoeff)
   {
     //---> Local Variables
-    Array2D<realT> Jinv(ndim, ndim);
+    Array2D<realT> Jinv(ndim_, ndim_);
     realT DetJ;
     realT vol;
     
     //---> Set volume to zero
     vol = 0.0;
-    for (intT j = 0; j < nqp ; j++){// quad_loop 
+    for (intT j = 0; j < nqp_ ; j++){// quad_loop 
       //Evaluate mapping at the quadrature point
-      comp_map(j, xcoeff, Jinv, DetJ);
+      ComputeJinv(j, xcoeff, Jinv, DetJ);
       
-      vol += wq(j)*DetJ;
+      vol += wq_(j)*DetJ;
     } // End quad_loop 
     
     return(vol);
+  } // End Volume
+
+//****************************************************************************80
+//!
+//! \brief FaceArea : Computes the volume of an element given the mapping 
+//!                 coefficients.
+//! \details
+//! \author Nick Burgess
+//! \version $Rev$
+//! \date $Date$
+//! \param[in] xcoeff The mapping coefficients
+//! \return vol The element volume
+//****************************************************************************80
+  realT FaceArea(const intT& side, const Array2D<realT>& xcoeff)
+  {
+    //---> Local Variables
+    Array1D<realT> norm(ndim_);
+    Array1D<realT> tang(ndim_);
+    realT Area;
+    
+    //---> Set volume to zero
+    Area = 0.0;
+    for (intT j = 0; j < nqp_face_ ; j++){// quad_loop 
+      //Evaluate mapping at the quadrature point
+      ComputeFaceVectors(side, j, xcoeff, norm, tang);
+      realT DetJ = 0.0;
+      for(intT d = 0; d < ndim_; d++) {DetJ += norm(d)*norm(d);}
+      DetJ = sqrt(DetJ);
+      
+      Area += wq_face_(j)*DetJ;
+    } // End quad_loop 
+    
+    return(Area);
   } // End integrate_func
+
 
 
 }; // End class Element

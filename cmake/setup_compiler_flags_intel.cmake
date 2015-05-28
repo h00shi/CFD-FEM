@@ -18,7 +18,7 @@ ENDIF ()
 
 # set flags for debug mode
 IF (CMAKE_BUILD_TYPE MATCHES "Debug")
-  SET (CMAKE_CXX_FLAGS_DEBUG "-g -O0 -finline -w3 -diag-error 1599")
+  SET (CMAKE_CXX_FLAGS_DEBUG "-g -O0 -finline -w3 -diag-error 1599,3280")
   IF (ICC_WITH_REMARKS_SUPPRESSION)
     SET(CMAKE_CXX_FLAGS_DEBUG  
       "${CMAKE_CXX_FLAGS_DEBUG} -diag-disable 383,981,2547")
