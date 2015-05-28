@@ -392,10 +392,10 @@ TEST(SquareMatrix, surreal_eval_LU) {
 
   SquareMatrix<Surreal<double,MATRIX_N> > unit(MATRIX_N);
   Surreal<double,MATRIX_N> q[MATRIX_N];
-  q[0].Value() = 1.0;
-  q[1].Value() = 2.0;
-  q[2].Value() = 3.0;
-  q[3].Value() = 4.0;
+  q[0] = 1.0;
+  q[1] = 2.0;
+  q[2] = 3.0;
+  q[3] = 4.0;
   q[0].Deriv(0) = 1.0;
   q[1].Deriv(1) = 1.0;
   q[2].Deriv(2) = 1.0;
@@ -478,10 +478,10 @@ TEST(SquareMatrix, surreal_eval_inv) {
 
   SquareMatrix<Surreal<double,MATRIX_N> > unit(MATRIX_N);
   Surreal<double,MATRIX_N> q[MATRIX_N];
-  q[0].Value() = 1.0;
-  q[1].Value() = 2.0;
-  q[2].Value() = 3.0;
-  q[3].Value() = 4.0;
+  q[0] = 1.0;
+  q[1] = 2.0;
+  q[2] = 3.0;
+  q[3] = 4.0;
   q[0].Deriv(0) = 1.0;
   q[1].Deriv(1) = 1.0;
   q[2].Deriv(2) = 1.0;
@@ -490,7 +490,7 @@ TEST(SquareMatrix, surreal_eval_inv) {
   unit(0,0) = q[0]*q[1];
   unit(0,1) = q[1]*q[2];
   unit(0,2) = q[3]*q[0];
-   unit(0,3) = q[2]/q[1];
+  unit(0,3) = q[2]/q[1];
 
   unit(1,0) = q[1]*q[1];
   unit(1,1) = q[3]*q[2];
@@ -732,10 +732,10 @@ TEST(SquareMatrix, surreal_eval_solve) {
 
   SquareMatrix<Surreal<double,MATRIX_N> > unit(MATRIX_N);
   Surreal<double,MATRIX_N> q[MATRIX_N];
-  q[0].Value() = 1.0;
-  q[1].Value() = 2.0;
-  q[2].Value() = 3.0;
-  q[3].Value() = 4.0;
+  q[0] = 1.0;
+  q[1] = 2.0;
+  q[2] = 3.0;
+  q[3] = 4.0;
   q[0].Deriv(0) = 1.0;
   q[1].Deriv(1) = 1.0;
   q[2].Deriv(2) = 1.0;
