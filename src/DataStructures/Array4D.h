@@ -421,6 +421,7 @@ private:
 		<< "). Size of Array4D "
 		<< "is " << size1 << ","<< size2 << "," << size3 << "," 
 		<< size4 << std::endl;
+      SystemModule::my_exit();
     }
     if( j >= size2) {
       std::cerr << "ERROR: In Array4D.h - Over bounds on 2nd index. "
@@ -428,6 +429,7 @@ private:
 		<< "). Size of Array4D "
 		<< "is " << size1 << ","<< size2 << "," << size3 << "," 
 		<< size4 << std::endl;
+      SystemModule::my_exit();
     }
     if( k >= size3) {
       std::cerr << "ERROR: In Array4D.h - Over bounds on 3rd index. "
@@ -435,7 +437,7 @@ private:
 		<< "). Size of Array4D "
 		<< "is " << size1 << ","<< size2 << "," << size3 << "," 
 		<< size4 << std::endl;
-      
+      SystemModule::my_exit();
     } 
     if( l >= size4) {
       std::cerr << "ERROR: In Array4D.h - Over bounds on 4th index. "
@@ -443,7 +445,7 @@ private:
 		<< "). Size of Array4D "
 		<< "is " << size1 << ","<< size2 << "," << size3 << "," 
 		<< size4 << std::endl;
-      
+      SystemModule::my_exit(); 
     } 
   }// End CheckBounds
   

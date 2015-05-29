@@ -437,20 +437,21 @@ private:
 		<< "Acessing Array3D::("<< i <<","<< j <<","<< k 
 		<< "). Size of Array3D "
 		<< "is " << size1 << ","<< size2 << "," << size3 << std::endl;
+      SystemModule::my_exit();
     }
     if( j >= size2) {
       std::cerr << "ERROR: In Array3D.h - Over bounds on 2nd index. "
 		<< "Acessing Array3D::("<< i <<","<< j <<","<< k 
 		<< "). Size of Array3D "
 		<< "is " << size1 << ","<< size2 << "," << size3 << std::endl;
-      
+      SystemModule::my_exit();  
     }
     if( k >= size3) {
       std::cerr << "ERROR: In Array3D.h - Over bounds on 3rd index. "
 		<< "Acessing Array3D::("<< i <<","<< j <<","<< k 
 		<< "). Size of Array3D "
 		<< "is " << size1 << ","<< size2 << "," << size3 << std::endl;
-      
+      SystemModule::my_exit();
     } 
   }// End CheckBounds
   

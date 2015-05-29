@@ -406,12 +406,13 @@ private:
       std::cerr << "ERROR: In Array2D.h - Over bounds on 1st index. "
 		<< "Acessing Array2D::("<< i <<","<< j <<"). Size of Array2D "
 		<< "is " << size1 << ","<< size2 << std::endl;
+      SystemModule::my_exit();
     }
     if( j >= size2) {
       std::cerr << "ERROR: In Array2D.h - Overbounds on 2nd index. "
 		<< "Acessing Array2D::("<< i <<","<< j <<"). Size of Array2D "
 		<< "is " << size1 << ","<< size2 << std::endl;
-      
+      SystemModule::my_exit();
     }
       
   }// End CheckBounds

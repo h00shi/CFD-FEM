@@ -549,8 +549,8 @@ void TriElement::initialize(const intT& p_in, const intT& pmap_in,
 					 Element::xiq_(i,1) );
 	
       //---> Evalute mapping basisD dof: i at qp: j;
-      EvalBasisD(j, Element::xiq_(j,0), 
-		  Element::xiq_(j,1), 
+      EvalBasisD(j, Element::xiq_(i,0), 
+		  Element::xiq_(i,1), 
 		  Element::dphi_map_(i,0,j), 
 		  Element::dphi_map_(i,1,j));
     } // End dof_map_loop 

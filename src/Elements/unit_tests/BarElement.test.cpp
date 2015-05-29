@@ -114,7 +114,7 @@ TEST(BarElement, EvalBasisD) {
   EXPECT_NEAR(0.0, dphi, tol);
   
   dphi = sbar.EvalBasisD(2, 0.774596669241483 );
-  EXPECT_NEAR(-0.9486832980505131, dphi, tol);
+  EXPECT_NEAR(0.9486832980505131, dphi, tol);
 
  //-------------------------------- k = 3 -------------------------------------
   dphi = sbar.EvalBasisD(3, 0.0);
