@@ -17,8 +17,8 @@
 #include "my_incl.h"
 #include "consts.h"
 
-template < class realT>
-class SquareMatrix : public Array2D<realT>  {
+template < class dataT>
+class SquareMatrix : public Array2D<dataT>  {
 
 protected:
 //+++++++++++++++++++++++++++++++ PROTECTED STUFF ++++++++++++++++++++++++++++++
@@ -39,7 +39,8 @@ public:
 //! \date $Date: 2013-10-28 10:08:01 -0700 (Mon, 28 Oct 2013) $
 //! \param[in] seedSize the input size
 //****************************************************************************80
-  SquareMatrix(const intT seedSize) : Array2D<realT>(seedSize,seedSize) { 
+  SquareMatrix(const intT seedSize) :
+    Array2D<dataT>::Array2D(seedSize,seedSize) { 
     nSize = seedSize;
 
   }// End Square Matrix Constructor
@@ -59,7 +60,7 @@ public:
   
 //****************************************************************************80
 //!
-//! \brief invert : inverts this square matrix that contains any realT 
+//! \brief invert : inverts this square matrix that contains any dataT 
 //!    including Surreal variables
 //! \details : Pivoted LU decomposition along with backward/forward substitution
 //! is employed to invert a small square matrix. The class is templated and can
@@ -73,7 +74,7 @@ public:
   void invert()
   {
     // Temporary storage for matrix inverse
-    Array2D<realT> matInInv(nSize,nSize);  
+    Array2D<dataT> matInInv(nSize,nSize);  
     // integer pivot Array1D, swaps rows in the matrix for optimal LU decomp
     // based on the abs of the largest element value for a given column
     Array1D<intT> pivot(nSize);
@@ -81,9 +82,9 @@ public:
     // the ith element of b is set to 1.0 and the rest of b is set to 0.0
     // which allows for the solution x of Ax = b to corrrespond to the ith
     // column of inv(A) 
-    Array1D<realT> b(nSize);
+    Array1D<dataT> b(nSize);
     // each column of inv(A) is stored in x
-    Array1D<realT> x(nSize);
+    Array1D<dataT> x(nSize);
 
     // function to perform pivoted LU decomposition on this square matrix.
     // This square matrix is overwritten with the LU decomposition operation
@@ -106,7 +107,7 @@ public:
     // this square matrix is overwritten with the inv(A)
     for (intT i = 0; i < nSize; i++) {
       for (intT j = 0; j < nSize; j++) {
-        Array2D<realT>::operator()(i,j) = matInInv(i,j);
+        Array2D<dataT>::operator()(i,j) = matInInv(i,j);
       } 
     }
       
@@ -115,7 +116,7 @@ public:
 //****************************************************************************80
 //!
 //! \brief squareSolve:solve Ax=b where A is this square matrix that contains 
-//!    any realT including Surreal variables
+//!    any dataT including Surreal variables
 //! \details : Pivoted LU decomposition along with backward/forward substitution
 //! is employed to solve a small square matrix. The class is templated and can
 //! be used with double/float variables or Surreal variables. If Surreal 
@@ -127,7 +128,7 @@ public:
 //! \param[in] b The rhs
 //! \param[out] x The solution
 //****************************************************************************80
-  void squareSolve(const Array1D<realT>& b, Array1D<realT> &x)
+  void squareSolve(const Array1D<dataT>& b, Array1D<dataT> &x)
   {
     // integer pivot Array1D, swaps rows in the matrix for optimal LU decomp
     // based on the abs of the largest element value for a given column
@@ -165,8 +166,8 @@ public:
     intT initialfirstrow;
     /*---> maxpivotvalue is the largest magnitude value as compared to all the 
       values in a column of this square matrix. */
-    realT maxpivotvalue;
-    Array1D<realT> temp(nSize);
+    dataT maxpivotvalue;
+    Array1D<dataT> temp(nSize);
     
     // the pivot array is initialized to the original orientation of the 
     // square matrix
@@ -182,11 +183,11 @@ public:
       /*---> For a given column of this square matrix find the largest magnitude
 	value. */ 
       /*---> The (i,j) element of this square matrix is accessed using the base 
-	class Array2D<realT>::operator()(i,j) */
+	class Array2D<dataT>::operator()(i,j) */
       for (intT i = j; i < nSize; i++) {  //pivot loop
-	if (abs(Array2D<realT>::operator()(pivot(i),j))>
+	if (abs(Array2D<dataT>::operator()(pivot(i),j))>
             abs(maxpivotvalue)) {
-          maxpivotvalue = abs(Array2D<realT>::operator()(pivot(i),j));
+          maxpivotvalue = abs(Array2D<dataT>::operator()(pivot(i),j));
           maxpivotrow = i;
         }
       }  // end pivot loop
@@ -197,12 +198,12 @@ public:
       pivot(maxpivotrow) = initialfirstrow;
         
       for(intT i = j + 1; i < nSize; i++){
-	Array2D<realT>::operator()(pivot(i),j) /=
-	  Array2D<realT>::operator()(pivot(j),j);
+	Array2D<dataT>::operator()(pivot(i),j) /=
+	  Array2D<dataT>::operator()(pivot(j),j);
 	for(intT k = j + 1; k < nSize; k++){
-	  Array2D<realT>::operator()(pivot(i),k) -= 
-	    Array2D<realT>::operator()(pivot(i),j)*
-	    Array2D<realT>::operator()(pivot(j),k);
+	  Array2D<dataT>::operator()(pivot(i),k) -= 
+	    Array2D<dataT>::operator()(pivot(i),j)*
+	    Array2D<dataT>::operator()(pivot(j),k);
 	}
       }
     }  // end column loop
@@ -221,26 +222,26 @@ public:
 //! \param[in] b Rhs array
 //! \param[out] x Solution of Ax=b
 //****************************************************************************80
-  void _backForwardSub(const Array1D<intT>& pivot, const Array1D<realT>& b, 
-                       Array1D<realT>& x) { 
-    Array1D<realT> y(nSize);
+  void _backForwardSub(const Array1D<intT>& pivot, const Array1D<dataT>& b, 
+                       Array1D<dataT>& x) { 
+    Array1D<dataT> y(nSize);
     // perform backward substitution 
     for (intT i = 0; i < nSize; i++) y(i) = b(pivot(i));
 
     for (intT j = 0; j < nSize-1; j++) {
       for (intT i = j+1; i < nSize; i++) {
-        y(i) = y(i) - Array2D<realT>::operator()(pivot(i),j)*y(j);
+        y(i) = y(i) - Array2D<dataT>::operator()(pivot(i),j)*y(j);
       }
     }
     // perform forward substitution
     for (intT i = 0; i < nSize; i++) {
-      x(i) = y(i)/Array2D<realT>::operator()(pivot(i),i);
+      x(i) = y(i)/Array2D<dataT>::operator()(pivot(i),i);
     }
 
     for (intT j = nSize-1; j > 0; j--) {
       for (intT i = j-1; i > -1; i--) {
-        x(i) = x(i)- Array2D<realT>::operator()(pivot(i),j)*x(j)/
-                Array2D<realT>::operator()(pivot(i),i);
+        x(i) = x(i)- Array2D<dataT>::operator()(pivot(i),j)*x(j)/
+                Array2D<dataT>::operator()(pivot(i),i);
 
       }
     }
@@ -264,11 +265,11 @@ public:
     for(intT c = 0; c < nSize - 1; c++) { // Column loop 
       //---> For the row we're on find the colume with the largest value
       intT max_loc = c;
-      realT max_val = abs( Array2D<realT>::operator()(c,c) );
+      dataT max_val = abs( Array2D<dataT>::operator()(c,c) );
       
       for(intT r = c; r < nSize; r++) { // Pivot 
-    	if( abs(Array2D<realT>::operator()(r, c)) > max_val ) {
-    	  max_val = abs(Array2D<realT>::operator()(r, c));
+    	if( abs(Array2D<dataT>::operator()(r, c)) > max_val ) {
+    	  max_val = abs(Array2D<dataT>::operator()(r, c));
     	  max_loc = r;
     	}
       } // End Pivot
@@ -281,20 +282,20 @@ public:
    
 	//---> Do the pivoting
 	for(intT j = 0; j < nSize; j++){ // Loop columns of max_loc
-	  realT temp_element = Array2D<realT>::operator()(c, j);
-	  Array2D<realT>::operator()(c, j) = 
-	    Array2D<realT>::operator()(max_loc, j);
+	  dataT temp_element = Array2D<dataT>::operator()(c, j);
+	  Array2D<dataT>::operator()(c, j) = 
+	    Array2D<dataT>::operator()(max_loc, j);
 	  
-	  Array2D<realT>::operator()(max_loc, j) = temp_element;
+	  Array2D<dataT>::operator()(max_loc, j) = temp_element;
 	} // End loop columns of max_loc
       } // End move row
       
       //---> Factorize
       for(intT r = c + 1; r < nSize; r++){ 
-    	Array2D<realT>::operator()(r,c) /= Array2D<realT>::operator()(c,c);
+    	Array2D<dataT>::operator()(r,c) /= Array2D<dataT>::operator()(c,c);
     	for(intT k = c + 1; k < nSize; k++){
-    	  Array2D<realT>::operator()(r,k) -= 
-    	    Array2D<realT>::operator()(r,c)*Array2D<realT>::operator()(c,k); 
+    	  Array2D<dataT>::operator()(r,k) -= 
+    	    Array2D<dataT>::operator()(r,c)*Array2D<dataT>::operator()(c,k); 
     	}
       }
 
@@ -311,8 +312,8 @@ public:
 //! \date $Date$
 //! 
 //****************************************************************************80
-  void lu_solve(const Array1D<intT>& pivot, const Array1D<realT>& b, 
-	   Array1D<realT>& x)
+  void lu_solve(const Array1D<intT>& pivot, const Array1D<dataT>& b, 
+	   Array1D<dataT>& x)
   {
 
     for(intT i = 0; i < nSize; i++){
@@ -321,17 +322,17 @@ public:
 
     for(intT i = 1; i < nSize; i++){
       for(intT j = 0; j < i; j++){ 
-	x(i) -= Array2D<realT>::operator()(i,j)*x(j);
+	x(i) -= Array2D<dataT>::operator()(i,j)*x(j);
       }
     }
      
-    x(nSize-1) /= Array2D<realT>::operator()(nSize-1,nSize-1);
+    x(nSize-1) /= Array2D<dataT>::operator()(nSize-1,nSize-1);
     
     for(intT i = nSize - 2; i > -1; i--){
       for(intT j = nSize - 1; j > i; j--){
-	x(i) -= Array2D<realT>::operator()(i,j)*x(j);
+	x(i) -= Array2D<dataT>::operator()(i,j)*x(j);
       }
-      x(i) /= Array2D<realT>::operator()(i,i);
+      x(i) /= Array2D<dataT>::operator()(i,i);
     }
     
 

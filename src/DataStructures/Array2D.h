@@ -126,7 +126,7 @@ public:
 //! \version $Rev: 5 $
 //!
 //****************************************************************************80
-  ~Array2D(){
+  virtual ~Array2D(){
     //---> Delete pointer to data
     if(data != NULL)  delete[] data;
     //---> Reset data pointer to NULL

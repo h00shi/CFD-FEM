@@ -14,7 +14,7 @@
 #include "SystemModule.h"
 #include "Array1D.h"
 
-template <typename dataT>
+template <class dataT>
 class List2D
 {
   //+++++++++++++++++++++++++++++++ PUBLIC STUFF +++++++++++++++++++++++++++++++
