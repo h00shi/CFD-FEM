@@ -385,7 +385,7 @@ private:
   void CheckBounds(intT i) const{
     
     if(i >= size1){
-      std::cerr << "ERROR:  In Array1D.h - Over bounds on 1st index. "
+      std::cerr << "ERROR: In Array1D.h - Over bounds on 1st index. "
                 << "Accessing Array1D::("<< i <<"). Size of Array1D is " 
 		<< size1 << std::endl;
       SystemModule::my_exit();

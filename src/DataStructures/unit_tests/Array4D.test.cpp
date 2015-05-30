@@ -182,45 +182,63 @@ TEST(Array4DDeathTest, outOfBounds){
   //death test to make sure program fails when I try to access
   //an out of bounds index for a 2D array
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  
+  Array4D<double> x(4,6,3,5);
+  Array4D<double> const & y = x;
 
-  // Array2D<double> x(4,6);
-  // Array2D<double> const & y = x;
+  //non constant operator() test
+  EXPECT_EXIT( x(5,5,2,0);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
 
-  // //non constant operator() test
-  // EXPECT_EXIT( x(5,5);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access ith index: 5. "
-  //              "Size of ith dimension is: 4");
+  EXPECT_EXIT( x(3,7,1,2);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
+  
+  EXPECT_EXIT( x(3,3,5,0);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
+  
+  EXPECT_EXIT( x(2,3,0,10);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
 
-  // EXPECT_EXIT( x(3,7);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access jth index: 7. "
-  //              "Size of jth dimension is: 6");
+  //non constant get_ptr() test
+  EXPECT_EXIT( x.get_ptr(5,5,2,0);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
 
-  // //non constant get_ptr() test
-  // EXPECT_EXIT( x.get_ptr(16,3);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access ith index: 16. "
-  //              "Size of ith dimension is: 4");
+  EXPECT_EXIT( x.get_ptr(3,7,1,2);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
+  
+  EXPECT_EXIT( x.get_ptr(3,3,5,0);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
+  
+  EXPECT_EXIT( x.get_ptr(2,3,0,10);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
 
-  // EXPECT_EXIT( x.get_ptr(3,17);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access jth index: 17. "
-  //              "Size of jth dimension is: 6");
+  
+  //constant operator() test
+  EXPECT_EXIT( y(18,3,0,0);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
 
-  // //constant operator() test
-  // EXPECT_EXIT( y(18,3);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access ith index: 18. "
-  //              "Size of ith dimension is: 4");
+  EXPECT_EXIT( y(3,19,1,2);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
+  
+  EXPECT_EXIT( y(3,1,205,0);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
 
-  // EXPECT_EXIT( y(3,19);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access jth index: 19. "
-  //              "Size of jth dimension is: 6");
+  EXPECT_EXIT( y(2,3,0,10);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
+  
+  //non constant get_ptr() test
+  EXPECT_EXIT( y.get_ptr(16,3,1,0);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
 
-  // //non constant get_ptr() test
-  // EXPECT_EXIT( y.get_ptr(16,3);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access ith index: 16. "
-  //              "Size of ith dimension is: 4");
+  EXPECT_EXIT( y.get_ptr(3,7,0,1);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
+  
+  EXPECT_EXIT( y.get_ptr(3,0,20,2);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
+  
+  EXPECT_EXIT( y.get_ptr(2,3,0,10);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array4D.h - ");
 
-  // EXPECT_EXIT( y.get_ptr(3,17);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access jth index: 17. "
-  //              "Size of jth dimension is: 6");
 }
 #endif
 #endif

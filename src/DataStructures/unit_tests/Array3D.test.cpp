@@ -167,44 +167,48 @@ TEST(Array3DDeathTest, outOfBounds){
   //an out of bounds index for a 2D array
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
 
-  // Array2D<double> x(4,6);
-  // Array2D<double> const & y = x;
+  Array3D<double> x(4,6,3);
+  Array3D<double> const & y = x;
 
-  // //non constant operator() test
-  // EXPECT_EXIT( x(5,5);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access ith index: 5. "
-  //              "Size of ith dimension is: 4");
+  //non constant operator() test
+  EXPECT_EXIT( x(5,5,2);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array3D.h - ");
 
-  // EXPECT_EXIT( x(3,7);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access jth index: 7. "
-  //              "Size of jth dimension is: 6");
+  EXPECT_EXIT( x(3,7,1);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array3D.h - ");
+  
+  EXPECT_EXIT( x(3,3,5);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array3D.h - ");
+  //non constant get_ptr() test
+  EXPECT_EXIT( x.get_ptr(16,3,1);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array3D.h - ");
 
-  // //non constant get_ptr() test
-  // EXPECT_EXIT( x.get_ptr(16,3);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access ith index: 16. "
-  //              "Size of ith dimension is: 4");
+  EXPECT_EXIT( x.get_ptr(3,7,0);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array3D.h - ");
+  
+  EXPECT_EXIT( x.get_ptr(3,0,20);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array3D.h - ");
 
-  // EXPECT_EXIT( x.get_ptr(3,17);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access jth index: 17. "
-  //              "Size of jth dimension is: 6");
+  //constant operator() test
+  EXPECT_EXIT( y(18,3,0);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array3D.h - ");
 
-  // //constant operator() test
-  // EXPECT_EXIT( y(18,3);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access ith index: 18. "
-  //              "Size of ith dimension is: 4");
+  EXPECT_EXIT( y(3,19,1);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array3D.h - ");
+  
+  EXPECT_EXIT( y(3,1,205);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array3D.h - ");
+  
+  //non constant get_ptr() test
+  EXPECT_EXIT( y.get_ptr(16,3,1);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array3D.h - ");
 
-  // EXPECT_EXIT( y(3,19);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access jth index: 19. "
-  //              "Size of jth dimension is: 6");
-
-  // //non constant get_ptr() test
-  // EXPECT_EXIT( y.get_ptr(16,3);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access ith index: 16. "
-  //              "Size of ith dimension is: 4");
-
-  // EXPECT_EXIT( y.get_ptr(3,17);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //              "ERROR:  In Array2D.h - Attempting to access jth index: 17. "
-  //              "Size of jth dimension is: 6");
+  EXPECT_EXIT( y.get_ptr(3,7,0);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array3D.h - ");
+  
+  EXPECT_EXIT( y.get_ptr(3,0,20);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array3D.h - ");
+  
 }
 #endif
 #endif

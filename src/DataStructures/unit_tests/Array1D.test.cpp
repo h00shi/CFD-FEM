@@ -146,26 +146,21 @@ TEST(Array1DDeathTest, outOfBounds){
   Array1D<double> x(5);
   Array1D<double> const & y = x;
 
-  // //non constant operator() test
-  // EXPECT_EXIT( x(5);, ::testing::ExitedWithCode(EXIT_FAILURE),
-  //               "ERROR:  In Array1D.h - Over bounds on 1st index. "
-  //               "Accessing Array1D::(5). Size of Array1D is 5");
+  //non constant operator() test
+  EXPECT_EXIT( x(5);, ::testing::ExitedWithCode(EXIT_FAILURE),
+                "ERROR: In Array1D.h - ");
 
-//   //non constant get_ptr() test
-//   EXPECT_EXIT( x.get_ptr(5);, ::testing::ExitedWithCode(EXIT_FAILURE),
-//               "ERROR:  In Array1D.h - "
-//                "Attempting to access 1st index (thisone): 5"
-//                ". Size of 1st dimension is: 5" );
+  //non constant get_ptr() test
+  EXPECT_EXIT( x.get_ptr(5);, ::testing::ExitedWithCode(EXIT_FAILURE),
+              "ERROR: In Array1D.h - ");
 
-//   //constant operator() test
-//   EXPECT_EXIT( y(5);, ::testing::ExitedWithCode(EXIT_FAILURE),
-//                "ERROR:  In Array1D.h - Attempting to access ith index: 5. "
-//                "Size of ith dimension is: 5");
+  //constant operator() test
+  EXPECT_EXIT( y(5);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array1D.h - ");
 
-//   //constant get_ptr() test
-//   EXPECT_EXIT( y.get_ptr(5);, ::testing::ExitedWithCode(EXIT_FAILURE),
-//                "ERROR:  In Array1D.h - Attempting to access ith index: 5. "
-//                "Size of ith dimension is: 5");
+  //constant get_ptr() test
+  EXPECT_EXIT( y.get_ptr(5);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In Array1D.h - ");
 }
 #endif
 #endif

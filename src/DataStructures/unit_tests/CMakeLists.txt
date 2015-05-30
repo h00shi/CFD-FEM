@@ -4,6 +4,7 @@ SET(Unit_Tests
   Array3D.test
   Array4D.test
   SquareMatrix.test
+  List2D.test
 )
 
 FOREACH(Unit ${Unit_Tests})
