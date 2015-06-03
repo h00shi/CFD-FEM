@@ -1065,7 +1065,14 @@ public:
     return(Area);
   } // End integrate_func
 
-
-
+//****************************************************************************80
+//! \brief get_ndof : Returns the number of degrees of freedom for the element
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  inline intT get_ndof() {return ndof_;} // End get_ndof
 }; // End class Element
 #endif

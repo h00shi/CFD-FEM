@@ -276,6 +276,28 @@ TEST(TriElement, bc_geom) {
   
 }
 
+TEST(Triangle, BasisSummation) {
+ TriElement stri;
+ int p = 2;
+ stri.initialize(p, p, 1);
+
+ double xi = -.3;
+ double eta = 0.0;
+ std::cout << stri.get_ndof() << std::endl;
+ Array1D<double> basis(stri.get_ndof());
+
+ 
+ for(int i = 0; i < stri.get_ndof(); i++){
+   basis(i) = stri.EvalBasis(i,xi,eta);
+ }
+
+ std::cout << basis << std::endl;
+ std::cout << basis(0) + basis(1) + basis(2) << std::endl;
+ std::cout << basis(3) + basis(4) + basis(5) << std::endl;
+
+}
+
+
 
 
 void quadpoly (const Array1D<double>& x, Array1D<double>& y)
