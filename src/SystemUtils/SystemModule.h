@@ -69,5 +69,17 @@ namespace SystemModule {
     mem = bytes*((realT) size)/1000000.0;
     return(mem);
   }
+
+//****************************************************************************80
+//! \brief  VarMemoryPrint : For a specified variable print it's size  and 
+//!         memory used.  
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] var_name The name of the variable
+//! \param[in] var The variable to print the diago
+//****************************************************************************80
+
 } //End namespace SystemModule
 #endif

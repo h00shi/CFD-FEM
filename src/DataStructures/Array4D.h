@@ -56,7 +56,7 @@ public:
     data = NULL;
 
     //---> Allocate the data in size1 is bigger than 1
-    if( size1 > 0) { // check_size
+    if( size1*size2*size3*size4 > 0) { // check_size
       mem = 
 	SystemModule::alloc_mem< dataT, int, double>(data,
 						     size1*size2*size3*size4);
@@ -361,6 +361,30 @@ public:
     return (data + size1*size2*size3*size4);
   }// End end
 
+//****************************************************************************80
+//! \brief MemoryDiagnostic : Prints the size and memory information to user.
+//!        
+//! \details This is a very useful feature that helps the user/developer know
+//!          how big the variable is and how much memory it consumes 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] var_name A string containing the variable name
+//****************************************************************************80
+  std::string MemoryDiagnostic(std::string const & var_name) {
+   
+     std::ostringstream stream;
+     //---> Use operators to write to ostringstream...this is nice an easy
+     stream << var_name << "(" << this->get_size(0) << ", "
+            << this->get_size(1) << ", " 
+	    << this->get_size(2) << ", " 
+	    << this->get_size(3) <<  "):\t "
+	    << this->get_mem() << " MB" << std::endl;
+     
+     //---> However ostringstream is not copyable...so return the string
+     return stream.str();
+
+  }
 private:
   //+++++++++++++++++++++++++++++++ PRIVATE STUFF ++++++++++++++++++++++++++++++
 

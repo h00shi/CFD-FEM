@@ -50,15 +50,12 @@ public:
 
     //---> Set default values of memory and sizes
     mem = 0.0;
-    size1 = 0;
-    size2 = 0;
+    size1 = n1;
+    size2 = n2;
 
     //---> Allocate the data if size request is bigger than 1
     if( n1*n2 > 0) { // check_size
-      //---> Set the sizes
-      size1 = n1;
-      size2 = n2;
-      //---> Allocate
+       //---> Allocate
       mem = SystemModule::alloc_mem< dataT, int, double>(data, size1*size2);
       //---> Loop over data and set the value to zero;
       for( intT i = 0; i < size1*size2; i++) {// init_loop
@@ -148,6 +145,9 @@ public:
 //! \param[in] n2 The size of the second array dimension
 //****************************************************************************80
   void initialize(intT n1, intT n2){
+
+    size1 = n1;
+    size2 = n2;
     /*-->only perform initialization if the data is null
     and input size request is positive*/
     if ( data == NULL && n1*n2 > 0) { // check_size
@@ -349,6 +349,30 @@ public:
   {
     return (data + size1*size2);
   }// End end
+
+//****************************************************************************80
+//! \brief MemoryDiagnostic : Prints the size and memory information to user.
+//!        
+//! \details This is a very useful feature that helps the user/developer know
+//!          how big the variable is and how much memory it consumes 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] var_name A string containing the variable name
+//****************************************************************************80
+  std::string MemoryDiagnostic(std::string const & var_name) {
+   
+     std::ostringstream stream;
+     //---> Use operators to write to ostringstream...this is nice an easy
+     stream << var_name << "(" << this->get_size(0) << ", " 
+	    << this->get_size(1) <<  "):\t "
+	    << this->get_mem() << " MB" << std::endl;
+
+     //---> However ostringstream is not copyable...so return the string
+     return stream.str();
+
+  }
+
 
 private:
   //+++++++++++++++++++++++++++++++ PRIVATE STUFF ++++++++++++++++++++++++++++++

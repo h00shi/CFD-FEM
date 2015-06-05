@@ -1,5 +1,6 @@
 SET(Unit_Tests 
- )
+  UnstMesh.test
+)
 
 FOREACH(Unit ${Unit_Tests})
   ADD_EXECUTABLE(${Unit}.unit ${Unit}.cpp )
@@ -7,3 +8,5 @@ FOREACH(Unit ${Unit_Tests})
   INSTALL(TARGETS ${Unit}.unit DESTINATION "{CMAKE_INSTALL_PREFIX}/test")
   ADD_TEST(NAME ${Unit} COMMAND ${Unit}.unit --gtest_death_test_use_fork)
 ENDFOREACH()
+# Files to copy for unit tests
+FILE (COPY "Square.grid" DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)

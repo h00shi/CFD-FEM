@@ -19,6 +19,7 @@
 #include "Array2D.h"
 #include "Array1D.h"
 #include "List2D.h"
+#include <stdio.h>
 
 class UnstMesh {
   
@@ -46,7 +47,7 @@ public:
 //! \details  Destructor is pure virtual to make this class abstract
 //! \nick
 //****************************************************************************80
-  virtual ~UnstMesh() = 0;
+  ~UnstMesh();
  
 //****************************************************************************80
 //! \brief get_ndim() : Returns the number of dimensions
@@ -89,20 +90,20 @@ public:
   inline intT get_nnode()  const {return(nnode);}
 
 //****************************************************************************80
-//! \brief get_nBar : Returns the number of bar elements in the mesh
+//! \brief get_nbar : Returns the number of bar elements in the mesh
 //! \details
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
-  inline intT get_nBar() const {return(nBar);}
+  inline intT get_nbar() const {return(nbar);}
 
 //****************************************************************************80
-//! \brief get_nTri : Returns the number of tri elements in the mesh
+//! \brief get_ntri : Returns the number of tri elements in the mesh
 //! \details
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
- inline intT get_nTri() const {return(nTri);}
+ inline intT get_ntri() const {return(ntri);}
 
 //****************************************************************************80
 //! \brief get_nQuad : Returns the number of quad elements in the mesh
@@ -110,71 +111,71 @@ public:
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
- inline intT get_nQuad() const {return(nQuad);}
+ inline intT get_nquad() const {return(nquad);}
 
 //****************************************************************************80
-//! \brief get_nTet : Returns the number of tet elements in the mesh
+//! \brief get_ntet : Returns the number of tet elements in the mesh
 //! \details
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
- inline intT get_nTet() const {return(nTet);}
+ inline intT get_ntet() const {return(ntet);}
 
 //****************************************************************************80
-//! \brief get_nPrism : Returns the number of prism elements in the mesh
+//! \brief get_nprism : Returns the number of prism elements in the mesh
 //! \details
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
- inline intT get_nPrism() const {return(nPrism);}
+ inline intT get_nprism() const {return(nprism);}
 
 //****************************************************************************80
-//! \brief get_nPyr : Returns the number of pyramid elements in the mesh
+//! \brief get_npyr : Returns the number of pyramid elements in the mesh
 //! \details
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
-  inline intT get_nPyr() const {return(nPyr);}
+  inline intT get_npyr() const {return(npyr);}
 
 //****************************************************************************80
-//! \brief get_nHex : Returns the number of hex elements in the mesh
+//! \brief get_nhex : Returns the number of hex elements in the mesh
 //! \details
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
- inline intT get_nHex() const {return(nHex);}
+ inline intT get_nhex() const {return(nhex);}
 
 //****************************************************************************80
-//! \brief get_nBcNode : Returns the number of nBcNode elements in the mesh
+//! \brief get_nbc_node : Returns the number of nbc_Node elements in the mesh
 //! \details
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
- inline intT get_nBcNode() const {return(nBcNode);}
+ inline intT get_nbc_node() const {return(nbc_node);}
 
 //****************************************************************************80
-//! \brief get_nBcEdge : Returns the number of bc edges in the mesh
+//! \brief get_nbc_edge : Returns the number of bc edges in the mesh
 //! \details
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
- inline intT get_nBcEdge() const {return(nBcEdge);}
+ inline intT get_nbc_edge() const {return(nbc_edge);}
 
 //****************************************************************************80
-//! \brief get_nBcTri : Returns the number of bc tri faces in the mesh
+//! \brief get_nbc_tri : Returns the number of bc tri faces in the mesh
 //! \details
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
-  inline intT get_nBcTri() const {return(nBcTri);}
+  inline intT get_nbc_tri() const {return(nbc_tri);}
 
 //****************************************************************************80
-//! \brief get_nBcQuad : Returns the number of bc quad faces in the mesh
+//! \brief get_nbc_quad : Returns the number of bc quad faces in the mesh
 //! \details
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
-  inline intT get_nBcQuad() const {return(nBcQuad);}
+  inline intT get_nbc_quad() const {return(nbc_quad);}
 
 //****************************************************************************80
 //! \brief get_nelement : Returns the number of elements in the mesh
@@ -332,7 +333,7 @@ public:
 //! \date $Date$ 
 //! 
 //****************************************************************************80
-  void MemoryDiagnostic();
+  void Diagnostic();
   
 protected: 
 
@@ -355,18 +356,18 @@ protected:
                  sense define a component.*/
   intT ncolor; /*!< Number of colors used to color mesh for parallel solver */
   intT ndof; /*!< Number of degrees of freedom associated with the mesh */
-  
-  intT nBar; //!< Number of 1-D bar elements in the mesh
-  intT nTri; //!< Number of 2-D tri elements in the mesh
-  intT nQuad; //!< Number of 2-D quad elements in the mesh
-  intT nTet; //!< Number of 3-D tet elements in the mesh
-  intT nPrism; //!< Number of 3-D prism elements in the mesh
-  intT nPyr; //!< Number of 3-D pyramid elements in the mesh
-  intT nHex; //!< Number of 3-D hex elements in the mesh
-  intT nBcNode; //!< Number of 1-D boundary nodes in the mesh (1-D meshes only)
-  intT nBcEdge; //!< Number of 2-D boundary edges in the mesh (2-D meshes only)
-  intT nBcTri; //!< Number of 3-D boundary tris in the mesh (3-D meshes only)
-  intT nBcQuad; //!< Number fo 3-D boundary quads in the mesh (3-D meshes only)
+  intT nline; /*!< Number of graph lines in the mesh */
+  intT nbar; //!< Number of 1-D bar elements in the mesh
+  intT ntri; //!< Number of 2-D tri elements in the mesh
+  intT nquad; //!< Number of 2-D quad elements in the mesh
+  intT ntet; //!< Number of 3-D tet elements in the mesh
+  intT nprism; //!< Number of 3-D prism elements in the mesh
+  intT npyr; //!< Number of 3-D pyramid elements in the mesh
+  intT nhex; //!< Number of 3-D hex elements in the mesh
+  intT nbc_node; //!< Number of 1-D boundary nodes in the mesh (1-D meshes only)
+  intT nbc_edge; //!< Number of 2-D boundary edges in the mesh (2-D meshes only)
+  intT nbc_tri; //!< Number of 3-D boundary tris in the mesh (3-D meshes only)
+  intT nbc_quad; //!< Number fo 3-D boundary quads in the mesh (3-D meshes only)
 
   Array1D<intT> nodeitemp; /*!< Array of the size nnode + 1 for temp usage */
   //---> UnstMesh Description Pointers
@@ -422,12 +423,12 @@ protected:
   */
   enum element_types: intT{
     ELEMTYPE_BAR = 0,
-    ELEMTYPE_TRIANGLE = 1,
+    ELEMTYPE_TRI = 1,
     ELEMTYPE_QUAD = 2,
-    ELEMTYPE_TETRAHEDRA = 3,
+    ELEMTYPE_TET = 3,
     ELEMTYPE_PRISM = 4,
-    ELEMTYPE_PYRAMID = 5,
-    ELEMTYPE_HEXAHEDRA = 6
+    ELEMTYPE_PYR = 5,
+    ELEMTYPE_HEX = 6
   };
 
   /*! FACE TYPES
@@ -439,7 +440,7 @@ protected:
   enum face_types: intT{
     FACETYPE_NODE = 0,
     FACETYPE_EDGE = 1,
-    FACETYPE_TRIANGLE = 2,
+    FACETYPE_TRI = 2,
     FACETYPE_QUAD = 3,
   };
 
@@ -494,7 +495,6 @@ protected:
 //****************************************************************************80
   intT GetLocalFaceTri(const Array1D<intT>& face_nodes,
 		       const Array1D<intT>& elem_nodes);
-
 
 //****************************************************************************80
 //! \brief GetLocalFaceQuad : Get the local face number of specified quad
@@ -627,5 +627,26 @@ protected:
 //! \param[in] filename A string containing the filename to read
 //****************************************************************************80
   void ReadGridFile(std::string const & filename);
+
+private:
+
+//****************************************************************************80
+//! \brief  Is the copy constructor
+//! \details  The copy constructor is explicitly blocked.
+//! \nick
+//! \version
+//****************************************************************************80
+  UnstMesh(const UnstMesh&) = delete;
+
+//****************************************************************************80
+//! \brief operator= : Is the default assignment operator for this class.
+//!                    This is blocked to prevent assignment of meshes
+//! \details  The assignment operator is explicitly blocked.
+//! \nick
+//! \version
+//****************************************************************************80
+  UnstMesh& operator= (const UnstMesh&) = delete;
+
+  
 };
 #endif

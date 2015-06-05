@@ -51,8 +51,8 @@ public:
 
     //---> Set default values of memory and sizes
     mem   = 0.0;
-    size1 = 0;
-    size  = 0;
+    size1 = nrow;
+    size  = n;
 
     //---> Allocate index if requested number of rows is positive
     if(nrow > 0) { //check row request
@@ -457,8 +457,12 @@ public:
 //****************************************************************************80
   dataT* get_ptr(const intT& i, const intT& j)
   {
-    //calls constant version of get_ptr
-    return const_cast<dataT *>(static_cast<const List2D &>(*this).get_ptr(i,j));
+
+#   ifdef DEV_DEBUG
+    this->CheckBounds(i,j);
+#endif
+    return(data + index[i] + j);
+    
   }// End get_ptr
 
 //****************************************************************************80
@@ -561,7 +565,27 @@ public:
       return(data);
     }
   }// End end
+//****************************************************************************80
+//! \brief MemoryDiagnostic : Prints the size and memory information to user.
+//!        
+//! \details This is a very useful feature that helps the user/developer know
+//!          how big the variable is and how much memory it consumes 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] var_name A string containing the variable name
+//****************************************************************************80
+  std::string MemoryDiagnostic(std::string const & var_name) {
+   
+     std::ostringstream stream;
+     stream << var_name << "(" << this->get_lead_size() << ")(" 
+	    << this->get_total_size() << "):\t "
+	    << this->get_mem() << " MB" << std::endl;
+     
+     //---> However ostringstream is not copyable...so return the string
+     return stream.str();
 
+  }
 private:
   //+++++++++++++++++++++++++++++++ PRIVATE STUFF ++++++++++++++++++++++++++++++
   intT size1; /*!< Size of the leading dimension of the list */
@@ -658,7 +682,7 @@ private:
 //! \param[in] ix - 1D access index
 //****************************************************************************80
   void CheckSizeIndex(intT i) const{
-    if(i >= size){
+    if(i >= size1 ){
       std::cerr << "ERROR: In List2D.h - "
                 << "Attempting to access index "<< i
                 << ".   Size of indexing array: " << size1 << std::endl;

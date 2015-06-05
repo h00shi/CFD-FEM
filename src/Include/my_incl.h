@@ -16,7 +16,7 @@
 //---> Basic includes... we'll have these all the time. */
 #ifndef INC_MATH
 #define INC_MATH
-#include <math.h>    /*!< Always include the math library. */  
+#include <math.h>    /*!< Always include the math library. */ 
 #endif
 
 #ifndef INC_COMPLEX
