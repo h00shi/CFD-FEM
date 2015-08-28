@@ -16,7 +16,7 @@
 *.svn
 documentation
 install
-build/*/
+build/*
 theory/*.reg
 theroy/*.log
 theory/*.aux
