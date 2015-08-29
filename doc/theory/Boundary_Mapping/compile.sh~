@@ -1,5 +1,0 @@
-#!/bin/sh
-pdflatex asm_2014-1.tex
-bibtex asm_2014-1.aux
-pdflatex asm_2014-1.tex
-pdflatex asm_2014-1.tex

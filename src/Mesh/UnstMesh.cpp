@@ -4,26 +4,26 @@
 UnstMesh::UnstMesh(std::string const & filename, std::string const & file_type)
 {
   //---> Initialize mesh to empty
-  ndim = 0;
-  nnode = 0;
-  nelement = 0;
-  nbc_face = 0;
-  nbc_id = 0;
-  ncolor = 0;
-  nline = 0;
-  ndof = 0;
-  nbar = 0;
-  ntri = 0;
-  nquad = 0;
-  ntet = 0;
-  nprism = 0;
-  npyr = 0;
-  nhex = 0;
-  nbc_node = 0;
-  nbc_edge = 0;
-  nbc_tri = 0;
-  nbc_quad = 0;
-  grid_mem = 0;
+  ndim_ = 0;
+  nnode_ = 0;
+  nelement_ = 0;
+  nbc_face_ = 0;
+  nbc_id_ = 0;
+  ncolor_ = 0;
+  nline_ = 0;
+  ndof_ = 0;
+  nbar_ = 0;
+  ntri_ = 0;
+  nquad_ = 0;
+  ntet_ = 0;
+  nprism_ = 0;
+  npyr_ = 0;
+  nhex_ = 0;
+  nbc_node_ = 0;
+  nbc_edge_ = 0;
+  nbc_tri_ = 0;
+  nbc_quad_ = 0;
+  grid_mem_ = 0;
   
   if(file_type.compare("Umesh2D-Binary") == 0 ) {
     
@@ -59,45 +59,45 @@ void UnstMesh::Diagnostic()
   std::cout << "------------------------- Mesh Diagnostics --------------------"
 	    << std::endl;
   std::cout << "Mesh Data: " << std::endl;
-  std::cout << "Number of Physical Dimensions: " << ndim << std::endl;
-  std::cout << "Number of Nodes: " << nnode << std::endl;
-  std::cout << "Number of Elements: " << nelement << std::endl;
-  std::cout << "Number of Boundary Faces: " << nbc_face << std::endl;
-  std::cout << "Number of Boundary IDs: " << nbc_id << std::endl;
-  std::cout << "Number of Degrees of Freedom: " << ndof << std::endl;
-  std::cout << "Number of Colors: " << ncolor << std::endl;
+  std::cout << "Number of Physical Dimensions: " << ndim_ << std::endl;
+  std::cout << "Number of Nodes: " << nnode_ << std::endl;
+  std::cout << "Number of Elements: " << nelement_ << std::endl;
+  std::cout << "Number of Boundary Faces: " << nbc_face_ << std::endl;
+  std::cout << "Number of Boundary IDs: " << nbc_id_ << std::endl;
+  std::cout << "Number of Degrees of Freedom: " << ndof_ << std::endl;
+  std::cout << "Number of Colors: " << ncolor_ << std::endl;
   std::cout << "Element Data: " << std::endl;
-  std::cout << "Number of Bar Elmenets: " << nbar << std::endl;
-  std::cout << "Number of Tri Elements: " << ntri << std::endl;
-  std::cout << "Number of Quad Elements: " << nquad << std::endl;
-  std::cout << "Number of Tet Elements: " << ntet << std::endl;
-  std::cout << "Number of Prism Elemnets: " << nprism << std::endl;
-  std::cout << "Number of Pyr Elements: " << npyr << std::endl;
-  std::cout << "Number of Hex Elements: " << nhex << std::endl;
+  std::cout << "Number of Bar Elmenets: " << nbar_ << std::endl;
+  std::cout << "Number of Tri Elements: " << ntri_ << std::endl;
+  std::cout << "Number of Quad Elements: " << nquad_ << std::endl;
+  std::cout << "Number of Tet Elements: " << ntet_ << std::endl;
+  std::cout << "Number of Prism Elemnets: " << nprism_ << std::endl;
+  std::cout << "Number of Pyr Elements: " << npyr_ << std::endl;
+  std::cout << "Number of Hex Elements: " << nhex_ << std::endl;
   std::cout << "Boundary Face Data: " << std::endl;
-  std::cout << "Number of Boundary Node Faces: " << nbc_node << std::endl;
-  std::cout << "Number of Boundary Edge Faces: " << nbc_edge << std::endl;
-  std::cout << "Number of Boundary Tri Faces : " << nbc_tri << std::endl;
-  std::cout << "Number of Boundary Quad Faces : " << nbc_quad << std::endl;
+  std::cout << "Number of Boundary Node Faces: " << nbc_node_ << std::endl;
+  std::cout << "Number of Boundary Edge Faces: " << nbc_edge_ << std::endl;
+  std::cout << "Number of Boundary Tri Faces : " << nbc_tri_ << std::endl;
+  std::cout << "Number of Boundary Quad Faces : " << nbc_quad_ << std::endl;
   std::cout << std::endl;
   std::cout << "MemoryDiagnostics: " << std::endl;
  
-  std::cout << x.MemoryDiagnostic("x");
-  std::cout << element2node.MemoryDiagnostic("element2node"); 
-  std::cout << bc_face2elem.MemoryDiagnostic("bc_face2elem");
-  std::cout << bc_face2node.MemoryDiagnostic("bc_face2node");
-  std::cout << element_type.MemoryDiagnostic("element_type");
-  std::cout << bc_face_id.MemoryDiagnostic("bc_face_id");
-  std::cout << bcid_type.MemoryDiagnostic("bcid_type");
-  std::cout << bc_local_face.MemoryDiagnostic("bc_local_face");
-  std::cout << nface_per_bcid.MemoryDiagnostic("nface_per_bcid");
-  std::cout << node2element.MemoryDiagnostic("node2element");
-  std::cout << adj.MemoryDiagnostic("adj");
-  std::cout << element_vol.MemoryDiagnostic("element_vol");
-  std::cout << element_sa.MemoryDiagnostic("element_sa");
-
+  std::cout << x_.MemoryDiagnostic("x");
+  std::cout << element2node_.MemoryDiagnostic("element2node_"); 
+  std::cout << bc_face2elem_.MemoryDiagnostic("bc_face2elem_");
+  std::cout << bc_face2node_.MemoryDiagnostic("bc_face2node_");
+  std::cout << element_type_.MemoryDiagnostic("element_type_");
+  std::cout << bc_face_id_.MemoryDiagnostic("bc_face_id_");
+  std::cout << bcid_type_.MemoryDiagnostic("bcid_type_");
+  std::cout << bc_local_face_.MemoryDiagnostic("bc_local_face_");
+  std::cout << nface_per_bcid_.MemoryDiagnostic("nface_per_bcid_");
+  std::cout << node2element_.MemoryDiagnostic("node2element_");
+  std::cout << adj_.MemoryDiagnostic("adj_");
+  std::cout << element_vol_.MemoryDiagnostic("element_vol_");
+  std::cout << element_sa_.MemoryDiagnostic("element_sa_");
+  std::cout << edge2node_.MemoryDiagnostic("edge2node_");
   std::cout << std::endl;
-  std::cout << "Total Grid Memory: " << grid_mem << " MB" << std::endl;
+  std::cout << "Total Grid Memory: " << grid_mem_ << " MB" << std::endl;
   std::cout << "---------------------- End  Mesh Diagnostics -----------------" 
 	    << std::endl << std::endl;
 }
@@ -113,29 +113,29 @@ intT UnstMesh::FindBcElement(const intT & f)
   intT e; // Return value
 
   //---> Counter number of boundary nodes
-  intT nbnode = bc_face2node.get_ncol(f); //bc_face2nodei(f + 1) - bc_face2nodei(f);
+  intT nbnode = bc_face2node_.get_ncol(f); //bc_face2nodei(f + 1) - bc_face2nodei(f);
 
   //---> Get first node on boundary face
-  intT bnode1 = bc_face2node(f,0);
+  intT bnode1 = bc_face2node_(f,0);
   e = -1;
 
   //---> Loop over elements attached to node
-  for( i = 0; i < node2element.get_ncol(bnode1); i++) {
+  for( i = 0; i < node2element_.get_ncol(bnode1); i++) {
     // Element on node loop
 
     //---> Get the ith element attached to node1
-    intT elem = node2element(bnode1, i);
+    intT elem = node2element_(bnode1, i);
     count = 1;
 
     //---> Loop over the rest of the nodes on bc_face f
-    for ( j = 1; j < bc_face2node.get_ncol(f); j ++){
+    for ( j = 1; j < bc_face2node_.get_ncol(f); j ++){
       // bc_node_loop
-      intT node = bc_face2node(f,j);
+      intT node = bc_face2node_(f,j);
       //---> Now loop over all the elements of node
-      for( k = 0; k < node2element.get_ncol(node); k++){
+      for( k = 0; k < node2element_.get_ncol(node); k++){
         // node loop
         // Get the elements containing node
-        intT elem2 = node2element(node, k);
+        intT elem2 = node2element_(node, k);
         /*---> Check to see if the element containing node 2 is the same
           as elem */
         if(elem2 == elem) { //end if elem check
@@ -168,9 +168,9 @@ intT UnstMesh::FindBcElement(const intT & f)
 #ifdef DEV_DEBUG
     std::cout << " The face "  << f << " contains the following nodes:"
               << std::endl;
-    for( i = 0 ; i < bc_face2node.get_ncol(f); i++){
+    for( i = 0 ; i < bc_face2node_.get_ncol(f); i++){
       std::cout << " Node " << i << ": "
-                << bc_face2node(f,i) << std::endl;
+                << bc_face2node_(f,i) << std::endl;
     }
     SystemModule::pause();
 #endif
@@ -398,62 +398,62 @@ void UnstMesh::FormNode2Element()
   std::cout << "-------------Node 2 Element Connectivity ---------------------"
 	    << std::endl;
   //---> Initialize the temporary counter array
-  nodeitemp.set_value(0);
+  nodeitemp_.set_value(0);
 
   /*---> Loop over elements and count the number of elements attached to a
     node */
-  for (e = 0; e < nelement; e++) { // element_loop
+  for (e = 0; e < nelement_; e++) { // element_loop
     //---> Get number of nodes on this element
-    nne = element2node.get_ncol(e);
+    nne = element2node_.get_ncol(e);
     //---> Loop over nodes on the element
-    for(n = 0; n< nne; n++) { // node_loop
+    for(n = 0; n < nne; n++) { // node_loop
       //---> Get node number
-      node = element2node(e, n);
+      node = element2node_(e, n);
       /*---> Add 1 to the count of number of elements attached to a node
         for node */
-      nodeitemp(node + 1) += 1;
+      nodeitemp_(node + 1) += 1;
     } // End node_loop
   } // End element_loop
 
     /*---> Now add up all the element surrounding each node and setup
       linked list index array */
   size_node2element = 0;
-  for ( n = 0; n < nnode ; n++) { // Node_loop
+  for ( n = 0; n < nnode_ ; n++) { // Node_loop
     //---> Size of node2element array computation
-    size_node2element += nodeitemp(n + 1);
+    size_node2element += nodeitemp_(n + 1);
   } // End Node_loop
 
     //---> Allocate the memory for node2element data array
-  node2element.initialize(nnode, size_node2element);
-  grid_mem += node2element.get_mem();
+  node2element_.initialize(nnode_, size_node2element);
+  grid_mem_ += node2element_.get_mem();
 
-  for ( n = 0; n < nnode ; n++) { // Node_loop
+  for ( n = 0; n < nnode_ ; n++) { // Node_loop
     //---> Size of node2element array computation
-    node2element.set_ncol(n, nodeitemp(n + 1));
-    nodeitemp(n + 1) = 0;
+    node2element_.set_ncol(n, nodeitemp_(n + 1));
+    nodeitemp_(n + 1) = 0;
   } // End Node_loop
 
     //---> Now for the connectivity node2element
-  for ( e = 0; e < nelement; e++ ) { // Element_loop
+  for ( e = 0; e < nelement_; e++ ) { // Element_loop
     //---> Get number of nodes on this element
-    nne = element2node.get_ncol(e);
+    nne = element2node_.get_ncol(e);
     //---> Loop over nodes on the element
     for(n = 0; n < nne; n++) { // node_loop
       //---> Get node number
-      node = element2node(e, n);
+      node = element2node_(e, n);
       //----> Assign element e to index position of node2element
-      node2element(node, nodeitemp(node)) = e;
+      node2element_(node, nodeitemp_(node)) = e;
       /*----> We've added an element to the node2element for node: node...so
         add 1 to node2elementi(node) to act as a counter for how many
         elements we've added to the node, this acts as a local index now */
       //node2elementi(node) += 1;
-      nodeitemp(node) += 1;
+      nodeitemp_(node) += 1;
     } // End node_loop
   } // End element_loop
 
   // DON'T THINK I NEED THIS 
   //---> Sort the the columns for each row so it's easier to deal with later
-  // for ( n = 0; n < nnode; n++) {
+  // for ( n = 0; n < nnode_; n++) {
   //   intT start = 0;
   //   intT end = node2element.get_ncol(n) - 1;
   //   std::sort(node2element.get_ptr(n,start), node2element.get_ptr(n,end) + 1);
@@ -472,19 +472,19 @@ void UnstMesh::FormBcFaceConnectivity()
   //---> Local Variables
   intT f; // Face looping index
   //---> For each boundary face figure out to which element it belongs
-  for (f = 0; f < nbc_face; f++) {// BC face loop
+  for (f = 0; f < nbc_face_; f++) {// BC face loop
     intT e = FindBcElement(f);
-    bc_face2elem(f) = e;
+    bc_face2elem_(f) = e;
   }// End bc_face_loop
 
   /*---> Now for each boundary face figure out local face number. */
-  for (f = 0; f< nbc_face; f++){// BC face loop
+  for (f = 0; f < nbc_face_; f++){// BC face loop
 
-    intT e = bc_face2elem(f); // Element attached to bc_face f
-    intT etype =  element_type(e); // Element type
+    intT e = bc_face2elem_(f); // Element attached to bc_face f
+    intT etype =  element_type_(e); // Element type
     intT loc_face; // Local Face number
-    intT nne = element2node.get_ncol(e); // Number of nodes on the element e
-    intT nnf = bc_face2node.get_ncol(f); // Number of nodes on the face f
+    intT nne = element2node_.get_ncol(e); // Number of nodes on the element e
+    intT nnf = bc_face2node_.get_ncol(f); // Number of nodes on the face f
 
     //---> Temp vectors
     Array1D<intT> face_nodes(nnf);
@@ -493,13 +493,13 @@ void UnstMesh::FormBcFaceConnectivity()
     //---> Fill elem_nodes
     for (intT i = 0; i < nne; i++){// elem nodes loop
       //---> Access element connecitivity
-      elem_nodes(i) = element2node(e, i);
+      elem_nodes(i) = element2node_(e, i);
     }// End elem nodes loop
 
     //---> Fill face_nodes
     for (intT i = 0; i < nnf; i++){// face nodes loop
       //---> Acces face connecitivity
-      face_nodes(i) = bc_face2node(f, i);
+      face_nodes(i) = bc_face2node_(f, i);
     }// end face nodes loop
 
     //---> Based on cell type figure out local face id
@@ -534,16 +534,16 @@ void UnstMesh::FormBcFaceConnectivity()
                                     << " which is of type: " << etype
                                     << std::endl;
     //---> Assign the value of bc_local_face for bc_face f
-    bc_local_face(f) = loc_face;
+    bc_local_face_(f) = loc_face;
   }// End BC face loop
   
   //---> Count the number of boundary faces for each boundary
-  for(intT id = 0; id < nbc_id; id++){nface_per_bcid(id) = 0;}
+  for(intT id = 0; id < nbc_id_; id++){nface_per_bcid_(id) = 0;}
   
   //---> Loop over boundary faces
-  for(intT bcf = 0; bcf < nbc_face; bcf++) { // bc_face loop
-    intT id = bc_face_id(bcf);
-    nface_per_bcid(id) +=1;
+  for(intT bcf = 0; bcf < nbc_face_; bcf++) { // bc_face loop
+    intT id = bc_face_id_(bcf);
+    nface_per_bcid_(id) +=1;
   } // End bc_face loop
   
   std::cout << "-------------- End Boundary Face Connectivity -----------------"
@@ -554,36 +554,36 @@ void UnstMesh::FormBcFaceConnectivity()
 void UnstMesh::CountElementTypes()
 {
 
-  nbar = 0;
-  ntri = 0;
-  nquad = 0;
-  ntet = 0;
-  nprism = 0;
-  npyr = 0;
-  nhex = 0;
+  nbar_ = 0;
+  ntri_ = 0;
+  nquad_ = 0;
+  ntet_ = 0;
+  nprism_ = 0;
+  npyr_ = 0;
+  nhex_ = 0;
 
-  for (intT e = 0; e < nelement; e++) { // Count element types
-    switch (element_type(e)) {
+  for (intT e = 0; e < nelement_; e++) { // Count element types
+    switch (element_type_(e)) {
     case element_types::ELEMTYPE_BAR:
-      nbar += 1;
+      nbar_ += 1;
       break;
     case element_types::ELEMTYPE_TRI:
-      ntri += 1;
+      ntri_ += 1;
       break;
     case element_types::ELEMTYPE_QUAD:
-      nquad += 1;
+      nquad_ += 1;
       break;
     case element_types::ELEMTYPE_TET:
-      ntet += 1;
+      ntet_ += 1;
       break;
     case element_types::ELEMTYPE_PRISM:
-      nprism += 1;
+      nprism_ += 1;
       break;
     case element_types::ELEMTYPE_PYR:
-      npyr += 1;
+      npyr_ += 1;
       break;
     case element_types::ELEMTYPE_HEX:
-      nhex += 1;
+      nhex_ += 1;
       break;
     }
   }
@@ -592,24 +592,24 @@ void UnstMesh::CountElementTypes()
 //****************************************************************************80
 void UnstMesh::CountBcFaceTypes()
 {
-  nbc_node = 0;
-  nbc_edge = 0;
-  nbc_tri = 0;
-  nbc_quad = 0;
+  nbc_node_ = 0;
+  nbc_edge_ = 0;
+  nbc_tri_ = 0;
+  nbc_quad_ = 0;
 
-  for (intT f = 0; f < nbc_face; f++) { // Count bc_face types
-    switch (bc_face2node.get_ncol(f)) {
+  for (intT f = 0; f < nbc_face_; f++) { // Count bc_face types
+    switch (bc_face2node_.get_ncol(f)) {
     case 1:
-      nbc_node += 1;
+      nbc_node_ += 1;
       break;
     case 2:
-      nbc_edge += 1;
+      nbc_edge_ += 1;
       break;
     case 3:
-      nbc_tri += 1;
+      nbc_tri_ += 1;
       break;
     case 4:
-      nbc_quad += 1;
+      nbc_quad_ += 1;
       break;
     }
   }
@@ -631,13 +631,17 @@ void UnstMesh::FormConnectivity()
   //---> Count bc face types and store connectivity for each type...for
   //     CGNS Output;
   CountBcFaceTypes();
+  
+  //---> Form Adjacency
+  FormAdjacency();
+  
 } // End FormConnectivity
 
 //****************************************************************************80
 void UnstMesh::ReadGridFile(std::string const & filename) 
 {
   //---> We know we are reading a 2-D mesh file;
-  ndim = 2;
+  ndim_ = 2;
   
   FILE * mesh_file;
  
@@ -662,54 +666,54 @@ void UnstMesh::ReadGridFile(std::string const & filename)
 
     //---> Get top line: nnodes nelement nbc_face nbc_id
   std::cout << "Reading Header" << std::endl;;
-  fscanf(mesh_file, "%d %d %d %d\n", &nnode, &nelement , &nbc_face,
-	 &nbc_id );
+  fscanf(mesh_file, "%d %d %d %d\n", &nnode_, &nelement_ , &nbc_face_,
+	 &nbc_id_ );
   
   //---> Memory based on stuff so far
   //----------------------------------------------------------------------------
-  nodeitemp.initialize(nnode + 1);
-  grid_mem += nodeitemp.get_mem();
+  nodeitemp_.initialize(nnode_ + 1);
+  grid_mem_ += nodeitemp_.get_mem();
   //----------------------------------------------------------------------------
-  x.initialize(nnode,ndim);
-  grid_mem += x.get_mem();
+  x_.initialize(nnode_, ndim_);
+  grid_mem_ += x_.get_mem();
   //----------------------------------------------------------------------------
-  bc_face2elem.initialize(nbc_face);
-  grid_mem += bc_face2elem.get_mem();
+  bc_face2elem_.initialize(nbc_face_);
+  grid_mem_ += bc_face2elem_.get_mem();
   //----------------------------------------------------------------------------
-  element_type.initialize(nelement);
-  grid_mem += element_type.get_mem();
+  element_type_.initialize(nelement_);
+  grid_mem_ += element_type_.get_mem();
   //----------------------------------------------------------------------------
-  bc_face_id.initialize(nbc_face);
-  grid_mem += bc_face_id.get_mem();		       
+  bc_face_id_.initialize(nbc_face_);
+  grid_mem_ += bc_face_id_.get_mem();		       
   //----------------------------------------------------------------------------
-  bcid_type.initialize(nbc_id);
-  grid_mem += bcid_type.get_mem();
+  bcid_type_.initialize(nbc_id_);
+  grid_mem_ += bcid_type_.get_mem();
   //----------------------------------------------------------------------------
-  bc_local_face.initialize(nbc_face);
-  grid_mem += bc_local_face.get_mem();
+  bc_local_face_.initialize(nbc_face_);
+  grid_mem_ += bc_local_face_.get_mem();
   //----------------------------------------------------------------------------
-  nface_per_bcid.initialize(nbc_id);
-  grid_mem += nface_per_bcid.get_mem();
+  nface_per_bcid_.initialize(nbc_id_);
+  grid_mem_ += nface_per_bcid_.get_mem();
   //----------------------------------------------------------------------------
   //---> Get line of text: Nodes per Cell
   // Use fgets to read 100 chars of crap and move one...it's a neat trick
   fgets(char_crap, 100, mesh_file);
   std::cout << "Reading Element Type" << std::endl;
   //---> Loop over elements and get nnodes per element
-  for(intT e = 0; e < nelement; e++){
+  for(intT e = 0; e < nelement_; e++){
     intT n = 0; 
     fscanf(mesh_file, "%d\n", &n);
     nnz_elem2node += n;
     
     switch (n) {
     case 2:
-      element_type(e) = element_types::ELEMTYPE_BAR;
+      element_type_(e) = element_types::ELEMTYPE_BAR;
       break;
     case 3:
-      element_type(e) = element_types::ELEMTYPE_TRI;
+      element_type_(e) = element_types::ELEMTYPE_TRI;
       break;
     case 4:
-      element_type(e) = element_types::ELEMTYPE_QUAD;
+      element_type_(e) = element_types::ELEMTYPE_QUAD;
       break;
     default:
       std::cout << "ERROR: Element " << e
@@ -721,53 +725,53 @@ void UnstMesh::ReadGridFile(std::string const & filename)
     } // End check number of nodes per element
   }// End loop over elements
 
-  nnz_bc_face2node = 2*nbc_face;
+  nnz_bc_face2node = 2*nbc_face_;
   //----------------------------------------------------------------------------
-  element2node.initialize(nelement, nnz_elem2node);
-  grid_mem += element2node.get_mem();
+  element2node_.initialize(nelement_, nnz_elem2node);
+  grid_mem_ += element2node_.get_mem();
   //----------------------------------------------------------------------------
-  bc_face2node.initialize(nbc_face, nnz_bc_face2node);
-  grid_mem += bc_face2node.get_mem();
+  bc_face2node_.initialize(nbc_face_, nnz_bc_face2node);
+  grid_mem_ += bc_face2node_.get_mem();
   //----------------------------------------------------------------------------
   std::cout << "Reading Nodal Coordinates" << std::endl;
   //---> Again using gets read line: Nodal Coordinates
   fgets(char_crap, 100, mesh_file);
-  for(intT n = 0; n < nnode; n++){
-    fscanf(mesh_file, "%lf %lf\n", &x(n,0), &x(n,1));
+  for(intT n = 0; n < nnode_; n++){
+    fscanf(mesh_file, "%lf %lf\n", &x_(n,0), &x_(n,1));
   }
   std::cout << "Reading Element 2 Node Connecitivity" << std::endl;
   //---> Again using gets read line: Element to Node Connectivity
   fgets(char_crap, 100, mesh_file);
   //std::cout << char_crap << std::endl;
-  for(intT e = 0; e < nelement; e++){ // Element2node loop 
+  for(intT e = 0; e < nelement_; e++){ // Element2node loop 
     intT n0, n1, n2, n3;
    
-    switch (element_type(e)) { // Choose element_type
+    switch (element_type_(e)) { // Choose element_type
     case element_types::ELEMTYPE_BAR:
       fscanf(mesh_file, "%d %d\n", &n0, &n1);
       
-      element2node.set_ncol(e,2);
-      element2node(e,0) = n0 - 1;
-      element2node(e,1) = n1 - 1;
+      element2node_.set_ncol(e,2);
+      element2node_(e,0) = n0 - 1;
+      element2node_(e,1) = n1 - 1;
       
       break;
     case element_types::ELEMTYPE_TRI:
       fscanf(mesh_file, "%d %d %d\n", &n0, &n1, &n2);
     
-      element2node.set_ncol(e,3);
-      element2node(e,0) = n0 - 1;
-      element2node(e,1) = n1 - 1;
-      element2node(e,2) = n2 - 1;
+      element2node_.set_ncol(e,3);
+      element2node_(e,0) = n0 - 1;
+      element2node_(e,1) = n1 - 1;
+      element2node_(e,2) = n2 - 1;
       
       break;
     case element_types::ELEMTYPE_QUAD:
       fscanf(mesh_file, "%d %d %d %d\n", &n0, &n1, &n2, &n3);
       
-      element2node.set_ncol(e,4);
-      element2node(e,0) = n0 - 1;
-      element2node(e,1) = n1 - 1;
-      element2node(e,2) = n2 - 1;
-      element2node(e,3) = n3 - 1;
+      element2node_.set_ncol(e,4);
+      element2node_(e,0) = n0 - 1;
+      element2node_(e,1) = n1 - 1;
+      element2node_(e,2) = n2 - 1;
+      element2node_(e,3) = n3 - 1;
       
       break;
     } // End Choose element type
@@ -775,19 +779,19 @@ void UnstMesh::ReadGridFile(std::string const & filename)
   std::cout << "Reading Boundary Face 2 Node Connecitivity" << std::endl;
   //---> Again using gets read line: Boundary Face Data
   fgets(char_crap, 100, mesh_file);
-  for(intT f = 0; f < nbc_face; f++){// Read Bc Faces
+  for(intT f = 0; f < nbc_face_; f++){// Read Bc Faces
     realT sbc = 0.0;
     realT xbc = 0.0;
     realT ybc = 0.0;
     //---> Set 2 nodes per bc_face
-    bc_face2node.set_ncol(f,2);
+    bc_face2node_.set_ncol(f,2);
    
-    fscanf(mesh_file, "%d %d %d\n", &bc_face2node(f,0), 
-	   &bc_face2node(f,1), &bc_face_id(f));
+    fscanf(mesh_file, "%d %d %d\n", &bc_face2node_(f,0), 
+	   &bc_face2node_(f,1), &bc_face_id_(f));
     
-    bc_face2node(f,0) = bc_face2node(f,0) - 1;
-    bc_face2node(f,1) = bc_face2node(f,1) - 1;
-    bc_face_id(f) = bc_face_id(f) - 1;
+    bc_face2node_(f,0) = bc_face2node_(f,0) - 1;
+    bc_face2node_(f,1) = bc_face2node_(f,1) - 1;
+    bc_face_id_(f) = bc_face_id_(f) - 1;
     
     for(intT i = 0; i < 11; i++){
       fscanf(mesh_file, "%lf %lf %lf\n", &sbc, &xbc, &ybc);
@@ -798,4 +802,130 @@ void UnstMesh::ReadGridFile(std::string const & filename)
   fclose(mesh_file);
   std::cout << "Done Reading mesh file." << std::endl;
   
-}
+}// End ReadGridFile
+
+//****************************************************************************80
+void UnstMesh::FormAdjacency() 
+{  
+  
+  //---> Initialize size of list to zero
+  intT nnz_adj = 0;
+  //---> Loop over the nodes
+  for(intT n = 0; n < nnode_; n++) { // Node_loop
+    intT nn_tot = 0;
+    //---> Loop over the elements that surround this node 
+    for(intT i = 0; i < node2element_.get_ncol(n); i++){
+      intT e = node2element_(n,i);
+      nn_tot += element2node_.get_ncol(e);
+    }
+    
+    //---> Temporary array for nodes attached to node n
+    std::vector<int> temp (nn_tot,-1);
+    
+    //---> Initialize counter
+    intT counter = 0;
+    
+    //---> Now loop over the elements containing that node
+    for( intT i = 0; i < node2element_.get_ncol(n); i++ ) {// element_loop
+      //---> Get element containing node n
+      intT e = node2element_(n, i);
+      
+      //---> Loop over nodes attached to elem
+      for ( intT j = 0; j < element2node_.get_ncol(e); j++){ // Node_on_element
+	
+	//---> Get node index of jth node attached to elem
+	intT node = element2node_(e, j);	 
+	
+	//---> Store node in temp 
+	temp[counter] = node;
+	
+	//---> Increment counter
+	counter += 1;
+	
+      } // Node_on_element
+      
+    } // End element_loop 
+    
+    //---> Sort all possible nodes adjacent to node n in lexigraphical order
+    std::sort (temp.begin(), temp.end());
+    
+    //---> Define variables to use unique function 
+    std::vector<int>::iterator itemp;
+    
+    /*---> Eleminate all duplicate nodes from list temp NOTE: Must call 
+      sort first for std::unique to work as expected.  */
+    itemp = std::unique(temp.begin(), temp.end());
+    
+    //---> Resize temp to remove undefined entries
+    temp.resize(std::distance( temp.begin(),itemp ) );
+    
+    //---> Return size of vector temp which is number of unique adjacent nodes
+    intT c = temp.size();
+    nnz_adj += c;
+
+  } // End Node_loop 
+  
+  //--------------------------------------------------------------------------
+  adj_.initialize(nnode_, nnz_adj);
+  grid_mem_ +=adj_.get_mem();
+  //--------------------------------------------------------------------------
+  
+  //---> Build Adjacency List
+  //---> Loop over the nodes
+  for (intT n = 0; n < nnode_; n++) { // Node_loop
+    intT nn_tot = 0;
+    //---> Loop over the elements that surround this node 
+    for(intT i = 0; i < node2element_.get_ncol(n); i++){
+      intT e = node2element_(n,i);
+      nn_tot += element2node_.get_ncol(e);
+    }
+    
+    //---> Temporary array for nodes attached to node n
+    std::vector<int> temp (nn_tot,-1);
+    
+    //---> Initialize counter
+    intT counter = 0;
+    
+    //---> Now loop over the elements containing that node
+    for( intT i = 0; i < node2element_.get_ncol(n); i++ ) {// element_loop
+      //---> Get element containing node n
+      intT e = node2element_(n, i);
+      
+      //---> Loop over nodes attached to elem
+      for ( intT j = 0; j < element2node_.get_ncol(e); j++){ // Node_on_element
+	
+	//---> Get node index of jth node attached to elem
+	intT node = element2node_(e, j);	 
+	
+	//---> Store node in temp 
+	temp[counter] = node;
+	
+	//---> Increment counter
+	counter += 1;
+	
+      } // Node_on_element
+      
+    } // End element_loop 
+    
+    //---> Sort all possible nodes adjacent to node n in lexigraphical order
+    std::sort (temp.begin(), temp.end());
+    
+    //---> Define variables to use unique function 
+    std::vector<int>::iterator itemp;
+    
+    /*---> Eleminate all duplicate nodes from list temp NOTE: Must call 
+      sort first for std::unique to work as expected.  */
+    itemp = std::unique(temp.begin(), temp.end());
+    
+    //---> Resize temp to remove undefined entries
+    temp.resize(std::distance( temp.begin(),itemp ) );
+    
+    //---> Return size of vector temp which is number of unique adjacent nodes
+    intT c = temp.size();
+    adj_.set_ncol(n,c);
+    for (intT i = 0; i < c; i++){adj_(n,i) = temp[i];}
+    
+  } // End Node_loop 
+
+
+}// End FormAdjacency

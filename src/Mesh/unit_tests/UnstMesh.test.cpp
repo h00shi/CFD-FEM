@@ -70,3 +70,8 @@ TEST(UnstMesh, BcConnectivity){
   
   
 }
+
+TEST(UnstMesh, Adjacency){
+  UnstMesh mesh("Square.grid", "Grid-NKB");
+  const List2D<intT>& adj = mesh.get_adj();
+}
