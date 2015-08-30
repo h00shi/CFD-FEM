@@ -338,7 +338,7 @@ public:
 //! \date $Date$ 
 //! 
 //****************************************************************************80
-  void Diagnostic();
+  void Diagnostic(std::ostream& out_stream);
   
 protected: 
 

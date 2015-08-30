@@ -4,6 +4,7 @@
 
 TEST(CSRMatrix, CRTP) {
   UnstMesh mesh("Square.grid", "Grid-NKB");
+  mesh.Diagnostic(std::cout);
   Array1D<intT> nfld(mesh.get_nnode());
   nfld.set_value(2);
 
@@ -11,7 +12,8 @@ TEST(CSRMatrix, CRTP) {
   
   SparseMatrix< realT, CSRMatrix<realT> >& matrix = csr_matrix;
   matrix(0,0,0,0) = 1.0;
-
+  matrix.Diagnostic(std::cout);
+  
 }
 
 

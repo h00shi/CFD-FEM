@@ -172,6 +172,19 @@ public:
 //****************************************************************************80
   virtual ~SparseMatrix() {  } 
 
+//****************************************************************************80
+//! \brief  Diagnostic : Returns diagnostic information to specified stream
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  inline void Diagnostic(std::ostream& out_stream)
+  {
+    static_cast< DerivedMatrixType<dataT>* >(this)->
+      Diagnostic(out_stream); 
+  }// End Diagnostic 
 private:
 //****************************************************************************80
 //! \brief SparseMatrix : Default constructor...deleted so you can't call it 

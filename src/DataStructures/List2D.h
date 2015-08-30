@@ -158,6 +158,38 @@ public:
     size = 0;
     mem = 0.0;
   } // End ~List2D
+//****************************************************************************80
+//!
+//! \brief CopyPattern : Take an existing List2D and copy it's pattern
+//! \details
+//! \nick
+//! \version $Rev: 5 $
+//! \param[in] other The other list 2D
+//****************************************************************************80
+  template<class otherT>
+  void intialize_copy_pattern(const List2D<otherT>& other)
+  {
+    if (this->index == NULL && this->size1 == 0){
+      //---> Call the initialize function
+      this->initialize(other.get_lead_size(), other.get_total_size());
+      //---> Set the number of columns to be the same
+      for(intT i = 0; i < size1; i++) {this->set_ncol(i,other.get_ncol(i));}
+    }
+    
+    else {
+      std::cerr << "ERROR: In List2D.h - "
+                << "Attemping to initalize and copy pattern for a List2D "
+		<< "that has already been intialized.  List2D data follows."
+		<< std::endl 
+                << "This List2D, nrow: " << size1 << " nnz: " << size 
+		<< std::endl
+		<< "Attemping to pattern from List2D, nrow: " << size1 
+		<< " nnz: " << size << std::endl;
+      SystemModule::my_exit();
+      
+    }
+
+  }// End CopyPattern;
 
 //****************************************************************************80
 //!
@@ -197,6 +229,8 @@ public:
       }// end init_loop
     }// end check input sizes
   } // End initialize
+
+
 
 //****************************************************************************80
 //!

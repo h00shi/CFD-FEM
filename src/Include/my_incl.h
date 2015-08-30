@@ -71,5 +71,6 @@
 typedef int intT;
 typedef double realT;
 
+#include "consts.h"
 
 #endif //END MY_INCL_H

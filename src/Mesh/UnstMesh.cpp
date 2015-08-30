@@ -53,52 +53,52 @@ UnstMesh::UnstMesh(std::string const & filename, std::string const & file_type)
 UnstMesh::~UnstMesh() {};
 
 //****************************************************************************80
-void UnstMesh::Diagnostic() 
+void UnstMesh::Diagnostic(std::ostream& out_stream) 
 {
-  std::cout << std::endl;
-  std::cout << "------------------------- Mesh Diagnostics --------------------"
+  out_stream << std::endl;
+  out_stream << "------------------------- Mesh Diagnostics --------------------"
 	    << std::endl;
-  std::cout << "Mesh Data: " << std::endl;
-  std::cout << "Number of Physical Dimensions: " << ndim_ << std::endl;
-  std::cout << "Number of Nodes: " << nnode_ << std::endl;
-  std::cout << "Number of Elements: " << nelement_ << std::endl;
-  std::cout << "Number of Boundary Faces: " << nbc_face_ << std::endl;
-  std::cout << "Number of Boundary IDs: " << nbc_id_ << std::endl;
-  std::cout << "Number of Degrees of Freedom: " << ndof_ << std::endl;
-  std::cout << "Number of Colors: " << ncolor_ << std::endl;
-  std::cout << "Element Data: " << std::endl;
-  std::cout << "Number of Bar Elmenets: " << nbar_ << std::endl;
-  std::cout << "Number of Tri Elements: " << ntri_ << std::endl;
-  std::cout << "Number of Quad Elements: " << nquad_ << std::endl;
-  std::cout << "Number of Tet Elements: " << ntet_ << std::endl;
-  std::cout << "Number of Prism Elemnets: " << nprism_ << std::endl;
-  std::cout << "Number of Pyr Elements: " << npyr_ << std::endl;
-  std::cout << "Number of Hex Elements: " << nhex_ << std::endl;
-  std::cout << "Boundary Face Data: " << std::endl;
-  std::cout << "Number of Boundary Node Faces: " << nbc_node_ << std::endl;
-  std::cout << "Number of Boundary Edge Faces: " << nbc_edge_ << std::endl;
-  std::cout << "Number of Boundary Tri Faces : " << nbc_tri_ << std::endl;
-  std::cout << "Number of Boundary Quad Faces : " << nbc_quad_ << std::endl;
-  std::cout << std::endl;
-  std::cout << "MemoryDiagnostics: " << std::endl;
+  out_stream << "Mesh Data: " << std::endl;
+  out_stream << "Number of Physical Dimensions: " << ndim_ << std::endl;
+  out_stream << "Number of Nodes: " << nnode_ << std::endl;
+  out_stream << "Number of Elements: " << nelement_ << std::endl;
+  out_stream << "Number of Boundary Faces: " << nbc_face_ << std::endl;
+  out_stream << "Number of Boundary IDs: " << nbc_id_ << std::endl;
+  out_stream << "Number of Degrees of Freedom: " << ndof_ << std::endl;
+  out_stream << "Number of Colors: " << ncolor_ << std::endl;
+  out_stream << "Element Data: " << std::endl;
+  out_stream << "Number of Bar Elmenets: " << nbar_ << std::endl;
+  out_stream << "Number of Tri Elements: " << ntri_ << std::endl;
+  out_stream << "Number of Quad Elements: " << nquad_ << std::endl;
+  out_stream << "Number of Tet Elements: " << ntet_ << std::endl;
+  out_stream << "Number of Prism Elemnets: " << nprism_ << std::endl;
+  out_stream << "Number of Pyr Elements: " << npyr_ << std::endl;
+  out_stream << "Number of Hex Elements: " << nhex_ << std::endl;
+  out_stream << "Boundary Face Data: " << std::endl;
+  out_stream << "Number of Boundary Node Faces: " << nbc_node_ << std::endl;
+  out_stream << "Number of Boundary Edge Faces: " << nbc_edge_ << std::endl;
+  out_stream << "Number of Boundary Tri Faces : " << nbc_tri_ << std::endl;
+  out_stream << "Number of Boundary Quad Faces : " << nbc_quad_ << std::endl;
+  out_stream << std::endl;
+  out_stream << "MemoryDiagnostics: " << std::endl;
  
-  std::cout << x_.MemoryDiagnostic("x");
-  std::cout << element2node_.MemoryDiagnostic("element2node_"); 
-  std::cout << bc_face2elem_.MemoryDiagnostic("bc_face2elem_");
-  std::cout << bc_face2node_.MemoryDiagnostic("bc_face2node_");
-  std::cout << element_type_.MemoryDiagnostic("element_type_");
-  std::cout << bc_face_id_.MemoryDiagnostic("bc_face_id_");
-  std::cout << bcid_type_.MemoryDiagnostic("bcid_type_");
-  std::cout << bc_local_face_.MemoryDiagnostic("bc_local_face_");
-  std::cout << nface_per_bcid_.MemoryDiagnostic("nface_per_bcid_");
-  std::cout << node2element_.MemoryDiagnostic("node2element_");
-  std::cout << adj_.MemoryDiagnostic("adj_");
-  std::cout << element_vol_.MemoryDiagnostic("element_vol_");
-  std::cout << element_sa_.MemoryDiagnostic("element_sa_");
-  std::cout << edge2node_.MemoryDiagnostic("edge2node_");
-  std::cout << std::endl;
-  std::cout << "Total Grid Memory: " << grid_mem_ << " MB" << std::endl;
-  std::cout << "---------------------- End  Mesh Diagnostics -----------------" 
+  out_stream << x_.MemoryDiagnostic("x");
+  out_stream << element2node_.MemoryDiagnostic("element2node_"); 
+  out_stream << bc_face2elem_.MemoryDiagnostic("bc_face2elem_");
+  out_stream << bc_face2node_.MemoryDiagnostic("bc_face2node_");
+  out_stream << element_type_.MemoryDiagnostic("element_type_");
+  out_stream << bc_face_id_.MemoryDiagnostic("bc_face_id_");
+  out_stream << bcid_type_.MemoryDiagnostic("bcid_type_");
+  out_stream << bc_local_face_.MemoryDiagnostic("bc_local_face_");
+  out_stream << nface_per_bcid_.MemoryDiagnostic("nface_per_bcid_");
+  out_stream << node2element_.MemoryDiagnostic("node2element_");
+  out_stream << adj_.MemoryDiagnostic("adj_");
+  out_stream << element_vol_.MemoryDiagnostic("element_vol_");
+  out_stream << element_sa_.MemoryDiagnostic("element_sa_");
+  out_stream << edge2node_.MemoryDiagnostic("edge2node_");
+  out_stream << std::endl;
+  out_stream << "Total Grid Memory: " << grid_mem_ << " MB" << std::endl;
+  out_stream << "---------------------- End  Mesh Diagnostics -----------------" 
 	    << std::endl << std::endl;
 }
 
@@ -458,6 +458,7 @@ void UnstMesh::FormNode2Element()
   //   intT end = node2element.get_ncol(n) - 1;
   //   std::sort(node2element.get_ptr(n,start), node2element.get_ptr(n,end) + 1);
   // }
+ 
   std::cout << "------------- End Node 2 Element Connectivity -----------------"
 	    << std::endl;
  
@@ -923,6 +924,7 @@ void UnstMesh::FormAdjacency()
     //---> Return size of vector temp which is number of unique adjacent nodes
     intT c = temp.size();
     adj_.set_ncol(n,c);
+ 
     for (intT i = 0; i < c; i++){adj_(n,i) = temp[i];}
     
   } // End Node_loop 
