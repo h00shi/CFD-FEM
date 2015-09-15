@@ -22,7 +22,7 @@ namespace SystemModule {
 //++++++++++++++++++++++++++++++++ Member Data Declarations ++++++++++++++++++++
 //
 ////////////////////////////////////////////////////////////////////////////////
-  extern std::stringstream my_cout;
+ 
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -38,6 +38,8 @@ namespace SystemModule {
 				      string_to_bool, \refcpp{SystemModule} */
   void pause(); /*!< Namespace member function pause, \refcpp{SystemModule} */
  
+  class pout; /*!< Namespace member class pout for parallel output */
+  extern SystemModule::pout my_pout;
 //****************************************************************************80
 //!
 //! \brief  alloc_mem : Memory allocation wrapper function 
@@ -81,5 +83,83 @@ namespace SystemModule {
 //! \param[in] var The variable to print the diago
 //****************************************************************************80
 
-} //End namespace SystemModule
+} //End namespace 
+
+//****************************************************************************80
+//!
+//! \brief A class to enable parallel cout type output trivially
+//! \details
+//! \nick
+//! \version $Rev$
+//****************************************************************************80
+class SystemModule::pout : public std::ostream
+{
+public:
+
+//****************************************************************************80
+//!
+//! \brief pout : Default constructor. 
+//! \details Default constructor will set output_rank to 0
+//! \nick
+//! \version $Rev$
+//****************************************************************************80
+  pout()
+  {
+    output_rank_ = 0;
+  }// end pout
+
+//****************************************************************************80
+//!
+//! \brief pout : Constructor that sets value of output rank for this 
+//!               instance of the class 
+//! \details Sets internal output_rank_
+//! \nick
+//! \version $Rev$
+//! \param[in] output_rank The rank for outputting data
+//****************************************************************************80
+  pout(const intT& output_rank)
+  {
+    output_rank_ = output_rank;
+  }// end pout
+
+//****************************************************************************80
+//!
+//! \brief operator << : '<<' operator for wrapping std::cout and only printing 
+//!                      if rank == specifed value
+//! \details
+//! \nick
+//! \version $Rev$
+//****************************************************************************80
+  template<class T>
+  inline SystemModule::pout& operator << (const T& output) 
+  {
+    std::cout << output;
+    
+    return *this;
+  }// End operator << 
+//****************************************************************************80
+//!
+//! \brief operator << : Special instance of operator to handle endl
+//! \details
+//! \nick
+//! \version $Rev$
+//****************************************************************************80
+  inline SystemModule::pout& operator 
+  << (std::ostream&(*f)(std::ostream&))
+  {
+    
+    if(f == (std::basic_ostream<char>& (*)(std::basic_ostream<char>&)) 
+       std::endl ) { // Check that input is endl;
+      std::cout << std::endl;
+    } // End Check that input is endl           
+    
+    return *this;
+  } // End operator << 
+   
+private:
+  intT output_rank_;
+
+}; //End class pout
+
+//#define pout pout()
 #endif

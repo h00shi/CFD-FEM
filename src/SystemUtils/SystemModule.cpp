@@ -10,8 +10,7 @@
 //+++++++++++++++++++++++++++++++ Member Data Definitions ++++++++++++++++++++++
 //
 ////////////////////////////////////////////////////////////////////////////////
-std::stringstream SystemModule::my_cout; /*!< String container used to 
-					    replace cout */ 
+SystemModule::pout SystemModule::my_pout;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -34,30 +33,6 @@ void SystemModule::my_exit () {
 #endif  
   
 }// End my_exit
-
-//****************************************************************************80
-//! \brief writeout : Writes the data in my_cout.str() to the screen.  
-//! Basically wraps cout to be parallel computing aware
-//! \nick 
-//! \version $Rev: 5 $
-//! \date $Date: 2013-10-21 14:35:02 -0700 (Mon, 21 Oct 2013) $
-//****************************************************************************8
-void SystemModule::writeout() {
-  //---> Local Variables
-  int my_proc = 0;
-  
-  //---> If we have MPI then we need to query the rank
-#ifdef HAVE_MPI
-  MPI_Comm_rank(MPI_COMM_WORLD, &my_proc);
-#endif
-  
-  //---> Now that we have the rank output
-  if(my_proc == 0) {// check_proc
-    std::cout << my_cout.str();
-    my_cout.str("");
-  } //End if check_proc
-  
-}// End writeout
 
 //****************************************************************************80
 //!

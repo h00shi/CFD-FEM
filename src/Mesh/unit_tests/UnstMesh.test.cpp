@@ -9,13 +9,15 @@
 
 static const realT small = 5.0e-15;
 TEST(UnstMesh, InitfromFile) {
+  SystemModule::my_pout << "Test" << std::endl;
   UnstMesh mesh("Square.grid", "Grid-NKB");
-  mesh.Diagnostic();
+  SystemModule::pout tout(0);
+  mesh.Diagnostic(tout);
   
   //---> Test writing
   UnstMeshWriter* writer = new UnstMeshWriterCGNS(mesh);
   writer->Write("Square");
-  
+ 
 }
 
 TEST(UnstMesh, Coords) {
