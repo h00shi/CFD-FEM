@@ -13,13 +13,13 @@
 //****************************************************************************80
 #include "my_incl.h"
 #include "consts.h"
-#include "Array1D.h"
-#include "Array2D.h"
-#include "Array3D.h"
-#include "Array4D.h"
-#include "Surreal.h"
-#include "SquareMatrix.h"
-#include "Equation.h"
+#include "DataStructures/Array1D.h"
+#include "DataStructures/Array2D.h"
+#include "DataStructures/Array3D.h"
+#include "DataStructures/Array4D.h"
+#include "Surreal/Surreal.h"
+#include "DataStructures/SquareMatrix.h"
+#include "PDE/Equation.h"
 
 class Element {
 private:

@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "Surreal.h"
+#include "Surreal/Surreal.h"
 
 //------------------------------ SURREAL SUBTRACT ------------------------------
 //--->This tests the SurrealSubtract class of the Surreal package

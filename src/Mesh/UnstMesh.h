@@ -11,14 +11,14 @@
 //! \tparam realT Template argument meant to mimic real numbers
 //****************************************************************************80
 #include "my_incl.h"
-#include "SystemModule.h"
+#include "SystemUtils/SystemModule.h"
 #include <vector> 
 #include <algorithm>
 #include <fstream>
 #include <map>
-#include "Array2D.h"
-#include "Array1D.h"
-#include "List2D.h"
+#include "DataStructures/Array2D.h"
+#include "DataStructures/Array1D.h"
+#include "DataStructures/List2D.h"
 #include <stdio.h>
 
 class UnstMesh {

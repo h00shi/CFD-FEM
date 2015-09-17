@@ -1,7 +1,7 @@
-#include "SquareMatrix.h"
-#include "Array1D.h"
+#include "DataStructures/SquareMatrix.h"
+#include "DataStructures/Array1D.h"
 #include "gtest/gtest.h"
-#include "Surreal.h"
+#include "Surreal/Surreal.h"
 #define MATRIX_N 4
 //****************************************************************************80
 //! \file squarematrix_test.cpp

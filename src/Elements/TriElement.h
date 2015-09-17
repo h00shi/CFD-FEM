@@ -4,7 +4,8 @@
 //****************************************************************************80
 //! \file TriElement.h
 //! \class TriElement TriElement.h
-//! \brief This the header file defining the class TriElement, which defines operators and data for the a 2-D triangular element.
+//! \brief This the header file defining the class TriElement, which defines 
+//!  operators and data for the a 2-D triangular element.
 //! \details
 //! \nick 
 //! \version $Rev: 6 $
@@ -14,11 +15,11 @@
 
 #include "my_incl.h"
 #include "consts.h"
-#include "Array1D.h"
-#include "Array2D.h"
-#include "Array3D.h"
-#include "Polynomials.h"
-#include "BarElement.h"
+#include "DataStructures/Array1D.h"
+#include "DataStructures/Array2D.h"
+#include "DataStructures/Array3D.h"
+#include "BasisFunctions/Polynomials.h"
+#include "Elements/BarElement.h"
 
 class TriElement : public BarElement {
 

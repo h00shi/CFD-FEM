@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "Surreal.h"
+#include "Surreal/Surreal.h"
 
 //----------------------------- SURREAL LOGIC ----------------------------------
 //--->These tests test the SurrealLogic class of the Surreal package

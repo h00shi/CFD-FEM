@@ -18,11 +18,11 @@
 //****************************************************************************80
 #include "my_incl.h"
 #include "consts.h"
-#include "Array1D.h"
-#include "Array2D.h"
-#include "Array3D.h"
-#include "Polynomials.h"
-#include "Element.h"
+#include "DataStructures/Array1D.h"
+#include "DataStructures/Array2D.h"
+#include "DataStructures/Array3D.h"
+#include "BasisFunctions/Polynomials.h"
+#include "Elements/Element.h"
  
 class BarElement : public Element{
 

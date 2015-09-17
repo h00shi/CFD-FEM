@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "Surreal.h"
+#include "Surreal/Surreal.h"
 
 //------------------------------ SURREAL POW -----------------------------------
 //--->This tests the SurrealPow class of the Surreal package

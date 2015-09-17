@@ -1,29 +1,29 @@
-#include "UnstMesh.h"
-#include "UnstMeshWriter.h"
-#include "UnstMeshWriterCGNS.h"
-#include "Array1D.h"
-#include "Array2D.h"
-#include "List2D.h"
-
+#include "Mesh/UnstMesh.h"
+#include "Mesh/UnstMeshWriter.h"
+#include "Mesh/UnstMeshWriterCGNS.h"
+#include "DataStructures/Array1D.h"
+#include "DataStructures/Array2D.h"
+#include "DataStructures/List2D.h"
 #include "gtest/gtest.h"
 
 static const realT small = 5.0e-15;
-TEST(UnstMesh, InitfromFile) {
-  SystemModule::my_pout << "Test" << std::endl;
+TEST(UnstMesh, InitfromFile) 
+{
+
   UnstMesh mesh("Square.grid", "Grid-NKB");
-  SystemModule::pout tout(0);
-  mesh.Diagnostic(tout);
+ 
+  mesh.Diagnostic(std::cout);
   
   //---> Test writing
   UnstMeshWriter* writer = new UnstMeshWriterCGNS(mesh);
   writer->Write("Square");
- 
+
 }
 
 TEST(UnstMesh, Coords) {
-  UnstMesh mesh("Square.grid", "Grid-NKB");
-  const Array2D<realT>& x = mesh.get_x();
-  
+UnstMesh mesh("Square.grid", "Grid-NKB");
+const Array2D<realT>& x = mesh.get_x();
+
   EXPECT_NEAR(-1.0, x(0,0), small);
   EXPECT_NEAR(-0.5, x(0,1), small);
   EXPECT_NEAR(0.0, x(13,0), small);

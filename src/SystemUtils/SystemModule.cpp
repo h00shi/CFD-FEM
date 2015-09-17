@@ -1,7 +1,7 @@
 
 #include "my_incl.h"
 #include <stdlib.h>
-#include "SystemModule.h"
+#include "SystemUtils/SystemModule.h"
 #include <algorithm>
 #include <limits>
 
@@ -10,7 +10,7 @@
 //+++++++++++++++++++++++++++++++ Member Data Definitions ++++++++++++++++++++++
 //
 ////////////////////////////////////////////////////////////////////////////////
-SystemModule::pout SystemModule::my_pout;
+SystemModule::pout SystemModule::cout;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -72,3 +72,5 @@ void SystemModule::pause()
   //---> Now use cin to wait for input
   std::cin.ignore( std::numeric_limits <std::streamsize> ::max(), '\n' );
 } //End pause
+
+

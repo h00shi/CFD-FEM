@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "Surreal.h"
+#include "Surreal/Surreal.h"
 
 //------------------------------ SURREAL DIVIDE --------------------------------
 //--->This tests the SurrealDivide class of the Surreal package

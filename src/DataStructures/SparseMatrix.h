@@ -2,9 +2,9 @@
 #ifndef SPARSEMATRIX_H
 #define SPARSEMATRIX_H
 #include "my_incl.h"
-#include "Array1D.h"
-#include "Array2D.h"
-#include "List2D.h"
+#include "DataStructures/Array1D.h"
+#include "DataStructures/Array2D.h"
+#include "DataStructures/List2D.h"
 
 //****************************************************************************80
 //! \brief This is the base class for sparse matricies.  

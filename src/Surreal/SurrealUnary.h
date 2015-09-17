@@ -2,7 +2,7 @@
 #ifndef SURREALUNARY_H
 #define SURREALUNARY_H
 
-#include "SurrealBase.h"
+#include "Surreal/SurrealBase.h"
 
 /* preprocessor directive function to help define operator classes
    and corresponding operator overloads for simple unary expressions */

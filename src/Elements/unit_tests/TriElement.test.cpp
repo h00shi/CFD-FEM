@@ -1,6 +1,6 @@
-#include "TriElement.h"
-#include "Array1D.h"
-#include "Array2D.h"
+#include "Elements/TriElement.h"
+#include "DataStructures/Array1D.h"
+#include "DataStructures/Array2D.h"
 #include "gtest/gtest.h"
 #include "my_incl.h"
 

@@ -1,9 +1,9 @@
-#include "BarElement.h"
-#include "Array1D.h"
+#include "Elements/BarElement.h"
+#include "DataStructures/Array1D.h"
 #include "gtest/gtest.h"
 #include "my_incl.h"
-#include "Polynomials.h"
-#include "Element.h"
+#include "BasisFunctions/Polynomials.h"
+#include "Elements/Element.h"
 
 void quadpoly (const Array1D<realT>&, Array1D<realT>& );
 void p3poly (const Array1D<realT>&, Array1D<realT>& );

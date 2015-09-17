@@ -12,11 +12,11 @@
 //! \date $Date$
 //! 
 //****************************************************************************80
-#include "Array1D.h"
-#include "Array2D.h"
-#include "Array3D.h"
-#include "SquareMatrix.h"
-template < class intT, class realT>
+#include "my_incl.h"
+#include "DataStructures/Array1D.h"
+#include "DataStructures/Array2D.h"
+#include "DataStructures/Array3D.h"
+#include "DataStructures/SquareMatrix.h"
 class EulerPDESet3D 
 {
 
@@ -41,10 +41,7 @@ private:
 //! \date $Date$
 //! 
 //****************************************************************************80
-  EulerPDESet3D() : gamma(1.4), gm1(.4)
-  {
-    //---> All work done in code proceeding : above.
-  }
+  EulerPDESet3D() = delete;
 
 //****************************************************************************80
 //!
@@ -749,9 +746,9 @@ public:
 //! \date $Date$
 //! \return nfld The number of fields or PDEs
 //****************************************************************************80
-  static const intT get_nfld () 
+  inline static const intT& get_nfld () 
   { 
-    return( EulerPDESet3D<intT,realT>::nfld);
+    return( EulerPDESet3D::nfld);
   }
 
 //****************************************************************************80
@@ -763,9 +760,9 @@ public:
 //! \date $Date$
 //! \return nfld The number of fields or PDEs
 //****************************************************************************80
-  static const intT get_ndim() 
+  inline static const intT& get_ndim() 
   {
-    return(EulerPDESet3D<intT,realT>::ndim);
+    return(EulerPDESet3D::ndim);
   }
 
 }; //End Class EulerPDESet

@@ -8,12 +8,12 @@
 //! 
 //****************************************************************************80
 #include "my_incl.h"
-#include "BarElement.h"
-#include "TriElement.h"
-#include "TetElement.h"
-#include "Array1D.h"
-#include "Array2D.h"
-#include "Array3D.h"
+#include "Elements/BarElement.h"
+#include "Elements/TriElement.h"
+#include "Elements/TetElement.h"
+#include "DataStructures/Array1D.h"
+#include "DataStructures/Array2D.h"
+#include "DataStructures/Array3D.h"
 #include <fstream>
 int main(int argc, char** argv)
 {

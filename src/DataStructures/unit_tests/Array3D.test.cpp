@@ -1,4 +1,4 @@
-#include "Array3D.h"
+#include "DataStructures/Array3D.h"
 #include "gtest/gtest.h"
 #include "my_incl.h"
 #include <algorithm>

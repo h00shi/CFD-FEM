@@ -39,7 +39,7 @@ namespace SystemModule {
   void pause(); /*!< Namespace member function pause, \refcpp{SystemModule} */
  
   class pout; /*!< Namespace member class pout for parallel output */
-  extern SystemModule::pout my_pout;
+  extern SystemModule::pout cout;
 //****************************************************************************80
 //!
 //! \brief  alloc_mem : Memory allocation wrapper function 
@@ -85,6 +85,7 @@ namespace SystemModule {
 
 } //End namespace 
 
+
 //****************************************************************************80
 //!
 //! \brief A class to enable parallel cout type output trivially
@@ -103,7 +104,7 @@ public:
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
-  pout()
+  inline pout()
   {
     output_rank_ = 0;
   }// end pout
@@ -117,11 +118,10 @@ public:
 //! \version $Rev$
 //! \param[in] output_rank The rank for outputting data
 //****************************************************************************80
-  pout(const intT& output_rank)
+  inline pout(const intT& output_rank)
   {
     output_rank_ = output_rank;
   }// end pout
-
 //****************************************************************************80
 //!
 //! \brief operator << : '<<' operator for wrapping std::cout and only printing 
@@ -144,9 +144,8 @@ public:
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
-  inline SystemModule::pout& operator 
-  << (std::ostream&(*f)(std::ostream&))
-  {
+  inline SystemModule::pout& operator << (std::ostream&(*f)(std::ostream&))
+   {
     
     if(f == (std::basic_ostream<char>& (*)(std::basic_ostream<char>&)) 
        std::endl ) { // Check that input is endl;
@@ -156,6 +155,13 @@ public:
     return *this;
   } // End operator << 
    
+//****************************************************************************80
+//!
+//! \brief GetOutputRank : Returns the value of the output rank
+//! \nick
+//! \version $Rev$
+//****************************************************************************80
+  const intT& GetOutputRank() const {return output_rank_;}
 private:
   intT output_rank_;
 

@@ -10,10 +10,10 @@
 //!
 //****************************************************************************80
 #include "my_incl.h"
-#include "Array2D.h"
-#include "Array1D.h"
-#include "List2D.h"
-#include "UnstMeshWriter.h"
+#include "DataStructures/Array2D.h"
+#include "DataStructures/Array1D.h"
+#include "DataStructures/List2D.h"
+#include "Mesh/UnstMeshWriter.h"
 #include "cgnslib.h"
 
 class UnstMeshWriterCGNS : public UnstMeshWriter

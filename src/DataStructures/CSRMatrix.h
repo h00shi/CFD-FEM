@@ -2,7 +2,7 @@
 #ifndef CSRMATRIX_H
 #define CSRMATRIX_H
 #include "my_incl.h"
-#include "SparseMatrix.h"
+#include "DataStructures/SparseMatrix.h"
 
 //****************************************************************************80
 //! \brief This is the base class for csr formatted sparse matricies.  

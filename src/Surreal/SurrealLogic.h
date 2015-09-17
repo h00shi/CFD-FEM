@@ -2,7 +2,7 @@
 #ifndef SURREALLOGIC_H
 #define SURREALLOGIC_H
 
-#include "SurrealBase.h"
+#include "Surreal/SurrealBase.h"
 //----------------------------- LOGICAL OPERATORS ------------------------------
 //----------------------------- OPERATOR < -------------------------------------
 //----------------------------- Surreal < Surreal ------------------------------

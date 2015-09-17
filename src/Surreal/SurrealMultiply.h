@@ -2,7 +2,7 @@
 #ifndef SURREALMULTIPLY_H
 #define SURREALMULTIPLY_H
 
-#include "SurrealBase.h"
+#include "Surreal/SurrealBase.h"
 //----------------------------- Surreal * Surreal ------------------------------
 //****************************************************************************80
 //! \brief SurrealMultiply : A class template to represent automatic

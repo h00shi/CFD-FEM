@@ -13,11 +13,10 @@
 //****************************************************************************80
 #include "my_incl.h"
 #include "consts.h"
-#include "Array1D.h"
-#include "Array2D.h"
-#include "Array3D.h"
+#include "DataStructures/Array1D.h"
+#include "DataStructures/Array2D.h"
+#include "DataStructures/Array3D.h"
 
-template< typename intT, typename realT, typename dataT>
 class Poisson {
 
 private:
@@ -69,7 +68,7 @@ public:
 //! \param[out] src The source term vector 
 //****************************************************************************80
   void cg_vol_res(const int& ndim, const int& nfld, const Array1D<realT>& q,
-	     const Array2D<realT>& dq, Array2D<realT>& flux, &
+	     const Array2D<realT>& dq, Array2D<realT>& flux,
 	     Array1D<realT>& src) {
 
     //---> Assemble the 
@@ -81,9 +80,6 @@ public:
     }// End PDE_loop
     
   }// End cg_vol_res 
-
-    
-  }// End cg_vol_res
 
 }; // End class Poisson
 

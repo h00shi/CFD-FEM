@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "Surreal.h"
+#include "Surreal/Surreal.h"
 
 //------------------------ CONSTRUCTORS ----------------------------------------
 TEST(SurrealConstructors, ConstructorFromRealNumber) {

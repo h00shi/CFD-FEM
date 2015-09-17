@@ -11,8 +11,8 @@
 //! \tparam dataT Template parameter for type of data
 //****************************************************************************80
 #include "my_incl.h"
-#include "SystemModule.h"
-#include "Array1D.h"
+#include "SystemUtils/SystemModule.h"
+#include "DataStructures/Array1D.h"
 
 template <class dataT>
 class List2D

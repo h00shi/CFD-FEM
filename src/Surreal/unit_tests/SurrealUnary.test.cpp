@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "Surreal.h"
+#include "Surreal/Surreal.h"
 
 //------------------------------ SURREAL OPERATOR+------------------------------
 //--->This tests the SurrealPos class of the Surreal package

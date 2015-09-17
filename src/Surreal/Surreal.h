@@ -2,14 +2,14 @@
 #ifndef SURREAL_H
 #define SURREAL_H
 
-#include "SurrealBase.h"
-#include "SurrealAdd.h"
-#include "SurrealSubtract.h"
-#include "SurrealMultiply.h"
-#include "SurrealDivide.h"
-#include "SurrealPow.h"
-#include "SurrealLogic.h"
-#include "SurrealUnary.h"
+#include "Surreal/SurrealBase.h"
+#include "Surreal/SurrealAdd.h"
+#include "Surreal/SurrealSubtract.h"
+#include "Surreal/SurrealMultiply.h"
+#include "Surreal/SurrealDivide.h"
+#include "Surreal/SurrealPow.h"
+#include "Surreal/SurrealLogic.h"
+#include "Surreal/SurrealUnary.h"
 
 //****************************************************************************80
 //! \class Surreal

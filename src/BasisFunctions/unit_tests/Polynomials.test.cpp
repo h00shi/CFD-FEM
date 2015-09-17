@@ -1,4 +1,4 @@
-#include "Polynomials.h"
+#include "BasisFunctions/Polynomials.h"
 #include "gtest/gtest.h"
 #include "my_incl.h"
 

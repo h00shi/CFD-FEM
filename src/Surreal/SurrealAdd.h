@@ -2,7 +2,7 @@
 #ifndef SURREALADD_H
 #define SURREALADD_H
 
-#include "SurrealBase.h"
+#include "Surreal/SurrealBase.h"
 
 //----------------------------- Surreal + Surreal ------------------------------
 //****************************************************************************80

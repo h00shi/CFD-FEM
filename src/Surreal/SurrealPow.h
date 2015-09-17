@@ -2,7 +2,7 @@
 #ifndef SURREALPOW_H
 #define SURREALPOW_H
 
-#include "SurrealBase.h"
+#include "Surreal/SurrealBase.h"
 
 //----------------------------- SurrealPow -------------------------------------
 //---> pow(Surreal, Surreal)

@@ -4,7 +4,8 @@
 #define EQUATION_H
 
 //---> A List of all supported equation classes in the code. 
-#include "EulerPDESet1D.h"
-#include "EulerPDESet2D.h"
-#include "EulerPDESet3D.h"
+#include "PDE/EulerPDESet1D.h"
+#include "PDE/EulerPDESet2D.h"
+#include "PDE/EulerPDESet3D.h"
+#include "PDE/Poisson.h"
 #endif

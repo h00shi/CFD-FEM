@@ -1,5 +1,5 @@
-#include "TetElement.h"
-#include "Array1D.h"
+#include "Elements/TetElement.h"
+#include "DataStructures/Array1D.h"
 #include "gtest/gtest.h"
 #include "my_incl.h"
 void quadpoly (const Array1D<double>&, Array1D<double>& );

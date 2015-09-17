@@ -11,7 +11,7 @@
 //! \tparam dataT Template parameter for type of data
 //****************************************************************************80
 #include "my_incl.h"
-#include "SystemModule.h"
+#include "SystemUtils/SystemModule.h"
 
 template <typename dataT>
 class Array4D
