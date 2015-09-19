@@ -1,6 +1,4 @@
 #include "Mesh/UnstMesh.h"
-#include "Mesh/UnstMeshWriter.h"
-#include "Mesh/UnstMeshWriterCGNS.h"
 #include "DataStructures/Array1D.h"
 #include "DataStructures/Array2D.h"
 #include "DataStructures/List2D.h"
@@ -13,10 +11,6 @@ TEST(UnstMesh, InitfromFile)
   UnstMesh mesh("Square.grid", "Grid-NKB");
  
   mesh.Diagnostic(std::cout);
-  
-  //---> Test writing
-  UnstMeshWriter* writer = new UnstMeshWriterCGNS(mesh);
-  writer->Write("Square");
 
 }
 

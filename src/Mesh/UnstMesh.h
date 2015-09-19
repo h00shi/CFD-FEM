@@ -330,6 +330,16 @@ public:
   inline const Array2D<intT>& get_edge2node() const {return edge2node_;}
 
 //****************************************************************************80
+//! \brief get_vtktype : Gets the vtk element type corresponding our element
+//!        type
+//! \details
+//! \nick
+//! \version $Rev$
+//! \param[in] etype Our element type
+//****************************************************************************80
+  inline intT get_vtktype(const intT& etype) const { return(vtktype[etype]);}
+
+//****************************************************************************80
 //! \brief MemoryDiagnostic : Runs a full diagnostic of the memory for the 
 //!        class.  Will print all data to standard out 
 //! \details 
@@ -451,7 +461,7 @@ protected:
     FACETYPE_TRI = 2,
     FACETYPE_QUAD = 3,
   };
-
+intT vtktype[7] = {3, 5, 9, 10, 13, 14, 12};
 //****************************************************************************80
 //! \brief AllocateMemory : Allocates the memory for the mesh
 //! \details 

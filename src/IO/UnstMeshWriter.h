@@ -16,9 +16,6 @@
 
 class UnstMeshWriter {
 
-protected:
-  const UnstMesh& grid_; //!< Reference to UnstMesh
-
 public:
 
 //****************************************************************************80
@@ -26,9 +23,9 @@ public:
 //! \details
 //! \nick
 //! \version $Rev$
-//! \param[in] gridRef Reference to a grid that you want to write
+//! \param[in] mesh Reference to a mesh that you want to write
 //****************************************************************************80
-  UnstMeshWriter(const UnstMesh& grid_ref) : grid_(grid_ref) {}
+  UnstMeshWriter(const UnstMesh& mesh_ref) : mesh_(mesh_ref) {}
 
 //****************************************************************************80
 //! \brief ~UnstMeshWriter : Destructor
@@ -48,6 +45,9 @@ public:
 //!
 //****************************************************************************80
   virtual void Write(const std::string& fbase) = 0;
+
+protected:
+  UnstMesh const & mesh_; //!< Reference to UnstMesh
 
 private:
 //****************************************************************************80

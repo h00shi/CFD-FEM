@@ -1,59 +1,59 @@
 #include "UnstMeshWriterCGNS.h"
 //****************************************************************************80
-UnstMeshWriterCGNS::UnstMeshWriterCGNS(const UnstMesh& grid_ref) :
-  UnstMeshWriter::UnstMeshWriter(grid_ref)
+UnstMeshWriterCGNS::UnstMeshWriterCGNS(const UnstMesh& mesh_ref) :
+  UnstMeshWriter::UnstMeshWriter(mesh_ref)
 {
    
-  x_.initialize(UnstMeshWriter::grid_.get_nnode());
-  y_.initialize(UnstMeshWriter::grid_.get_nnode());
-  z_.initialize(UnstMeshWriter::grid_.get_nnode());
+  x_.initialize(UnstMeshWriter::mesh_.get_nnode());
+  y_.initialize(UnstMeshWriter::mesh_.get_nnode());
+  z_.initialize(UnstMeshWriter::mesh_.get_nnode());
 
-  bar_con_.initialize( std::max(1,UnstMeshWriter::grid_.get_nbar()),  2);
-  tri_con_.initialize( std::max(1,UnstMeshWriter::grid_.get_ntri()),  3);
-  quad_con_.initialize( std::max(1,UnstMeshWriter::grid_.get_nquad()),
+  bar_con_.initialize( std::max(1,UnstMeshWriter::mesh_.get_nbar()),  2);
+  tri_con_.initialize( std::max(1,UnstMeshWriter::mesh_.get_ntri()),  3);
+  quad_con_.initialize( std::max(1,UnstMeshWriter::mesh_.get_nquad()),
                         4);
-  tet_con_.initialize(  std::max(1,UnstMeshWriter::grid_.get_ntet()), 4);
-  prism_con_.initialize( std::max(1,UnstMeshWriter::grid_.get_nprism()),
+  tet_con_.initialize(  std::max(1,UnstMeshWriter::mesh_.get_ntet()), 4);
+  prism_con_.initialize( std::max(1,UnstMeshWriter::mesh_.get_nprism()),
                          6);
-  pyr_con_.initialize( std::max(1,UnstMeshWriter::grid_.get_npyr()), 5);
-  hex_con_.initialize( std::max(1,UnstMeshWriter::grid_.get_nhex()), 8);
+  pyr_con_.initialize( std::max(1,UnstMeshWriter::mesh_.get_npyr()), 5);
+  hex_con_.initialize( std::max(1,UnstMeshWriter::mesh_.get_nhex()), 8);
 
   bc_node_con_.initialize(
-			  std::max(1, UnstMeshWriter::grid_.get_nbc_node()), 1);
+			  std::max(1, UnstMeshWriter::mesh_.get_nbc_node()), 1);
   bc_edge_con_.initialize(
-			  std::max(1, UnstMeshWriter::grid_.get_nbc_edge()), 2);
+			  std::max(1, UnstMeshWriter::mesh_.get_nbc_edge()), 2);
   bc_tri_con_.initialize(
-			 std::max(1, UnstMeshWriter::grid_.get_nbc_tri()),  3);
+			 std::max(1, UnstMeshWriter::mesh_.get_nbc_tri()),  3);
   bc_quad_con_.initialize(
-			  std::max(1, UnstMeshWriter::grid_.get_nbc_quad()), 4);
+			  std::max(1, UnstMeshWriter::mesh_.get_nbc_quad()), 4);
     
-  bc_id_edge_.initialize(UnstMeshWriter::grid_.get_nbc_id(),
-			 UnstMeshWriter::grid_.get_nbc_edge() );
-  bc_id_tri_.initialize(UnstMeshWriter::grid_.get_nbc_id(),
-			UnstMeshWriter::grid_.get_nbc_tri() );
-  bc_id_quad_.initialize(UnstMeshWriter::grid_.get_nbc_id(),
-			 UnstMeshWriter::grid_.get_nbc_quad() );
+  bc_id_edge_.initialize(UnstMeshWriter::mesh_.get_nbc_id(),
+			 UnstMeshWriter::mesh_.get_nbc_edge() );
+  bc_id_tri_.initialize(UnstMeshWriter::mesh_.get_nbc_id(),
+			UnstMeshWriter::mesh_.get_nbc_tri() );
+  bc_id_quad_.initialize(UnstMeshWriter::mesh_.get_nbc_id(),
+			 UnstMeshWriter::mesh_.get_nbc_quad() );
 
-  //---> Using the grid pointer setup the arrays for writing CGNS files
-  //---> Loop over grid and re-order coordinate values as separate 1-D Arrays.
+  //---> Using the mesh pointer setup the arrays for writing CGNS files
+  //---> Loop over mesh and re-order coordinate values as separate 1-D Arrays.
   //     Unfortunately it appears that CGNS developers are equally STUPID and
   //     MORNIC to all other CS people, who don't seem to understand that I
   //     DON'T STORE MY DATA IN THEIR WAY.
-  for (intT n = 0; n < UnstMeshWriter::grid_.get_nnode(); n++) {
-    x_(n) = UnstMeshWriter::grid_.get_x()(n,0);
+  for (intT n = 0; n < UnstMeshWriter::mesh_.get_nnode(); n++) {
+    x_(n) = UnstMeshWriter::mesh_.get_x()(n,0);
 
-    switch (UnstMeshWriter::grid_.get_ndim()) {
+    switch (UnstMeshWriter::mesh_.get_ndim()) {
     case 1:
       y_(n) = 0.0;
       z_(n) = 0.0;
       break;
     case 2:
-      y_(n) = UnstMeshWriter::grid_.get_x()(n,1);
+      y_(n) = UnstMeshWriter::mesh_.get_x()(n,1);
       z_(n) = 0.0;
       break;
     case 3:
-      y_(n) = UnstMeshWriter::grid_.get_x()(n,1);
-      z_(n) = UnstMeshWriter::grid_.get_x()(n,2);
+      y_(n) = UnstMeshWriter::mesh_.get_x()(n,1);
+      z_(n) = UnstMeshWriter::mesh_.get_x()(n,2);
       break;
     }// End switch (ndim)
   }
@@ -65,111 +65,111 @@ UnstMeshWriterCGNS::UnstMeshWriterCGNS(const UnstMesh& grid_ref) :
   intT ipyr = 0;
   intT ihex = 0;
 
-  for (intT e = 0; e < UnstMeshWriter::grid_.get_nelement(); e++) {
+  for (intT e = 0; e < UnstMeshWriter::mesh_.get_nelement(); e++) {
     // Element type connecitivty
 
-    switch ( UnstMeshWriter::grid_.get_element_type()(e) ) {
+    switch ( UnstMeshWriter::mesh_.get_element_type()(e) ) {
     case 0:
       bar_con_(e,0) =
-	UnstMeshWriter::grid_.get_element2node()(e,0) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,0) + 1;
       bar_con_(e,1) =
-	UnstMeshWriter::grid_.get_element2node()(e,1) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,1) + 1;
       break;
     case 1:
       tri_con_(itri,0) =
-	UnstMeshWriter::grid_.get_element2node()(e,0) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,0) + 1;
       tri_con_(itri,1) =
-	UnstMeshWriter::grid_.get_element2node()(e,1) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,1) + 1;
       tri_con_(itri,2) =
-	UnstMeshWriter::grid_.get_element2node()(e,2) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,2) + 1;
       itri += 1;
       break;
     case 2:
       quad_con_(iquad,0) =
-	UnstMeshWriter::grid_.get_element2node()(e,0) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,0) + 1;
       quad_con_(iquad,1) =
-	UnstMeshWriter::grid_.get_element2node()(e,1) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,1) + 1;
       quad_con_(iquad,2) =
-	UnstMeshWriter::grid_.get_element2node()(e,2) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,2) + 1;
       quad_con_(iquad,3) =
-	UnstMeshWriter::grid_.get_element2node()(e,3) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,3) + 1;
       iquad += 1;
       break;
     case 3:
       tet_con_(itet,0) =
-	UnstMeshWriter::grid_.get_element2node()(e,0) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,0) + 1;
       tet_con_(itet,1) =
-	UnstMeshWriter::grid_.get_element2node()(e,1) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,1) + 1;
       tet_con_(itet,2) =
-	UnstMeshWriter::grid_.get_element2node()(e,2) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,2) + 1;
       tet_con_(itet,3) =
-	UnstMeshWriter::grid_.get_element2node()(e,3) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,3) + 1;
       itet += 1;
       break;
     case 4:
       prism_con_(iprism,0) =
-	UnstMeshWriter::grid_.get_element2node()(e,0) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,0) + 1;
       prism_con_(iprism,1) =
-	UnstMeshWriter::grid_.get_element2node()(e,1) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,1) + 1;
       prism_con_(iprism,2) =
-	UnstMeshWriter::grid_.get_element2node()(e,2) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,2) + 1;
       prism_con_(iprism,3) =
-	UnstMeshWriter::grid_.get_element2node()(e,4) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,4) + 1;
       prism_con_(iprism,4) =
-	UnstMeshWriter::grid_.get_element2node()(e,5) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,5) + 1;
       prism_con_(iprism,5) =
-	UnstMeshWriter::grid_.get_element2node()(e,6) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,6) + 1;
       iprism += 1;
       break;
     case 5:
       pyr_con_(ipyr,0) =
-	UnstMeshWriter::grid_.get_element2node()(e,0) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,0) + 1;
       pyr_con_(ipyr,1) =
-	UnstMeshWriter::grid_.get_element2node()(e,1) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,1) + 1;
       pyr_con_(ipyr,2) =
-	UnstMeshWriter::grid_.get_element2node()(e,2) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,2) + 1;
       pyr_con_(ipyr,3) =
-	UnstMeshWriter::grid_.get_element2node()(e,3) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,3) + 1;
       pyr_con_(ipyr,4) =
-	UnstMeshWriter::grid_.get_element2node()(e,4) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,4) + 1;
       ipyr += 1;
       break;
     case 6:
       hex_con_(ihex,0) =
-	UnstMeshWriter::grid_.get_element2node()(e,1) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,1) + 1;
       hex_con_(ihex,1) =
-	UnstMeshWriter::grid_.get_element2node()(e,2) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,2) + 1;
       hex_con_(ihex,2) =
-	UnstMeshWriter::grid_.get_element2node()(e,3) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,3) + 1;
       hex_con_(ihex,3) =
-	UnstMeshWriter::grid_.get_element2node()(e,0) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,0) + 1;
       hex_con_(ihex,4) =
-	UnstMeshWriter::grid_.get_element2node()(e,5) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,5) + 1;
       hex_con_(ihex,5) =
-	UnstMeshWriter::grid_.get_element2node()(e,6) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,6) + 1;
       hex_con_(ihex,6) =
-	UnstMeshWriter::grid_.get_element2node()(e,7) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,7) + 1;
       hex_con_(ihex,7) =
-	UnstMeshWriter::grid_.get_element2node()(e,4) + 1;
+	UnstMeshWriter::mesh_.get_element2node()(e,4) + 1;
       ihex += 1;
       break;
     }
   } // End Element type connecitivty
 
-  Array1D<int> nEdgeId(UnstMeshWriter::grid_.get_nbc_id());
-  Array1D<int> nTriFaceId(UnstMeshWriter::grid_.get_nbc_id());
-  Array1D<int> nQuadFaceId(UnstMeshWriter::grid_.get_nbc_id());
+  Array1D<int> nEdgeId(UnstMeshWriter::mesh_.get_nbc_id());
+  Array1D<int> nTriFaceId(UnstMeshWriter::mesh_.get_nbc_id());
+  Array1D<int> nQuadFaceId(UnstMeshWriter::mesh_.get_nbc_id());
   nEdgeId.set_value(0);
   nTriFaceId.set_value(0);
   nQuadFaceId.set_value(0);
 
   //---> Count number of boundary edges, tris and quad that belong to each
   //     boundary id number separately.
-  for(intT f = 0; f < UnstMeshWriter::grid_.get_nbc_face(); f++) {
-    intT id = UnstMeshWriter::grid_.get_bc_face_id()(f);
+  for(intT f = 0; f < UnstMeshWriter::mesh_.get_nbc_face(); f++) {
+    intT id = UnstMeshWriter::mesh_.get_bc_face_id()(f);
 
     switch
-      (UnstMeshWriter::grid_.get_bc_face2node().get_ncol(f) ) {
+      (UnstMeshWriter::mesh_.get_bc_face2node().get_ncol(f) ) {
     case 2:
       nEdgeId(id) +=1;
       break;
@@ -193,10 +193,10 @@ UnstMeshWriterCGNS::UnstMeshWriterCGNS(const UnstMesh& grid_ref) :
 
   //---> For each boundary ID collect the face numbers of each type of face
   //     and group these faces by boundary id number
-  for(intT f = 0; f < UnstMeshWriter::grid_.get_nbc_face(); f++) {
-    intT id = UnstMeshWriter::grid_.get_bc_face_id()(f);
+  for(intT f = 0; f < UnstMeshWriter::mesh_.get_nbc_face(); f++) {
+    intT id = UnstMeshWriter::mesh_.get_bc_face_id()(f);
     switch
-      (UnstMeshWriter::grid_.get_bc_face2node().get_ncol(f) ) {
+      (UnstMeshWriter::mesh_.get_bc_face2node().get_ncol(f) ) {
     case 2:
       bc_id_edge_(id, nEdgeId(id)) = f;
       nEdgeId(id) += 1;
@@ -219,7 +219,7 @@ UnstMeshWriterCGNS::UnstMeshWriterCGNS(const UnstMesh& grid_ref) :
   intT iBcTri = 0;
   intT iBcQuad = 0;
   //---> Loop over boundary ID's
-  for(intT id = 0; id < UnstMeshWriter::grid_.get_nbc_id(); id++) {
+  for(intT id = 0; id < UnstMeshWriter::mesh_.get_nbc_id(); id++) {
 
     //---> For all Edges on this Id get the boundary face number and
     // connectivity
@@ -228,9 +228,9 @@ UnstMeshWriterCGNS::UnstMeshWriterCGNS(const UnstMesh& grid_ref) :
       intT f = bc_id_edge_(id,i);
       //---> Copy over connectivity to bc_edge_con_ for this id
       bc_edge_con_(iBcEdge,0) =
-	UnstMeshWriter::grid_.get_bc_face2node()(f,0) + 1;
+	UnstMeshWriter::mesh_.get_bc_face2node()(f,0) + 1;
       bc_edge_con_(iBcEdge,1) =
-	UnstMeshWriter::grid_.get_bc_face2node()(f,1) + 1;
+	UnstMeshWriter::mesh_.get_bc_face2node()(f,1) + 1;
       //---> Increment boundary Edge counter;
       iBcEdge += 1;
     }
@@ -242,11 +242,11 @@ UnstMeshWriterCGNS::UnstMeshWriterCGNS(const UnstMesh& grid_ref) :
       intT f = bc_id_tri_(id,i);
       //---> Copy over connectivity to bc_tri_con_ for this id
       bc_tri_con_(iBcTri,0) =
-	UnstMeshWriter::grid_.get_bc_face2node()(f,0) + 1;
+	UnstMeshWriter::mesh_.get_bc_face2node()(f,0) + 1;
       bc_tri_con_(iBcTri,1) =
-	UnstMeshWriter::grid_.get_bc_face2node()(f,1) + 1;
+	UnstMeshWriter::mesh_.get_bc_face2node()(f,1) + 1;
       bc_tri_con_(iBcTri,2) =
-	UnstMeshWriter::grid_.get_bc_face2node()(f,2) + 1;
+	UnstMeshWriter::mesh_.get_bc_face2node()(f,2) + 1;
       //---> Increment boundary Tri counter;
       iBcTri += 1;
     }
@@ -258,13 +258,13 @@ UnstMeshWriterCGNS::UnstMeshWriterCGNS(const UnstMesh& grid_ref) :
       intT f = bc_id_quad_(id,i);
       //---> Copy over connectivity to bc_quad_con_ for this id
       bc_quad_con_(iBcQuad,0) =
-	UnstMeshWriter::grid_.get_bc_face2node()(f,0) + 1;
+	UnstMeshWriter::mesh_.get_bc_face2node()(f,0) + 1;
       bc_quad_con_(iBcQuad,1) =
-	UnstMeshWriter::grid_.get_bc_face2node()(f,1) + 1;
+	UnstMeshWriter::mesh_.get_bc_face2node()(f,1) + 1;
       bc_quad_con_(iBcQuad,2) =
-	UnstMeshWriter::grid_.get_bc_face2node()(f,2) + 1;
+	UnstMeshWriter::mesh_.get_bc_face2node()(f,2) + 1;
       bc_quad_con_(iBcQuad,3) =
-	UnstMeshWriter::grid_.get_bc_face2node()(f,3) + 1;
+	UnstMeshWriter::mesh_.get_bc_face2node()(f,3) + 1;
       //---> Increment boundary Edge counter;
       iBcQuad += 1;
     }
@@ -300,19 +300,19 @@ void UnstMeshWriterCGNS::Write(const std::string& fbase )
 	    << (fbase + std::string(".cgns")) << std::endl;
 
   cg_base_write(funit, "Base",
-		UnstMeshWriter::grid_.get_ndim(),
-		std::max(2,UnstMeshWriter::grid_.get_ndim()),
+		UnstMeshWriter::mesh_.get_ndim(),
+		std::max(2,UnstMeshWriter::mesh_.get_ndim()),
 		&BaseIndex);
   //---> Set size storage array
   //---> First number of nodes;
-  isize[0][0] = UnstMeshWriter::grid_.get_nnode();
-  isize[1][0] = UnstMeshWriter::grid_.get_nelement();
+  isize[0][0] = UnstMeshWriter::mesh_.get_nnode();
+  isize[1][0] = UnstMeshWriter::mesh_.get_nelement();
   isize[2][0] = 0;
   cg_zone_write(funit, BaseIndex, "VolumeZone", isize[0], Unstructured,
 		&ZoneIndex);
-  // ---> Loop over grid and re-order coordinate values as separate 1-D
+  // ---> Loop over mesh and re-order coordinate values as separate 1-D
   //     Arrays.
-  switch ( UnstMeshWriter::grid_.get_ndim() ) {
+  switch ( UnstMeshWriter::mesh_.get_ndim() ) {
   case 1:
     cg_coord_write(funit, BaseIndex, ZoneIndex, RealDouble, "CoordinateX",
 		   x_.get_ptr(0), &CoordIndex);
@@ -338,20 +338,20 @@ void UnstMeshWriterCGNS::Write(const std::string& fbase )
   intT istart = 1;
   intT iend = 0;
 
-  intT nBar =   UnstMeshWriter::grid_.get_nbar();
-  intT nTri =   UnstMeshWriter::grid_.get_ntri();
-  intT nQuad =  UnstMeshWriter::grid_.get_nquad();
-  intT nTet =   UnstMeshWriter::grid_.get_ntet();
-  intT nPrism = UnstMeshWriter::grid_.get_nprism();
-  intT nPyr =   UnstMeshWriter::grid_.get_npyr();
-  intT nHex =   UnstMeshWriter::grid_.get_nhex();
+  intT nBar =   UnstMeshWriter::mesh_.get_nbar();
+  intT nTri =   UnstMeshWriter::mesh_.get_ntri();
+  intT nQuad =  UnstMeshWriter::mesh_.get_nquad();
+  intT nTet =   UnstMeshWriter::mesh_.get_ntet();
+  intT nPrism = UnstMeshWriter::mesh_.get_nprism();
+  intT nPyr =   UnstMeshWriter::mesh_.get_npyr();
+  intT nHex =   UnstMeshWriter::mesh_.get_nhex();
 
-  intT nBcTri = UnstMeshWriter::grid_.get_nbc_tri();
-  intT nBcQuad = UnstMeshWriter::grid_.get_nbc_quad();
+  intT nBcTri = UnstMeshWriter::mesh_.get_nbc_tri();
+  intT nBcQuad = UnstMeshWriter::mesh_.get_nbc_quad();
 
 
   intT fbegin = 0;
-  switch ( UnstMeshWriter::grid_.get_ndim() ) {
+  switch ( UnstMeshWriter::mesh_.get_ndim() ) {
 
   case 1:
     iend += nBar - 1;
@@ -381,7 +381,7 @@ void UnstMeshWriterCGNS::Write(const std::string& fbase )
     }
 
     fbegin = 0;
-    for (intT id = 0; id < UnstMeshWriter::grid_.get_nbc_id(); id++) {
+    for (intT id = 0; id < UnstMeshWriter::mesh_.get_nbc_id(); id++) {
 
       std::stringstream ss;
       ss << id;
@@ -436,7 +436,7 @@ void UnstMeshWriterCGNS::Write(const std::string& fbase )
 
     if( nBcTri > 0 ) {
       fbegin = 0;
-      for (intT id = 0; id < UnstMeshWriter::grid_.get_nbc_id(); id++) {
+      for (intT id = 0; id < UnstMeshWriter::mesh_.get_nbc_id(); id++) {
 
 	std::stringstream ss;
 	ss << id;
@@ -456,7 +456,7 @@ void UnstMeshWriterCGNS::Write(const std::string& fbase )
 
     if( nBcQuad > 0 ) {
       fbegin = 0;
-      for (intT id = 0; id < UnstMeshWriter::grid_.get_nbc_id(); id++) {
+      for (intT id = 0; id < UnstMeshWriter::mesh_.get_nbc_id(); id++) {
 
 	std::stringstream ss;
 	ss << id;
@@ -480,6 +480,6 @@ void UnstMeshWriterCGNS::Write(const std::string& fbase )
 
   cg_close(funit);
 
-  std::cout << "Successfully wrote Unstructured Grid to "
+  std::cout << "Successfully wrote Unstructured Mesh to "
 	    << (fbase + std::string(".cgns")) << std::endl;
 }

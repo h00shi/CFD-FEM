@@ -13,7 +13,7 @@
 #include "DataStructures/Array2D.h"
 #include "DataStructures/Array1D.h"
 #include "DataStructures/List2D.h"
-#include "Mesh/UnstMeshWriter.h"
+#include "IO/UnstMeshWriter.h"
 #include "cgnslib.h"
 
 class UnstMeshWriterCGNS : public UnstMeshWriter
@@ -58,7 +58,7 @@ public:
 //! \version $Rev$
 //! \param[in] grid_ref The reference to the grid you want to write
 //****************************************************************************80
-  UnstMeshWriterCGNS(const UnstMesh& grid_ref);
+  UnstMeshWriterCGNS(const UnstMesh& mesh_ref);
 
 //****************************************************************************80
 //! \brief ~UnstMeshWriterCGNS : Destructor
