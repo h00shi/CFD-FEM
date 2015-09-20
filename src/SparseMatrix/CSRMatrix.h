@@ -2,7 +2,7 @@
 #ifndef CSRMATRIX_H
 #define CSRMATRIX_H
 #include "my_incl.h"
-#include "DataStructures/SparseMatrix.h"
+#include "SparseMatrix/SparseMatrix.h"
 
 //****************************************************************************80
 //! \brief This is the base class for csr formatted sparse matricies.  
@@ -13,13 +13,12 @@
 //! 
 //****************************************************************************80
 template<class dataT> 
-class CSRMatrix : public SparseMatrix<dataT, CSRMatrix<dataT> >
+class CSRMatrix : public SparseMatrix<dataT>
 {
 protected:
   Array1D<intT> row_offset_; //!< Row offset pointer as specified by CSR
-  List2D<intT> column_idx_; //!< Column offset point as specified by CSR
-  Array1D<intT> ncol_per_row_; //!< Number of columns per Row
-  List2D<intT> adj_data_offset_; //!< Adjacency based data offset 
+  List2D<intT>  column_idx_; //!< Column offset point as specified by CSR
+  List2D<intT>  adj_data_offset_; //!< Pointer from adj to data indexing 
 
 public:
 
@@ -35,15 +34,13 @@ public:
 //****************************************************************************80
   CSRMatrix(const List2D<intT>& adjacency, const Array2D<intT>& edge2node, 
             const Array1D<intT>& nrow_per_node) 
-    : SparseMatrix< dataT, CSRMatrix<dataT> >::SparseMatrix(adjacency, 
-                                                            edge2node, 
-                                                            nrow_per_node)
+    : SparseMatrix<dataT>::SparseMatrix(adjacency, edge2node, nrow_per_node)
   {
     //---> Some temporary storage...makes for shorter code;
-    intT nrow  = SparseMatrix< dataT, CSRMatrix<dataT> >::nrow_;
-    intT nnz   = SparseMatrix< dataT, CSRMatrix<dataT> >::nnz_;
-    intT nnode = SparseMatrix< dataT, CSRMatrix<dataT> >::nnode_;
-
+    intT nrow  = SparseMatrix<dataT>::nrow_;
+    intT nnz   = SparseMatrix<dataT>::nnz_;
+    intT nnode = SparseMatrix<dataT>::nnode_;
+   
     //---> Initialize indexing arrays for CSR
     row_offset_.initialize(nrow + 1);
     column_idx_.initialize(nrow, nnz);
@@ -97,10 +94,27 @@ public:
       } // End Row var
      
     } // End node loop 
+    
+    //---> Setup the adj_data_offset_ and diag pointers
+    
+    intT index = 0;
+    for(intT n = 0; n < nnode; n++){// Node Loop 
+      //---> Cycle through neighbors of this node
+      for (intT j = 0; j < adjacency.get_ncol(n); j++) {
+	adj_data_offset_(n,j) = index;
+	index += nrow_per_node(adjacency(n,j));
+      }
+      /*---> Account for all rows between first row of node n and 
+	first row of node n+1.  */
+      for (intT j = 0; j < adjacency.get_ncol(n); j++) {
+	index += (nrow_per_node(n)-1)*nrow_per_node(adjacency(n,j));
+      }
+      
+    }// End Node Loop 
 
-    //---> Setup the diagonal and offset_ pointers
-
-
+    SparseMatrix<dataT>::mem_ +=
+      row_offset_.get_mem() + column_idx_.get_mem();
+      
   } // End CSRMatrix
 //****************************************************************************80
 //! \brief operator() : A parenthetical operator to access specified spot in 
@@ -109,14 +123,132 @@ public:
 //! \nick 
 //! \version $Rev$ 
 //! \date $Date$ 
-//! 
+//! \param[in] node The graph node where you want to acess matrix
+//! \param[in] j_neighbor The local neighbor index of neighbor 
+//!            you want to access
+//! \param[in] block_row Row of block you want
+//! \param[in] block_col Column of block you want
 //****************************************************************************80
   inline dataT& operator()(const intT& node, const intT& j_neighbor, 
 			   const intT& block_row, const intT& block_col)
   {
- 
-    return SparseMatrix< dataT, CSRMatrix<dataT> >::data_(node);
+   
+    intT i = adj_data_offset_(node, j_neighbor) + 
+      (row_offset_(node + block_row + 1) - 
+       row_offset_(node + block_row))*block_row + 
+      block_col;
+    
+    return SparseMatrix<dataT>::data_(i);
   }// End operator()
+
+//****************************************************************************80
+//! \brief operator() : A parenthetical operator to access specified spot in 
+//!        matrix based on graph node, neighbor index and block (i,j)
+//!        CONST VERSION
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] node The graph node where you want to acess matrix
+//! \param[in] j_neighbor The local neighbor index of neighbor 
+//!            you want to access
+//! \param[in] block_row Row of block you want
+//! \param[in] block_col Column of block you want
+//****************************************************************************80
+  inline const dataT& operator() (const intT& node,
+				  const intT& j_neighbor, 
+				  const intT& block_row, 
+				  const intT& block_col) const
+  {
+   
+    intT i = adj_data_offset_(node, j_neighbor) + 
+      (row_offset_(node + block_row + 1) - 
+       row_offset_(node + block_row))*block_row + 
+      block_col;
+    
+    return SparseMatrix<dataT>::data_(i);
+  }// End operator()
+
+//****************************************************************************80
+//! \brief Diagonal : Returns reference to the diagonal element  
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] node The graph node where you want to acess matrix
+//! \param[in] block_row Row of block you want
+//! \param[in] block_col Column of block you want
+//****************************************************************************80
+  inline dataT& Diagonal(const intT& node, 
+			 const intT& block_row, 
+			 const intT& block_col)
+  {
+    intT jneighbor = SparseMatrix<dataT>::self_adj_index_(node);
+    return this->operator()(node, jneighbor, block_row, block_col);
+       
+  }// End Diagonal
+
+//****************************************************************************80
+//! \brief Diagonal : Returns reference to the diagonal element. CONST VERSION
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] node The graph node where you want to acess matrix
+//! \param[in] block_row Row of block you want
+//! \param[in] block_col Column of block you want
+//****************************************************************************80
+  inline const dataT& Diagonal(const intT& node, 
+			       const intT& block_row, 
+			       const intT& block_col) const
+  {
+    intT jneighbor = SparseMatrix<dataT>::self_adj_index_(node);
+    return this->operator()(node, jneighbor, block_row, block_col);
+  }// End Diagonal
+//****************************************************************************80
+//! \brief OffDiagonal : Returns reference to the diagonal element. 
+//!      
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] edge The graph edge you want the off-diagonal of
+//! \param[in] side Side indicates if you want the left or right 0=left, 
+//!            1 = right
+//! \param[in] block_row Row of block you want
+//! \param[in] block_col Column of block you want
+//****************************************************************************80
+  inline dataT& OffDiagonal(const intT& edge, const intT& side, 
+			    const intT& block_row, 
+			    const intT& block_col)
+  {
+    intT node = SparseMatrix<dataT>::edge2node_(edge,side);
+    intT jneighbor = SparseMatrix<dataT>::edge_adj_index(edge,side);
+    return this->operator()(node, jneighbor, block_row, block_col);
+    
+  }// End OffDiagonal
+
+//****************************************************************************80
+//! \brief OffDiagonal : Returns reference to the diagonal element. 
+//!        CONST VERSION
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] edge The graph edge you want the off-diagonal of
+//! \param[in] side Side indicates if you want the left or right 0=left, 
+//!            1 = right
+//! \param[in] block_row Row of block you want
+//! \param[in] block_col Column of block you want
+//****************************************************************************80
+ inline const dataT& OffDiagonal(const intT& edge, const intT& side, 
+			    const intT& block_row, 
+			    const intT& block_col) const
+  {
+    intT node = SparseMatrix<dataT>::edge2node_(edge,side);
+    intT jneighbor = SparseMatrix<dataT>::edge_adj_index(edge,side);
+    return this->operator()(node, jneighbor, block_row, block_col);
+  }// End OffDiagonal
 
 //****************************************************************************80
 //! \brief get_row_offset() : Returns the row_offset array;
@@ -137,7 +269,20 @@ public:
 //! 
 //****************************************************************************80
   inline const List2D<intT>& get_column_idx() const {return column_idx_;}
-  
+
+//****************************************************************************80
+//! \brief get_adj_data_offset : Returns the adj_data_offset array
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  inline const List2D<intT>& get_adj_data_offset() const 
+  {
+    return adj_data_offset_;
+  } // End get_adj_data_offset;
+
 //****************************************************************************80
 //! \brief  Diagnostic : Returns diagnostic information to specified stream
 //! \details 
@@ -148,8 +293,21 @@ public:
 //****************************************************************************80
   inline void Diagnostic(std::ostream& out_stream)
   {
-    out_stream << "Row Offset: " << std::endl << row_offset_ << std::endl;
-    out_stream << "Column Idx: " << std::endl << column_idx_ << std::endl;
+    out_stream << std::endl;
+    out_stream << "--------------------- CSRMatrix Diagnostics ----------------"
+            << std::endl;
+        
+    SparseMatrix<dataT>::Diagnostic(std::cout);
+    out_stream << row_offset_.MemoryDiagnostic("row_offset_"); 
+    out_stream << column_idx_.MemoryDiagnostic("column_idx_");
+    out_stream << adj_data_offset_.MemoryDiagnostic("adj_data_offset_");
+    //---> Total Memory:
+    out_stream << "CSR Matrix Memory: " 
+	       << SparseMatrix<dataT>::mem_ << " MB" 
+	       << std::endl;
+    out_stream << std::endl;
+    out_stream << "------------------- End CSRMatrix Diagnostics --------------"
+            << std::endl;
   }// End Diagnostic
 
 private:

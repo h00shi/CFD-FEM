@@ -19,7 +19,7 @@
 //! \date $Date$ 
 //! 
 //****************************************************************************80
-template <class dataT, template <class = dataT> class DerivedMatrixType >
+template <class dataT>
 class SparseMatrix {
 
 protected:
@@ -31,9 +31,11 @@ protected:
   
   realT mem_; //!< Number of 
   Array1D<dataT> data_; //!< Data array 
-  Array1D<intT> node2diag_; //!< Given node point to diagonal for that node
-  Array2D<intT> off_diag_index_; //!< Given a graph edge point to off-diagonal
- 
+  Array1D<intT> self_adj_index_; /*!< For a node i self_adj_index_(i) = j :
+				   adjacency(i,j) = i */
+  Array2D<intT> edge_adj_index_; /*!< For an edge e edge_adj_index(e,0) = j :
+				   adjacency(edge2node(e,0),j) = edge2node(e,1)
+				 */
 //****************************************************************************80
 //! \brief SparseMatrix : Constructor of SpareMatrix From Graph
 //! \details 
@@ -45,7 +47,8 @@ protected:
 //! \param[in] nrow_per_node The number of rows per node
 //****************************************************************************80
   SparseMatrix(const List2D<intT>& adjacency, const Array2D<intT>& edge2node, 
-	       const Array1D<intT>& nrow_per_node)
+	       const Array1D<intT>& nrow_per_node) : 
+    adj_(adjacency), edge2node_(edge2node), nrow_per_node_(nrow_per_node)
   {
     //---> Get the graph info
     nnode_ = adjacency.get_lead_size();
@@ -64,73 +67,46 @@ protected:
       for(intT j = 0; j < adjacency.get_ncol(n); j++) { // Neighbor Loop 
 	intT node = adjacency(n,j);
 	nnz_ += nrow_per_node(n)*nrow_per_node(node);
+
       } // End Neighbor Loop 
     } // End Node loop 
     
     //---> Initialize variables
     data_.initialize(nnz_);
-    node2diag_.initialize(nnode_);
-    off_diag_index_.initialize(nedge_, 2);
+    self_adj_index_.initialize(nnode_);
+    edge_adj_index_.initialize(nedge_,2);
+    mem_ = data_.get_mem() + self_adj_index_.get_mem() + 
+      edge_adj_index_.get_mem();
     
-
+    //---> Setup Self adjacency index
+    for(intT n = 0; n < nnode_; n++){// Node Loop
+      for(intT j = 0; j < adjacency.get_ncol(n); j++) { // Neighbor Loop 
+      	intT node = adjacency(n,j);
+	if(node == n){self_adj_index_(n) = j;break;}
+      }// End Neighbor loop
+    }
+    
+    //---> Setup edge adjacency index
+    for(intT e = 0; e < nedge_; e++){ // Edge loop
+      //---> Left and right nodes
+      intT nl = edge2node(e,0);
+      intT nr = edge2node(e,1);
+      
+      for(intT j = 0; j < adjacency.get_ncol(nl); j++){// left node neighbor idx
+	intT node = adjacency(nl,j);
+	if(node == nr){edge_adj_index_(e,0) = j; break;}
+      }// End left node neighbor idx
+      
+      for(intT j = 0; j < adjacency.get_ncol(nr); j++){//right node neighbor idx
+	intT node = adjacency(nr,j);
+	if(node == nl){edge_adj_index_(e,1) = j; break;}
+      }//End right node neighbor idx
+      
+    }// End Edge loop 
+  
   } //End SparseMatrix
 
 public:
-
-//****************************************************************************80
-//! \brief operator() : Parenthetical operator that accesses based on graph node
-//!                     and neighbor index.
-//! \details 
-//! \nick 
-//! \version $Rev$ 
-//! \date $Date$ 
-//! \param[in] node The graph node
-//! \param[in] j_neighbor The jth neighbor of node i, j = 0,1,2,3...N_neighbors
-//! \param[in] block_row The row of the block at node (node, j_neighbor)
-//! \param[in] block_col The column of the block at node (node, j_neighbor)
-//****************************************************************************80
-  inline dataT& operator()(const intT& node, const intT& j_neighbor, 
-			    const intT& block_row, const intT& block_col)
-  {
-    return static_cast< DerivedMatrixType<dataT>* >(this)->
-      operator()(node, j_neighbor, block_row, block_col);
-  }// End operator ()
-
-
-//****************************************************************************80
-//! \brief Diagonal : Returns reference to the diagonal element  
-//! \details 
-//! \nick 
-//! \version $Rev$ 
-//! \date $Date$ 
-//! 
-//****************************************************************************80
-  inline dataT& Diagonal(const intT& node, const intT& block_row, 
-			 const intT& block_col)
-  {
-    
-    return static_cast< DerivedMatrixType<dataT>* >(this)-> 
-      Diagonal(node, block_row, block_col);
-    
-  }// End Diagonal
-
-//****************************************************************************80
-//! \brief OffDiagonal : Given an node and edge in the graph fill off-diagonal 
-//!                      entries
-//! \details 
-//! \nick 
-//! \version $Rev$ 
-//! \date $Date$ 
-//! 
-//****************************************************************************80
-  inline dataT& OffDiagonal(const intT& node, const intT& edge, 
-			    const intT& side, const intT& block_row,
-			    const intT& block_col)
-  {
-    return static_cast< DerivedMatrixType<dataT>* >(this)-> 
-      OffDiagonal(node, edge, side, block_row, block_col);
-
-  }// End OffDiagonal
 
 //****************************************************************************80
 //! \brief get_nrow_ : Gets the number of rows of the matrix 
@@ -140,7 +116,7 @@ public:
 //! \date $Date$ 
 //! 
 //****************************************************************************80
-  inline intT get_nrow() const { return nrow_;}
+  inline const intT& get_nrow() const { return nrow_;}
 
 //****************************************************************************80
 //! \brief get_ncol_ : Gets the number of columns of the matrix 
@@ -150,7 +126,7 @@ public:
 //! \date $Date$ 
 //! 
 //****************************************************************************80
-  inline intT get_ncol() const { return ncol_;}
+  inline const intT& get_ncol() const { return ncol_;}
 
 //****************************************************************************80
 //! \brief get_data : Gets the reference to the data Array 
@@ -162,6 +138,40 @@ public:
 //****************************************************************************80
   inline Array1D<dataT>& get_data() { return data_;}
 
+//****************************************************************************80
+//! \brief get_data : Gets the reference to the data Array 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  inline const Array1D<dataT>& get_data() const { return data_;}
+
+//****************************************************************************80
+//! \brief get_self_adj_index : Gets the reference to the self_adj_index array 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  inline const Array1D<intT>& get_self_adj_index() const 
+  {
+    return self_adj_index_;
+  } // End get_self_adj_index
+//****************************************************************************80
+//! \brief get_edge_adj_index : Gets the reference to the edge_adj_index
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  inline const Array2D<intT>& get_edge_adj_index() const 
+  {
+    return edge_adj_index_;
+  } // end get_edge_adj_index
 //****************************************************************************80
 //! \brief 
 //! \details 
@@ -182,10 +192,21 @@ public:
 //****************************************************************************80
   inline void Diagnostic(std::ostream& out_stream)
   {
-    static_cast< DerivedMatrixType<dataT>* >(this)->
-      Diagnostic(out_stream); 
+    out_stream << "Number of Graph Nodes: " << nnode_ << std::endl;
+    out_stream << "Number of Graph Edges: " << nedge_ << std::endl;
+    out_stream << "Number of Rows: " << nrow_ << std::endl;
+    out_stream << "Number of Columns: " << ncol_ << std::endl;
+    out_stream << std::endl;
+    out_stream << data_.MemoryDiagnostic("data_");
+    out_stream << self_adj_index_.MemoryDiagnostic("self_adj_index_");
+    out_stream << edge_adj_index_.MemoryDiagnostic("edge_adj_index_");
   }// End Diagnostic 
 private:
+  
+  //---> References to adjacency
+  const List2D<intT>& adj_;         //!< Adjacency of the graph
+  const Array2D<intT>& edge2node_;  //!< Edge ordering
+  const Array1D<intT>& nrow_per_node_;  //!< Number of rows per graph node
 //****************************************************************************80
 //! \brief SparseMatrix : Default constructor...deleted so you can't call it 
 //! \details 

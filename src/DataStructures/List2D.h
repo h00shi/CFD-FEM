@@ -699,8 +699,8 @@ private:
     }
     if( j >= get_ncol(i) ) {
       std::cerr << "ERROR: In List2D.h - Over bounds on 2nd index. "
-		<< ".   Number of columns of row " << i
-                << " is " << get_ncol(i) << std::endl;
+		<< "Acessing List2D::("<< i <<","<< j <<"). Size is "
+		<< "is " << size1 << ","<< get_ncol(i) << std::endl;
       SystemModule::my_exit();
     }
   }// End CheckBounds

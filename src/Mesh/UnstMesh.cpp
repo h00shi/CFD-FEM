@@ -82,7 +82,7 @@ void UnstMesh::Diagnostic(std::ostream& out_stream)
   out_stream << std::endl;
   out_stream << "MemoryDiagnostics: " << std::endl;
  
-  out_stream << x_.MemoryDiagnostic("x");
+  out_stream << x_.MemoryDiagnostic("x_");
   out_stream << element2node_.MemoryDiagnostic("element2node_"); 
   out_stream << bc_face2elem_.MemoryDiagnostic("bc_face2elem_");
   out_stream << bc_face2node_.MemoryDiagnostic("bc_face2node_");
