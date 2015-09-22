@@ -23,6 +23,11 @@ template <class dataT>
 class SparseMatrix {
 
 protected:
+  //---> References to adjacency
+  const List2D<intT>& adj_;         //!< Adjacency of the graph
+  const Array2D<intT>& edge2node_;  //!< Edge ordering
+  const Array1D<intT>& nrow_per_node_;  //!< Number of rows per graph node
+ 
   intT nnode_ ; //!< Number of graph nodes that sparse matrix is built from
   intT nedge_;//!< Number of graph edges
   intT nrow_; //!< Number of rows in the matrix 
@@ -36,6 +41,7 @@ protected:
   Array2D<intT> edge_adj_index_; /*!< For an edge e edge_adj_index(e,0) = j :
 				   adjacency(edge2node(e,0),j) = edge2node(e,1)
 				 */
+  
 //****************************************************************************80
 //! \brief SparseMatrix : Constructor of SpareMatrix From Graph
 //! \details 
@@ -202,11 +208,7 @@ public:
     out_stream << edge_adj_index_.MemoryDiagnostic("edge_adj_index_");
   }// End Diagnostic 
 private:
-  
-  //---> References to adjacency
-  const List2D<intT>& adj_;         //!< Adjacency of the graph
-  const Array2D<intT>& edge2node_;  //!< Edge ordering
-  const Array1D<intT>& nrow_per_node_;  //!< Number of rows per graph node
+ 
 //****************************************************************************80
 //! \brief SparseMatrix : Default constructor...deleted so you can't call it 
 //! \details 

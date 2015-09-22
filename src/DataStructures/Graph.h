@@ -16,8 +16,11 @@
 class Graph
 {
 public:
+  typedef intT NeighborIterator;
+  
 //****************************************************************************80
-//! \brief Graph : Constructor for this class
+//! \brief Graph : Constructor for this class. Note will use move constructor 
+//!                of input variables...effectly deleting them. 
 //! \nick
 //! \version $Rev: 5 $
 //! \param[in] adj The adjacency for this graph 
@@ -38,15 +41,15 @@ public:
 //! \version $Rev: 5 $
 //! \return nnode_ The number of nodes in the graph
 //****************************************************************************80
-  inline const intT& get_nnode() const;
+  inline const intT& get_nnode() const {return nnode_;}
 
 //****************************************************************************80
 //! \brief get_nnode : Returns the number of edges in a graph
 //! \nick
 //! \version $Rev: 5 $
-//! \return nnode_ The number of edges in the graph
+//! \return nedge_ The number of edges in the graph
 //****************************************************************************80
-  inline const intT& get_nedge() const;
+  inline const intT& get_nedge() const {return nedge_;}
 
 //****************************************************************************80
 //! \brief get_GraphAdj : Returns the adjacency of the graph
@@ -54,7 +57,7 @@ public:
 //! \version $Rev: 5 $
 //! \return adj_ The adjacency of the graph
 //****************************************************************************80
-  inline const List2D<intT>& get_GraphAdj() const;
+  inline const List2D<intT>& get_GraphAdj() const {return adj_;}
 
 //****************************************************************************80
 //! \brief get_GraphEdge2Node : Returns the adjacency of the graph
@@ -62,8 +65,17 @@ public:
 //! \version $Rev: 5 $
 //! \return edge2node_ The nodes that are attached to each edge 
 //****************************************************************************80
-  inline const Array2D<intT>& get_GraphEdge2Node() const;
+  inline const Array2D<intT>& get_GraphEdge2Node() const {return edge2node_;}
 
+//****************************************************************************80
+//! \brief NeighborBegin : Returns the iterator the begining of the neighbor 
+//!                        list of the specified node
+//! \nick
+//! \version $Rev: 5 $
+//! \return edge2node_ The nodes that are attached to each edge 
+//****************************************************************************8
+  inline NeighborIterator NeighborBegin(const intT& n){return 0;}
+  inline NeighborIterator NeighborBack(const intT& n){return adj_.get_ncol(n);} 
 
 protected:
   

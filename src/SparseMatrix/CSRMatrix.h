@@ -223,7 +223,7 @@ public:
 			    const intT& block_col)
   {
     intT node = SparseMatrix<dataT>::edge2node_(edge,side);
-    intT jneighbor = SparseMatrix<dataT>::edge_adj_index(edge,side);
+    intT jneighbor = SparseMatrix<dataT>::edge_adj_index_(edge,side);
     return this->operator()(node, jneighbor, block_row, block_col);
     
   }// End OffDiagonal
@@ -246,7 +246,7 @@ public:
 			    const intT& block_col) const
   {
     intT node = SparseMatrix<dataT>::edge2node_(edge,side);
-    intT jneighbor = SparseMatrix<dataT>::edge_adj_index(edge,side);
+    intT jneighbor = SparseMatrix<dataT>::edge_adj_index_(edge,side);
     return this->operator()(node, jneighbor, block_row, block_col);
   }// End OffDiagonal
 

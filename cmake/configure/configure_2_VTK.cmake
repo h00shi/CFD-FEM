@@ -4,16 +4,14 @@
 ##! 
 ##! 
 ##****************************************************************************80
-FIND_PACKAGE(VTK 6.0 REQUIRED NO_MODULE)
+FIND_PACKAGE(VTK COMPONENTS vtkIOXML vtkCommonCore NO_MODULE)
 
 IF(VTK_FOUND)
   INCLUDE(${VTK_USE_FILE})
- 
   SET(VTK_INCLUDE_DIR ${VTK_INCLUDE_DIRS})
-  #SET(VTK_LIB vtkHybrid)
-  #SET(VTK_LIB ${VTK_LIB} vtkWidgets)
-  set(VTK_LIB ${VTK_LIBRARIES})
+  SET(VTK_LIB vtkIOXML vtkCommonCore)
   INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIR})
+  MESSAGE(STATUS "CMAKE FOUND VTK DIRECTORY: ${VTK_DIR}")
   MESSAGE(STATUS "CMAKE Found VTK Library: ${VTK_LIB}")
   MESSAGE(STATUS "CMAKE Found VTK Include: ${VTK_INCLUDE_DIR}")
 ELSE()

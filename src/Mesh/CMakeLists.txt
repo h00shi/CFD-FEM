@@ -2,4 +2,4 @@
 ADD_SUBDIRECTORY(unit_tests)
 
 ADD_LIBRARY(Mesh UnstMesh.cpp)
-TARGET_LINK_LIBRARIES(Mesh SystemUtils)
+TARGET_LINK_LIBRARIES(Mesh SystemUtils DataStructures)
