@@ -166,8 +166,8 @@ public:
 //! \version $Rev: 5 $
 //! \param[in] other The other list 2D
 //****************************************************************************80
-  template<class otherT>
-  void intialize_copy_pattern(const List2D<otherT>& other)
+  template <class otherT>
+  inline void intialize_copy_pattern(const List2D<otherT>& other)
   {
     if (this->index == NULL && this->size1 == 0){
       //---> Call the initialize function
@@ -201,7 +201,7 @@ public:
 //! \param[in] n1 The size of the leading list dimension
 //! \param[in] n Total size of the all the data
 //****************************************************************************80
-  void initialize(intT nrow, intT n){
+  inline void initialize(intT nrow, intT n){
     /*-->only perform index initialization if the index is null
     and input row request is positive*/
     if (index == NULL && nrow > 0){
@@ -240,7 +240,7 @@ public:
 //! \version $Rev: 5 $
 //! \param[in] val The value you want to set the whole array to
 //****************************************************************************80
-  void set_value(const dataT& val)
+  inline void set_value(const dataT& val)
   {
     for(intT i = 0; i < size; i++) {// set_loop
       data[i] = val;
@@ -255,7 +255,7 @@ public:
 //! \version $Rev$
 //! \param[in] row The row number having it's number of columns set
 //****************************************************************************80
-  void set_ncol(intT row, intT nc)
+  inline void set_ncol(intT row, intT nc)
   {
 #ifdef DEV_DEBUG
     this->CheckSizeIndex(row);
@@ -274,7 +274,7 @@ public:
 //! \version $Rev$
 //! \param[in] ncol An Array1D of requested column numbers (signed int)
 //****************************************************************************80
-  void set_ncol(Array1D<int> const & ncol)
+  inline void set_ncol(Array1D<int> const & ncol)
   {
 #ifdef DEV_DEBUG
     //debug check - checking if size(Array1D) == nrow
@@ -318,7 +318,7 @@ public:
 //! \version $Rev$
 //! \param[in] row The row who's number of columns is desired
 //****************************************************************************80
-  intT get_ncol(intT row) const
+  inline intT get_ncol(intT row) const
   {
 
 #ifdef DEV_DEBUG
@@ -337,7 +337,7 @@ public:
 //! \param[in] i First index of the array you want to access with parenthesis
 //! \param[in] j Second index of the array you want to access with parenthesis
 //****************************************************************************80
-  const dataT& operator () (intT i, intT j) const
+  inline const dataT& operator () (intT i, intT j) const
   {
 #ifdef DEV_DEBUG
     this->CheckBounds(i,j);
@@ -356,7 +356,7 @@ public:
 //! \param[in] i First index of the array you want to access with parenthesis
 //! \param[in] j Second index of the array you want to access with parenthesis
 //****************************************************************************80
-  dataT& operator () (intT i, intT j)
+  inline dataT& operator () (intT i, intT j)
   {
 #ifdef DEV_DEBUG
     this->CheckBounds(i,j);
@@ -375,7 +375,7 @@ public:
 //! \param[in] i First index of the array you want to access with parenthesis
 //! \param[in] j Second index of the array you want to access with parenthesis
 //****************************************************************************80
-  const dataT& operator () (intT i) const
+  inline const dataT& operator () (intT i) const
   {
 #ifdef DEV_DEBUG
     this->CheckSize(i);
@@ -393,7 +393,7 @@ public:
 //! \version
 //! \param[in] i Index of the array you want to access with parenthesis
 //****************************************************************************80
-  dataT& operator () (intT i)
+  inline dataT& operator () (intT i)
   {
     //calls constant version of operator (i)
     return const_cast<dataT&>(static_cast<const List2D &>(*this).operator()(i));
@@ -406,7 +406,7 @@ public:
 //! \nick
 //! \version $Rev: 5 $
 //****************************************************************************80
-  intT get_lead_size( ) const
+  inline intT get_lead_size( ) const
   {
     return((int)size1);
   }// End get_lead_size
@@ -418,7 +418,7 @@ public:
 //! \nick
 //! \version $Rev: 5 $
 //****************************************************************************80
-  intT get_total_size( ) const
+  inline intT get_total_size( ) const
   {
     return((int)size);
   }// End get_lead_size
@@ -472,7 +472,7 @@ public:
 //! \param[in] i The first address you want to access
 //! \param[in] j The second address you want to access
 //****************************************************************************80
-  dataT const * get_ptr(const intT& i, const intT& j) const
+  inline dataT const * get_ptr(const intT& i, const intT& j) const
   {
 #ifdef DEV_DEBUG
     this->CheckBounds(i,j);
@@ -489,7 +489,7 @@ public:
 //! \param[in] i The first address you want to access
 //! \param[in] j The second address you want to access
 //****************************************************************************80
-  dataT* get_ptr(const intT& i, const intT& j)
+  inline dataT* get_ptr(const intT& i, const intT& j)
   {
 
 #   ifdef DEV_DEBUG
@@ -500,25 +500,13 @@ public:
   }// End get_ptr
 
 //****************************************************************************80
-//!
-//! \brief set_ptr : Set the pointer to some "external" thing
-//! \details
-//! \nick
-//! \version $Rev: 5 $
-//! \param[in] x Pointer you want to assign to data
-//****************************************************************************80
-  void set_ptr(dataT* x) {
-    data = x;
-  }
-
-//****************************************************************************80
 //! \brief get_index_ptr : Returns the pointer to the indexing array
 //! \details
 //! \nick
 //! \version $Rev$
 //! \param[in] i The leading address
 //****************************************************************************80
-  intT const * get_index_ptr(const intT& i ) const
+  inline intT const * get_index_ptr(const intT& i ) const
   {
 #ifdef DEV_DEBUG
     this->CheckSizeIndex(i);
@@ -533,7 +521,7 @@ public:
 //! \version $Rev$
 //! \param[in] i The leading address
 //****************************************************************************80
-  int* get_index_ptr(const intT& i )
+  inline int* get_index_ptr(const intT& i )
   {
     //calls constant version of get_index_ptr
     return const_cast<int*>(static_cast<const List2D&>(*this).get_index_ptr(i));
@@ -547,7 +535,7 @@ public:
 //! \param[in] i Leading dimension index
 //! \param[in] j Second dimension index
 //****************************************************************************80
-  intT get_index(const intT& i, const intT& j) const
+  inline intT get_index(const intT& i, const intT& j) const
   {
 #ifdef DEV_DEBUG
     this->CheckBounds(i,j);
@@ -559,7 +547,7 @@ public:
 //! \brief begin : Returns pointer to start of the list
 //! \nick
 //****************************************************************************80
-  dataT* begin()
+  inline dataT* begin()
   {
     return(data);
   }// End begin
@@ -568,7 +556,7 @@ public:
 //! \brief begin : Returns pointer to start of a row of the list
 //! \nick
 //****************************************************************************80
-  dataT const * begin() const
+  inline dataT const * begin() const
   {
     return(data);
   }// End begin
@@ -577,7 +565,7 @@ public:
 //! \brief end : Returns pointer to end of a row of the list
 //! \nick
 //****************************************************************************80
-  dataT* end()
+  inline dataT* end()
   {
     if(index !=NULL){
       return(data + index[size1]);
@@ -591,7 +579,7 @@ public:
 //! \brief end : Returns pointer to end of a row of the list
 //! \nick
 //****************************************************************************80
-  dataT const * end() const
+  inline dataT const * end() const
   {
     if(index !=NULL){
       return(data + index[size1]);
@@ -599,6 +587,35 @@ public:
       return(data);
     }
   }// End end
+
+//****************************************************************************80
+//! \brief RowBegin() : The index that begins a row; 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] i The row you want to begin
+//! \return index[i] Returns the indexing array value for that row
+//****************************************************************************80
+  inline intT RowBegin(const intT& i) 
+  {
+      return index[i];
+  }// End RowBegin 
+
+//****************************************************************************80
+//! \brief RowEnd() : The index that ends a row; 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] i The row you want to end
+//! \return index[i+1] Returns the indexing array value for that row
+//****************************************************************************80
+  inline intT RowEnd(const intT& i) 
+  {
+      return index[i+1];
+  }// End RowEnd
+ 
 //****************************************************************************80
 //! \brief MemoryDiagnostic : Prints the size and memory information to user.
 //!        
