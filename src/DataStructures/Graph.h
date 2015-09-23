@@ -16,8 +16,21 @@
 class Graph
 {
 public:
-  typedef intT NeighborIterator;
-  
+  class NeighborIterator{
+  public:
+    NeighborIterator(){this->i = 0;}
+    NeighborIterator(const intT& n){this->i = n;}
+    inline NeighborIterator& operator ++(){++(this->i);return *this;}
+    inline NeighborIterator& operator ++(int){(this->i)++;return *this;}
+    inline friend bool operator < (const NeighborIterator& lhs, 
+			    const NeighborIterator& rhs) 
+    {return (lhs.i < rhs.i);}
+    void SetIndex(intT& j){i = j;return;}
+    const intT& GetIndex()const {return this->i;} 
+  private:
+    intT i;
+  };
+
 //****************************************************************************80
 //! \brief Graph : Constructor for this class. Note will use move constructor 
 //!                of input variables...effectly deleting them. 
@@ -74,9 +87,19 @@ public:
 //! \version $Rev: 5 $
 //! \return edge2node_ The nodes that are attached to each edge 
 //****************************************************************************8
-  inline NeighborIterator NeighborBegin(const intT& n){return 0;}
-  inline NeighborIterator NeighborBack(const intT& n){return adj_.get_ncol(n);} 
-
+  inline NeighborIterator NeighborBegin(const intT& n)
+  {
+    return NeighborIterator(0);
+  }
+  inline NeighborIterator NeighborBack(const intT& n)
+  {
+    return NeighborIterator(adj_.get_ncol(n));//iter;
+  } 
+  inline intT& operator() (const NeighborIterator& i, 
+			   const NeighborIterator& j)
+  {
+    return adj_(i.GetIndex(),j.GetIndex());
+  }
 protected:
   
   List2D<intT> adj_; //!< Adjacency of nodes in the graph

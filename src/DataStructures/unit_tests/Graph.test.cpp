@@ -44,5 +44,14 @@ TEST(Graph, Constructor) {
 
   EXPECT_EQ(N, graph->get_nnode());
   EXPECT_EQ(N-1,graph->get_nedge());
+
+  for(intT i = 0; i < graph->get_nnode(); i++){
+    for(Graph::NeighborIterator j = graph->NeighborBegin(i); 
+	j < graph->NeighborBack(i); j++){
+      SystemModule::cout << graph->operator()(i,j) << " ";
+    }
+    SystemModule::cout << std::endl;
+  }
+  
   
 }

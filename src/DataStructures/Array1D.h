@@ -138,7 +138,7 @@ public:
 //! \version $Rev: 5 $
 //! \param[in] n The size of the array to be initialized
 //****************************************************************************80
-  void initialize(intT n){
+  inline void initialize(intT n){
     /*-->only perform initialization if the data is null
     and input size request is positive*/
     if ( data == NULL && n > 0) {
@@ -162,7 +162,7 @@ public:
 //! \version $Rev: 5 $
 //! \param[in] val The value you want to set the whole array to
 //****************************************************************************80
-  void set_value(const dataT& val)
+  inline void set_value(const dataT& val)
   {
     for(intT i = 0; i < size1; i++) {// set_loop
       data[i] = val;
@@ -177,7 +177,7 @@ public:
 //! \version $Rev: 5 $
 //! \param[in] i The index of the array you want to acess with parenthesis
 //****************************************************************************80
-const dataT& operator () (intT i) const
+  inline const dataT& operator () (intT i) const
   {
 
 #ifdef DEV_DEBUG
@@ -196,7 +196,7 @@ const dataT& operator () (intT i) const
 //! \version $Rev: 5 $
 //! \param[in] i The index of the array you want to acess with parenthesis
 //****************************************************************************80
-  dataT& operator () (intT i)
+  inline dataT& operator () (intT i)
   {
     //calls constant version of operator (i)
     return const_cast<dataT&>(static_cast<const Array1D&>(*this).
@@ -211,7 +211,7 @@ const dataT& operator () (intT i) const
 //! \version $Rev: 5 $
 //! \param[in] dim The dimension you want the size of
 //****************************************************************************80
-  intT get_size(intT dim) const
+  inline intT get_size(intT dim) const
   {
     //---> It's only a 1-D array so just give back the size
     switch (dim) {
@@ -232,7 +232,7 @@ const dataT& operator () (intT i) const
 //! \version $Rev: 5 $
 //!
 //****************************************************************************80
-  double get_mem() const
+  inline double get_mem() const
   {
     /*---> Return the amount of memory used to store pointer data* to user.
       Remember we stored this in variable mem at allocation */
@@ -266,7 +266,7 @@ const dataT& operator () (intT i) const
 //! \version
 //! \param[in] i The first address you want to access
 //****************************************************************************80
-  dataT const * get_ptr(const intT& i) const
+  inline dataT const * get_ptr(const intT& i) const
   {
 #ifdef DEV_DEBUG
     this->CheckBounds(i);
@@ -283,7 +283,7 @@ const dataT& operator () (intT i) const
 //! \version $Rev: 5 $
 //! \param[in] i The address you want to access
 //****************************************************************************80
-  dataT* get_ptr(const intT& i)
+  inline dataT* get_ptr(const intT& i)
   {
 #ifdef DEV_DEBUG
     this->CheckBounds(i);
@@ -296,7 +296,7 @@ const dataT& operator () (intT i) const
 //! \brief begin : Returns pointer to start of array
 //! \nick
 //****************************************************************************80
-  dataT* begin()
+  inline dataT* begin()
   {
     return(data);
   }// End begin
@@ -306,7 +306,7 @@ const dataT& operator () (intT i) const
 //! \brief begin : Returns pointer to start of array
 //! \nick
 //****************************************************************************80
-  dataT const * begin() const
+  inline dataT const * begin() const
   {
     return(data);
   }// End begin
@@ -316,7 +316,7 @@ const dataT& operator () (intT i) const
 //! \brief end : Returns pointer to end of array
 //! \nick
 //****************************************************************************80
-  dataT* end()
+  inline dataT* end()
   {
     return(data + size1);
   }// End end
@@ -326,7 +326,7 @@ const dataT& operator () (intT i) const
 //! \brief end : Returns pointer to end of array
 //! \nick
 //****************************************************************************80
-  dataT const * end() const
+  inline dataT const * end() const
   {
     return(data + size1);
   }// End end
