@@ -16,21 +16,7 @@
 class Graph
 {
 public:
-  class NeighborIterator{
-  public:
-    NeighborIterator(){this->i = 0;}
-    NeighborIterator(const intT& n){this->i = n;}
-    inline NeighborIterator& operator ++(){++(this->i);return *this;}
-    inline NeighborIterator& operator ++(int){(this->i)++;return *this;}
-    inline friend bool operator < (const NeighborIterator& lhs, 
-			    const NeighborIterator& rhs) 
-    {return (lhs.i < rhs.i);}
-    void SetIndex(intT& j){i = j;return;}
-    const intT& GetIndex()const {return this->i;} 
-  private:
-    intT i;
-  };
-
+ 
 //****************************************************************************80
 //! \brief Graph : Constructor for this class. Note will use move constructor 
 //!                of input variables...effectly deleting them. 
@@ -85,21 +71,40 @@ public:
 //!                        list of the specified node
 //! \nick
 //! \version $Rev: 5 $
-//! \return edge2node_ The nodes that are attached to each edge 
+//! \return n The node who's neighbors you want to access; 
 //****************************************************************************8
-  inline NeighborIterator NeighborBegin(const intT& n)
+  inline intT NeighborBegin(const intT& n)
   {
-    return NeighborIterator(0);
-  }
-  inline NeighborIterator NeighborBack(const intT& n)
+    return 0;
+  }// End NeighborBegin
+
+//****************************************************************************80
+//! \brief NeighborEnd : Returns the accessor to the end of the neighbor list
+//!                      of the specified node
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \return n The node who's neighbors you want to access
+//****************************************************************************80
+  inline intT NeighborEnd(const intT& n)
   {
-    return NeighborIterator(adj_.get_ncol(n));//iter;
-  } 
-  inline intT& operator() (const NeighborIterator& i, 
-			   const NeighborIterator& j)
+    return adj_.get_ncol(n);
+  } // End NeighborLast
+
+//****************************************************************************80
+//! \brief GetNeighbor : Retreive specified neighbor of specified node
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] n The node who's neighbor you want
+//****************************************************************************80
+  inline intT& GetNeighbor (const intT& n, const intT& j)
   {
-    return adj_(i.GetIndex(),j.GetIndex());
-  }
+    return adj_(n,j);
+  } // End GetNeighbor
+
 protected:
   
   List2D<intT> adj_; //!< Adjacency of nodes in the graph
