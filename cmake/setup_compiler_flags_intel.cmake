@@ -38,7 +38,7 @@ ENDIF ()
 
 # set flags for release mode
 IF (CMAKE_BUILD_TYPE MATCHES "Release")
-  SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
+  SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -finline-limit=300 -no-inline-min-size -no-inline-max-per-compile")
 # may generate intel advanced vector extensions 2 instructions
   ENABLE_FLAG_IF_SUPPORTED(CMAKE_CXX_FLAGS_RELEASE "-axCORE-AVX2")
 ENDIF ()

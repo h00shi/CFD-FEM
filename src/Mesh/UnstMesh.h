@@ -20,7 +20,8 @@
 #include "DataStructures/Array1D.h"
 #include "DataStructures/List2D.h"
 #include <stdio.h>
-
+//#include "Elements/Element.h"
+#include "Mesh/ElementTopology.h"
 class UnstMesh {
   
 public:
@@ -46,6 +47,7 @@ public:
 //! \brief The destructor
 //! \details  Destructor is pure virtual to make this class abstract
 //! \nick
+//! \version $Rev$
 //****************************************************************************80
   ~UnstMesh();
  
@@ -330,14 +332,27 @@ public:
   inline const Array2D<intT>& get_edge2node() const {return edge2node_;}
 
 //****************************************************************************80
-//! \brief get_vtktype : Gets the vtk element type corresponding our element
+//! \brief get_VTKType : Gets the vtk element type corresponding our element
 //!        type
 //! \details
 //! \nick
 //! \version $Rev$
 //! \param[in] etype Our element type
 //****************************************************************************80
-  inline intT get_vtktype(const intT& etype) const { return(vtktype[etype]);}
+  inline intT get_VTKType(const intT& etype) const {return vtk_type[etype];}
+
+//****************************************************************************80
+//! \brief get_VTKFaceType : Gets the vtk face type corresponding to our face
+//!        type.  
+//! \details
+//! \nick
+//! \version $Rev$
+//! \param[in] ftype Our face type
+//****************************************************************************80
+  inline intT get_VTKFaceType(const intT& ftype) const 
+  {
+    return vtk_face_type[ftype];
+  }// End get_VTKFaceType
 
 //****************************************************************************80
 //! \brief MemoryDiagnostic : Runs a full diagnostic of the memory for the 
@@ -349,7 +364,18 @@ public:
 //! 
 //****************************************************************************80
   void Diagnostic(std::ostream& out_stream);
-  
+  /*! ELEMENT TYPES
+      0 = 1-D Bar, a line segement with end points
+      1 = 2-D Triangle, 3 verticies connected together
+      2 = 2-D Quad, 4 verticies connected together
+      3 = 3-D Tetrahedra, 4 verticies with 4 triangular faces
+      4 = 3-D Prism, 6 vertices with 2 trianglular faces and
+      3 quadrilateral faces
+      5 = 3-D Pyramid, 5 verticies with 4 triangular faces and
+      1 quadrilateral face
+      6 = 3-D Hexahedra, 8 verticies with 6 quadrilateral faces
+  */
+
 protected: 
 
   //++++++++++++++++++++++++++++++ PROTECTED STUFF +++++++++++++++++++++++++++++
@@ -427,41 +453,8 @@ protected:
   realT grid_mem_; /*!< Total memory for this instance of class */
   //---> Misc
   std::map<intT,std::string> bcid_tag_; /*!< Boundary id string tag */
-
-  /*! ELEMENT TYPES
-      0 = 1-D Bar, a line segement with end points
-      1 = 2-D Triangle, 3 verticies connected together
-      2 = 2-D Quad, 4 verticies connected together
-      3 = 3-D Tetrahedra, 4 verticies with 4 triangular faces
-      4 = 3-D Prism, 6 vertices with 2 trianglular faces and
-      3 quadrilateral faces
-      5 = 3-D Pyramid, 5 verticies with 4 triangular faces and
-      1 quadrilateral face
-      6 = 3-D Hexahedra, 8 verticies with 6 quadrilateral faces
-  */
-  enum element_types: intT{
-    ELEMTYPE_BAR = 0,
-    ELEMTYPE_TRI = 1,
-    ELEMTYPE_QUAD = 2,
-    ELEMTYPE_TET = 3,
-    ELEMTYPE_PRISM = 4,
-    ELEMTYPE_PYR = 5,
-    ELEMTYPE_HEX = 6
-  };
-
-  /*! FACE TYPES
-      0 = Node
-      1 = Edge
-      2 = Triangle
-      3 = Quad
-  */
-  enum face_types: intT{
-    FACETYPE_NODE = 0,
-    FACETYPE_EDGE = 1,
-    FACETYPE_TRI = 2,
-    FACETYPE_QUAD = 3,
-  };
-intT vtktype[7] = {3, 5, 9, 10, 13, 14, 12};
+  intT vtk_type[7] = {3, 5, 9, 10, 13, 14, 12};
+  intT vtk_face_type[4] = {3, 5, 9, 10};
 //****************************************************************************80
 //! \brief AllocateMemory : Allocates the memory for the mesh
 //! \details 

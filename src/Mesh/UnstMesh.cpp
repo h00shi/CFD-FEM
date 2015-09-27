@@ -45,12 +45,12 @@ UnstMesh::UnstMesh(std::string const & filename, std::string const & file_type)
 
   //---> Now Process the Mesh
   FormConnectivity();
-  
+  //extractor_ = new EdgeExtractor(*this);
 
 }
 
 //****************************************************************************80
-UnstMesh::~UnstMesh() {};
+UnstMesh::~UnstMesh() {}
 
 //****************************************************************************80
 void UnstMesh::Diagnostic(std::ostream& out_stream) 
@@ -98,7 +98,7 @@ void UnstMesh::Diagnostic(std::ostream& out_stream)
   out_stream << edge2node_.MemoryDiagnostic("edge2node_");
   out_stream << std::endl;
   out_stream << "Total Grid Memory: " << grid_mem_ << " MB" << std::endl;
-  out_stream << "---------------------- End  Mesh Diagnostics -----------------" 
+  out_stream << "---------------------- End  Mesh Diagnostics -----------------"
 	    << std::endl << std::endl;
 }
 
@@ -505,25 +505,25 @@ void UnstMesh::FormBcFaceConnectivity()
 
     //---> Based on cell type figure out local face id
     switch (etype) {
-    case element_types::ELEMTYPE_BAR: // 1-D Bar elements
+    case ElementTopology::element_types::BAR: // 1-D Bar elements
       loc_face = GetLocalFace1D(face_nodes, elem_nodes);
       break;
-    case element_types::ELEMTYPE_TRI: // 2-D Triangles
+    case ElementTopology::element_types::TRI: // 2-D Triangles
       loc_face = GetLocalFaceTri(face_nodes, elem_nodes);
       break;
-    case element_types::ELEMTYPE_QUAD: // 2-D Quadrilaterals
+    case ElementTopology::element_types::QUAD: // 2-D Quadrilaterals
       loc_face = GetLocalFaceQuad(face_nodes, elem_nodes);
       break;
-    case element_types::ELEMTYPE_TET: // 3-D Tetrahedra
+    case ElementTopology::element_types::TET: // 3-D Tetrahedra
       loc_face = GetLocalFaceTet(face_nodes, elem_nodes);
       break;
-    case element_types::ELEMTYPE_PRISM: // 3-D Prism
+    case ElementTopology::element_types::PRISM: // 3-D Prism
       loc_face = GetLocalFacePrism(face_nodes, elem_nodes);
       break;
-    case element_types::ELEMTYPE_PYR: // 3-D Pyramid
+    case ElementTopology::element_types::PYR: // 3-D Pyramid
       loc_face = GetLocalFacePyramid(face_nodes, elem_nodes);
       break;
-    case element_types::ELEMTYPE_HEX: // 3-D Hex
+    case ElementTopology::element_types::HEX: // 3-D Hex
       loc_face = GetLocalFaceHex(face_nodes, elem_nodes);
       break;
     }
@@ -565,25 +565,25 @@ void UnstMesh::CountElementTypes()
 
   for (intT e = 0; e < nelement_; e++) { // Count element types
     switch (element_type_(e)) {
-    case element_types::ELEMTYPE_BAR:
+    case ElementTopology::element_types::BAR:
       nbar_ += 1;
       break;
-    case element_types::ELEMTYPE_TRI:
+    case ElementTopology::element_types::TRI:
       ntri_ += 1;
       break;
-    case element_types::ELEMTYPE_QUAD:
+    case ElementTopology::element_types::QUAD:
       nquad_ += 1;
       break;
-    case element_types::ELEMTYPE_TET:
+    case ElementTopology::element_types::TET:
       ntet_ += 1;
       break;
-    case element_types::ELEMTYPE_PRISM:
+    case ElementTopology::element_types::PRISM:
       nprism_ += 1;
       break;
-    case element_types::ELEMTYPE_PYR:
+    case ElementTopology::element_types::PYR:
       npyr_ += 1;
       break;
-    case element_types::ELEMTYPE_HEX:
+    case ElementTopology::element_types::HEX:
       nhex_ += 1;
       break;
     }
@@ -708,13 +708,13 @@ void UnstMesh::ReadGridFile(std::string const & filename)
     
     switch (n) {
     case 2:
-      element_type_(e) = element_types::ELEMTYPE_BAR;
+      element_type_(e) = ElementTopology::element_types::BAR;
       break;
     case 3:
-      element_type_(e) = element_types::ELEMTYPE_TRI;
+      element_type_(e) = ElementTopology::element_types::TRI;
       break;
     case 4:
-      element_type_(e) = element_types::ELEMTYPE_QUAD;
+      element_type_(e) = ElementTopology::element_types::QUAD;
       break;
     default:
       std::cout << "ERROR: Element " << e
@@ -748,7 +748,7 @@ void UnstMesh::ReadGridFile(std::string const & filename)
     intT n0, n1, n2, n3;
    
     switch (element_type_(e)) { // Choose element_type
-    case element_types::ELEMTYPE_BAR:
+    case ElementTopology::element_types::BAR:
       fscanf(mesh_file, "%d %d\n", &n0, &n1);
       
       element2node_.set_ncol(e,2);
@@ -756,7 +756,7 @@ void UnstMesh::ReadGridFile(std::string const & filename)
       element2node_(e,1) = n1 - 1;
       
       break;
-    case element_types::ELEMTYPE_TRI:
+    case ElementTopology::element_types::TRI:
       fscanf(mesh_file, "%d %d %d\n", &n0, &n1, &n2);
     
       element2node_.set_ncol(e,3);
@@ -765,7 +765,7 @@ void UnstMesh::ReadGridFile(std::string const & filename)
       element2node_(e,2) = n2 - 1;
       
       break;
-    case element_types::ELEMTYPE_QUAD:
+    case ElementTopology::element_types::QUAD:
       fscanf(mesh_file, "%d %d %d %d\n", &n0, &n1, &n2, &n3);
       
       element2node_.set_ncol(e,4);

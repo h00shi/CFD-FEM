@@ -32,7 +32,7 @@ UnstMeshWriterVTK::UnstMeshWriterVTK(const UnstMesh& mesh_ref) :
   for(intT e = 0; e < nelement; e++){ // Element loop 
     intT const vtk_cell_type = 
       UnstMeshWriter::
-      mesh_.get_vtktype(UnstMeshWriter::mesh_.get_element_type()(e));
+      mesh_.get_VTKType(UnstMeshWriter::mesh_.get_element_type()(e));
    
     if(vtk_cell->GetCellType() != vtk_cell_type){ //Check delete element type
       vtk_cell->Delete();

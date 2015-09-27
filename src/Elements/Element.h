@@ -77,6 +77,7 @@ protected:
 				global dofs */
   
 public:
+
 //****************************************************************************80
 //!
 //! \brief Element: The constructor, it's empty ...but we declare anyway
@@ -1074,5 +1075,6 @@ public:
 //! 
 //****************************************************************************80
   inline intT get_ndof() {return ndof_;} // End get_ndof
+
 }; // End class Element
 #endif

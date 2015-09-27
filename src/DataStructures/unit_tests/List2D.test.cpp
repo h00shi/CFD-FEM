@@ -4,7 +4,7 @@
 #include <algorithm>
 //--------------------------- LIST 2D Tests -----------------------------------
 //--->This tests the move constructor of the List2D class
-TEST(Array2D, moveconstructor) {
+TEST(List2D, moveconstructor) {
   List2D<double> x(4,11);
   Array1D<int> ncol(x.get_lead_size());
 
@@ -82,7 +82,7 @@ TEST(Array2D, moveconstructor) {
 }
 
 //--->This tests the move assignment operator of the List2D class
-TEST(Array2D, moveassignmentoperator) {
+TEST(List2D, moveassignmentoperator) {
   List2D<double> x(4,11);
   List2D<double> y(2,3);
 

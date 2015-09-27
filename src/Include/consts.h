@@ -15,7 +15,6 @@
 #include <complex> /*!< Include the native C++ complex template we'll use 
 		     this. */
 #include <iomanip> /*!< Include the ability to manipulate io. */	   
-using namespace std; /* We are going to need this all the time too */
 
 //!
 //--> Type definitions		    
@@ -25,7 +24,7 @@ typedef float DOUBLE;
 typedef double DOUBLE;
 #endif
 
-typedef complex <DOUBLE> COMPLEX; /*!< Definition of a double complex */ 
+typedef std::complex <DOUBLE> COMPLEX; /*!< Definition of a double complex */ 
 //---> Compile time constants that are useful
  static const double pi = 
    double(3.141592653589793238462643383279502884197); //!< Value of PI */
