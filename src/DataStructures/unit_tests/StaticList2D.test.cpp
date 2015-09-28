@@ -12,6 +12,31 @@ TEST(StaticList2D, Initalize) {
   EXPECT_EQ(x.get_ncol(2), 2);
 }
 
+TEST(StaticList2D, Initalize_list) {
+ 
+  StaticList2D<intT, 3, 5> x({2,1,2});
+  EXPECT_EQ(x.get_lead_size(), 3);
+  EXPECT_EQ(x.get_total_size(), 5);
+  EXPECT_EQ(x.get_ncol(0), 2);
+  EXPECT_EQ(x.get_ncol(1), 1);
+  EXPECT_EQ(x.get_ncol(2), 2);
+}
+
+TEST(StaticList2D, Initalize_list2) {
+ 
+  StaticList2D<intT, 3, 5> x({2,1,2},{2,10,20,25,30});
+  EXPECT_EQ(x.get_lead_size(), 3);
+  EXPECT_EQ(x.get_total_size(), 5);
+  EXPECT_EQ(x.get_ncol(0), 2);
+  EXPECT_EQ(x.get_ncol(1), 1);
+  EXPECT_EQ(x.get_ncol(2), 2);
+  
+  EXPECT_EQ(x(0,0), 2);
+  EXPECT_EQ(x(0,1), 10);
+  EXPECT_EQ(x(1,0), 20);
+  EXPECT_EQ(x(2,0), 25);
+  EXPECT_EQ(x(2,1), 30);
+}
 
 TEST(StaticList2D, Access) {
   intT ncol[3] = {2,1,2};
@@ -104,72 +129,58 @@ TEST(StaticList2D, sortRows) {
   EXPECT_DOUBLE_EQ( 3.0, x(3,3));
   EXPECT_DOUBLE_EQ( 5.0, x(3,4));
 }
-//--->This tests the move assignment operator of the List2D class
-TEST(List2D, moveassignmentoperator) {
-  intT ncol[4] = {1,3,2,5};
-  StaticList2D<double,4,11> x(ncol);
-  intT ncol2[2] = {0,0};
-  StaticList2D<double,4,11> y(ncol);
 
-  x.set_value(0.0);
-  x(0,0) = 1.0;
+#ifdef DEV_DEBUG
+TEST(List2DDeathTest, outOfBounds){
+  //death test to make sure program fails when I try to access
+  //an out of bounds index for a List2D object
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  intT ncol[6]={1,3,2,5,7,4};
+  StaticList2D<double,6,22> x(ncol);
+ 
+  //---> () access tests
+  //non constant access function test
+  EXPECT_EXIT( x(8,1);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In List2D.h - ");
 
-  x(1,0) = 3.0;
-  x(1,1) = 2.0;
-  x(1,2) = 1.0;
+  EXPECT_EXIT( x(1,4);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In List2D.h - ");
 
-  x(2,0) = 6.0;
-  x(2,1) = 1.0;
+  EXPECT_EXIT( x(22);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In List2D.h - ");
 
-  x(3,0) = 1.0;
-  x(3,1) = 2.0;
-  x(3,2) = 3.0;
-  x(3,3) = 5.0;
-  x(3,4) =-1.0;
+   //---> get_index tests
+  //non constant get_index test
+  EXPECT_EXIT( x.get_index(6,1);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In List2D.h - ");
 
-  double memory_used = x.get_mem();
-  unsigned size1     = x.get_lead_size();
-  unsigned size      = x.get_total_size();
-  double* begin      = x.begin();
-  double* end        = x.end();
+  EXPECT_EXIT( x.get_index(0,3);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In List2D.h - ");
 
-  //call the move assignment operator by explicitly making x into a rvalue
-  y = (std::move(x));
+ 
+  //--->get_ncol tests
+  //non constant get_ncol test
+  EXPECT_EXIT( x.get_ncol(321);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In List2D.h - ");
 
-  //--->see if the y is equal to what x was
-  //--> check memory
-  EXPECT_DOUBLE_EQ(memory_used, y.get_mem());
+ 
 
-  //--> check size
-  EXPECT_EQ(size1, y.get_lead_size());
-  EXPECT_EQ(size,  y.get_total_size());
+  //--->pointer test
+  //non constant
+  EXPECT_EXIT( x.get_ptr(7,15);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In List2D.h - ");
 
-  //--> check pointer of data
-  EXPECT_EQ(begin, y.begin());
-  EXPECT_EQ(  end, y.end()  );
+  EXPECT_EXIT( x.get_ptr(3,17);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "In List2D.h - ");
 
-  //--> check data of y
-  EXPECT_DOUBLE_EQ( 1.0, y(0,0));
-  EXPECT_DOUBLE_EQ( 3.0, y(1,0));
-  EXPECT_DOUBLE_EQ( 2.0, y(1,1));
-  EXPECT_DOUBLE_EQ( 1.0, y(1,2));
-  EXPECT_DOUBLE_EQ( 6.0, y(2,0));
-  EXPECT_DOUBLE_EQ( 1.0, y(2,1));
-  EXPECT_DOUBLE_EQ( 1.0, y(3,0));
-  EXPECT_DOUBLE_EQ( 2.0, y(3,1));
-  EXPECT_DOUBLE_EQ( 3.0, y(3,2));
-  EXPECT_DOUBLE_EQ( 5.0, y(3,3));
-  EXPECT_DOUBLE_EQ(-1.0, y(3,4));
+ 
 
-  //--->see if the x is set to a default state
-  //--> check memory
-  EXPECT_DOUBLE_EQ(0.0, x.get_mem());
+  //--->index pointer access test
+  //non constant
+  EXPECT_EXIT( x.get_index_ptr(123);, ::testing::ExitedWithCode(EXIT_FAILURE),
+               "ERROR: In List2D.h - ");
+ 
 
-  //--> check size
-  EXPECT_EQ(0, x.get_lead_size());
-  EXPECT_EQ(0, x.get_total_size());
-
-  //--> make sure data is null
-  EXPECT_EQ(nullptr, x.begin());
-  EXPECT_EQ(nullptr, x.end()  );
 }
+
+#endif

@@ -2,6 +2,7 @@
 #ifndef ELEMENTTOPOLOGY_H
 #define ELEMENTTOPOLOGY_H
 #include "my_incl.h"
+#include "DataStructures/StaticList2D.h"
 
 namespace ElementTopology
 {
@@ -39,6 +40,14 @@ namespace ElementTopology
     FACE_QUAD = 3,
   };
 
+//****************************************************************************80
+//! \brief Bar : Describes the Topology of a bar element 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
   class Bar 
   {
   public:
@@ -46,17 +55,36 @@ namespace ElementTopology
     static const intT nNode;
     static const intT nEdge;
     static const intT nFace;
-    
     static const intT Nodes[2];// = {0,1};
     static const intT Edges[1][2]; //= {0,1};
-    static const intT Faces[2][1];// = {0,1};
+    static const StaticList2D<intT,2,2> Faces;
+
   }; // End Class Bar
-    class Triangle;
-    class Quadrilateral;
-    class Tetrehedra;
-    class Prism;
-    class Pyramid;
-    class Pyramid;
-    class Hexahedron;
+//****************************************************************************80
+//! \brief Triangle : Describes the Topology of a triangle element 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************8
+  class Triangle 
+  {
+  public:
+    static const intT Type;
+    static const intT nNode;
+    static const intT nEdge;
+    static const intT nFace;
+    static const intT Nodes[3];
+    static const intT Edges[3][2];
+    static const StaticList2D<intT, 3, 6> Faces;
+  }; // End Class Triangle
+  
+  class Quadrilateral;
+  class Tetrehedra;
+  class Prism;
+  class Pyramid;
+  class Pyramid;
+  class Hexahedron;
 }// End namespace ElementTopology
 #endif

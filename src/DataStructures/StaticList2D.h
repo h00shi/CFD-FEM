@@ -15,7 +15,7 @@
 //****************************************************************************80
 #include "my_incl.h"
 #include "SystemUtils/SystemModule.h"
-//#include "DataStructures/Array1D.h"
+#include <initializer_list>
 
 template <class dataT, intT nrow, intT nnz>
 class StaticList2D
@@ -24,15 +24,16 @@ class StaticList2D
 public:
 //****************************************************************************80
 //!
-//! \brief StaticLis2D : Constructor that requires number of columns to be known
-//!                      at construction time.  This is reasonable to static
-//!                      data.  
+//! \brief StaticList2D : Constructor that requires number of columns to be 
+//!                       known at construction time.  This is reasonable to 
+//!                       static data.  
 //! \details
 //! \nick
 //! \version $Rev: 5 $
-//!
+//! \param[in] ncol The number of columns in each row
 //****************************************************************************80
-  StaticList2D(const intT ncol[nrow]){
+  StaticList2D(const intT (&ncol)[nrow])
+  {
     size1 = nrow;
     size = nnz;
     this->set_ncol(ncol);
@@ -41,56 +42,90 @@ public:
 
 //****************************************************************************80
 //!
-//! \brief List2D : List2D class move constructor
+//! \brief StaticList2D : Constructor that requires number of columns to be 
+//!                       known at construction time.  This is reasonable to 
+//!                       static data.  
 //! \details
 //! \nick
-//! \param[in] other - rvalue reference that we are "moving" data from
+//! \version $Rev: 5 $
+//! \param[in] ncol The number of columns in each row
 //****************************************************************************80
-  StaticList2D(StaticList2D< dataT, nrow, nnz >&& other)
+  StaticList2D(const std::initializer_list<intT>& ncol) 
   {
-    //--->pilfer other's resource
-    size1 = other.size1;
-    size  = other.size;
-    index = other.index;
-    data  = other.data;
-    mem   = other.mem;
-
-    //--->reset other
-    other.size1 = 0;
-    other.size  = 0;
-    other.mem   = 0.0;
-    other.data  = NULL;
-    other.index = NULL;
-  }
+    size1 = nrow;
+    size = nnz;
+    
+    if(ncol.size() != nrow ) {
+      std::cout << "ERROR Constructing StaticList2D - " << std::endl
+                << "Initializer list is too small: "  << std::endl
+                << "Number of Rows of StaticList2D: " << nrow 
+                << " Size of intializer list: " << ncol.size() << std::endl;
+      SystemModule::my_exit();
+    }
+    else {
+      this->set_ncol(ncol);
+    }
+    
+    
+  } // End StaticList2D
 
 //****************************************************************************80
 //!
-//! \brief operator= : List2D class move assignment operator
+//! \brief StaticList2D : Constructor that requires number of columns to be 
+//!                       known
+//!                       at construction time and data as well.    
 //! \details
 //! \nick
-//! \param[in] other - rvalue reference that we are "moving" data from
-//! \return    this  - returns this object with data moved into it
+//! \version $Rev: 5 $
+//! \param[in] ncol The number of columns in each row
+//! \param[in] vals The values 
 //****************************************************************************80
-  StaticList2D<dataT, nrow, nnz>& operator = 
-  (StaticList2D< dataT, nrow, nnz >&& other)
+  StaticList2D(const intT (&ncol)[nrow], const intT (&vals)[nnz])
   {
+    size1 = nrow;
+    size = nnz;
+    this->set_ncol(ncol);
+    for( intT i = 0; i < nnz; i++){data[i] = vals[i];}
+    
+  } // End StaticList2D
 
-    //--->pilfer other's resource
-    size1 = other.size1;
-    size  = other.size;
-    *index = *other.index;
-    *data  = *other.data;
-    mem   = other.mem;
+//****************************************************************************80
+//!
+//! \brief StaticList2D : Constructor that requires number of columns to be 
+//!                       known
+//!                       at construction time and data as well.    
+//! \details
+//! \nick
+//! \version $Rev: 5 $
+//! \param[in] ncol The number of columns in each row
+//! \param[in] vals The values 
+//****************************************************************************80
+  StaticList2D(const std::initializer_list<intT>& ncol, 
+               const std::initializer_list<intT>& vals)
+  {
+    size1 = nrow;
+    size = nnz;
+    if(ncol.size() != nrow && vals.size() != nnz) {
+      std::cout << "ERROR Constructing StaticList2D - " << std::endl
+                << "Initializer list is too small: "  << std::endl
+                << "Size of StaticList2D: " << nrow << " " << nnz 
+                << " Size of intializer list: " << ncol.size() 
+                <<  " " << vals.size() << std::endl;
+      SystemModule::my_exit();
+    }
+    else 
+      {
+        this->set_ncol(ncol);
+        //---> Use iterator to traverse the initializer list
+        std::initializer_list<intT>::iterator list_iter = vals.begin();
+        for(intT i = 0; i < nnz; i++)
+          {
+            data[i] = *list_iter;
+            list_iter++;
+          }
+      }
 
-    //--->reset other
-    other.size1 = 0;
-    other.size  = 0;
-    other.mem   = 0.0;
-    other.data[0]  = NULL;
-    other.index[0] = NULL;
-    return *this;
-  }
-
+  } // End StaticList2D
 //****************************************************************************80
 //!
 //! \brief ~List2D : Destructor for class List2D
@@ -105,37 +140,6 @@ public:
     size = 0;
     mem = 0.0;
   } // End ~List2D
-//****************************************************************************80
-//!
-//! \brief CopyPattern : Take an existing List2D and copy it's pattern
-//! \details
-//! \nick
-//! \version $Rev: 5 $
-//! \param[in] other The other list 2D
-//****************************************************************************80
-  template <class otherT>
-  inline void 
-  intialize_copy_pattern(const StaticList2D< otherT, nrow, nnz >& other)
-  {
-    if (this->size1 == 0){
-      //---> Set the number of columns to be the same
-      for(intT i = 0; i < size1; i++) {this->set_ncol(i,other.get_ncol(i));}
-    }
-    
-    else {
-      std::cerr << "ERROR: In List2D.h - "
-                << "Attemping to initalize and copy pattern for a List2D "
-		<< "that has already been intialized.  List2D data follows."
-		<< std::endl 
-                << "This List2D, nrow: " << size1 << " nnz: " << size 
-		<< std::endl
-		<< "Attemping to pattern from List2D, nrow: " << size1 
-		<< " nnz: " << size << std::endl;
-      SystemModule::my_exit();
-      
-    }
-
-  }// End CopyPattern;
 
 //****************************************************************************80
 //!
@@ -560,7 +564,7 @@ private:
 //! \version $Rev$
 //! \param[in] ncol An Array1D of requested column numbers (signed int)
 //****************************************************************************80
-  inline void set_ncol(const intT ncol[])
+  inline void set_ncol(const intT  (&ncol)[nrow])
   {
     if(size1 > 0) {//check if we have columns
       //setup index array based on ncol input
@@ -568,6 +572,45 @@ private:
       for(intT irow = 0; irow < size1; irow++){
         //---> Index;
         index[irow+1] = index[irow] + ncol[irow];
+      }
+
+#ifdef DEV_DEBUG
+      //debug check - checking if total num of entries <= entire size of List
+      intT targetSize = index[size1] - index[0];
+
+      if(targetSize > size){
+        std::cerr << "In List2D.h - "
+                  << "ERROR: Requesting too many elements."
+                  << "\n Target total size of requested columns: " << targetSize
+                  << "\n Preallocated total size: " << size << std::endl;
+        SystemModule::my_exit();
+      }
+#endif
+    }//end check if we have columns
+  } // end set_ncol
+
+//****************************************************************************80
+//! \brief set_ncol : Sets number of columns and creates index array for all
+//!                   rows.
+//! \details This function modifies the index array such that the number of
+//!          columns of row i is equal to ncol(i).
+//!          Array1D ncol should be the same size of size1.
+//! \nick
+//! \version $Rev$
+//! \param[in] ncol An initializer list of number of columns
+//****************************************************************************80
+  inline void set_ncol(const std::initializer_list<intT>& ncol)
+  {
+    if(size1 > 0) {//check if we have columns
+      
+      //setup index array based on ncol input
+      index[0] = 0;
+      //---> Use iterator to traverse the initializer list
+      std::initializer_list<intT>::iterator list_iter = ncol.begin();
+      for(intT irow = 0; irow < size1; irow++){
+        //---> Index;
+        index[irow+1] = index[irow] + *list_iter;
+        list_iter++;
       }
 
 #ifdef DEV_DEBUG
