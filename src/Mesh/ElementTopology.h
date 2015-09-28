@@ -79,12 +79,97 @@ namespace ElementTopology
     static const intT Edges[3][2];
     static const StaticList2D<intT, 3, 6> Faces;
   }; // End Class Triangle
-  
-  class Quadrilateral;
-  class Tetrehedra;
-  class Prism;
-  class Pyramid;
-  class Pyramid;
-  class Hexahedron;
+
+//****************************************************************************80
+//! \brief Quadrilateral : Describes the Topology of a quadrilateral element 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************8
+  class Quadrilateral
+  {
+    static const intT Type;
+    static const intT nNode;
+    static const intT nEdge;
+    static const intT nFace;
+    static const intT Nodes[4];
+    static const intT Edges[4][2];
+    static const StaticList2D<intT, 4, 8> Faces;
+  }; // End Class Quadrilateral
+
+//****************************************************************************80
+//! \brief Tetrahedra : Describes the Topology of a tetrahedra element 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************8
+  class Tetrahedron
+  {
+    static const intT Type;
+    static const intT nNode;
+    static const intT nEdge;
+    static const intT nFace;
+    static const intT Nodes[4];
+    static const intT Edges[6][2];
+    static const StaticList2D<intT, 4, 12> Faces;
+  };// End Class Tetrahedron
+//****************************************************************************80
+//! \brief Prism : Describes the Topology of a prism element 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************8
+  class Prism
+  {
+    static const intT Type;
+    static const intT nNode;
+    static const intT nEdge;
+    static const intT nFace;
+    static const intT Nodes[6];
+    static const intT Edges[9][2];
+    static const StaticList2D<intT, 5, 18> Faces;
+  };// End Class Prism
+//****************************************************************************80
+//! \brief Pyramid : Describes the Topology of a pyramid element 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************8
+  class Pyramid
+  {
+    static const intT Type;
+    static const intT nNode;
+    static const intT nEdge;
+    static const intT nFace;
+    static const intT Nodes[5];
+    static const intT Edges[8][2];
+    static const StaticList2D<intT, 5, 16> Faces; 
+  };// End Pyramid
+//****************************************************************************80
+//! \brief Hexahedron : Describes the Topology of a hexadedron 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************8
+  class Hexahedron
+  {
+    static const intT Type;
+    static const intT nNode;
+    static const intT nEdge;
+    static const intT nFace;
+    static const intT Nodes[8];
+    static const intT Edges[12][2];
+    static const StaticList2D<intT, 6, 24> Faces;
+  }; // End Hexahedron
 }// End namespace ElementTopology
 #endif
