@@ -1,0 +1,199 @@
+\documentclass[letterpaper]{article}
+\usepackage{fullpage}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{stmaryrd}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{pslatex}   % Good fonts psType 1 or \usepackage{mathptmx}
+\usepackage{varioref}  % smart page, figure, table, and equation referencing
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{cancel}
+\usepackage{listings}
+%\usepackage{fancy headings}
+
+  \newcommand{\eqnref}[1]{Eq. (\ref{#1})}                % Eq. (no)
+  \newcommand{\figref}[1]{Figure \ref{#1}}                % Figure (no)
+  \newcommand{\tblref}[1]{Table \ref{#1}}                % Table (no)
+  \newcommand{\secref}[1]{Section \ref{#1}}                % Section (no)
+  \newcommand{\incfig}{\centering\includegraphics*}  % Centered figure
+
+%DG integrals
+\newcommand{\pd}[2]{\frac{ \partial #1}{\partial #2}}
+\newcommand{\volint}[1]{ \sum_{e \in \mathcal{T}_{h}}\int_{\Omega_k} #1 d\Omega_{e} }  
+\newcommand{\surfint}[1]{\sum_{i\in \mathcal{I}_{h}}\int_{\Gamma^{i}} #1 ds}
+\newcommand{\bsurfint}[1]{\sum_{b\in \mathcal{B}_{h}}\int_{\Gamma^{b}} #1 ds}
+% Operators
+\newcommand{\frechd}[2]{ #1'_{\left[ #2 \right]} }%\left( #3\right)} 
+\newcommand{\diver}[1]{\nabla \cdot #1}
+\newcommand{\abs}[1]{\left \lvert #1 \right \rvert}
+\newcommand{\avg}[1]{\left\{ #1 \right\} }
+\newcommand{\jump}[1]{\llbracket #1 \rrbracket}
+\newcommand{\mat}[1]{\left[ #1 \right]}
+\newcommand{\paren}[1]{\left( #1 \right)}
+\newcommand{\sparen}[1]{\left[ #1 \right]}
+\newcommand{\twonorm}[1]{\parallel #1 \parallel_{2}}
+%variables
+\newcommand{\hb}[1]{ {\bf #1}_{h} } % \hb for discrete symbol _{h} and bolded for vector in fields
+% Fluxes 
+\newcommand{\fc}{\vec{{\bf F}}_{c} \paren{\hb{u}}   }
+\newcommand{\fv}{\vec{{\bf F}}_{v} \paren{\hb{u},\nabla \hb{u}} }
+\newcommand{\fav}{\vec{{\bf F}}_{ad} \paren{ \epsilon,\hb{u},\nabla \hb{u} } }
+\newcommand{\ec}{\vec{{\bf E}}_{c} \paren{\hb{u}}   }
+\newcommand{\ev}{\vec{{\bf E}}_{v} \paren{\hb{u},\nabla \hb{u}} }
+\newcommand{\eav}{\vec{{\bf E}}_{ad} \paren{ \epsilon,\hb{u},\nabla \hb{u} } }
+
+\newcommand{\hc}{\mathcal{H}_{c} \paren{ \hb{u}^{+},\hb{u}^{-},\vec{n} } }  
+\newcommand{\hv}{\mathcal{H}_{v} \paren{ \hb{u},\hb{u}^{-},\phi_{i}^{+}, \phi_{i}^{-},\nabla \hb{u}^{+},\nabla \hb{u}^{-},
+\vec{n} } }
+\newcommand{\hav}{\mathcal{H}_{ad}\paren{ \epsilon^{+},\epsilon^{-},\hb{u}^{+},\hb{w}^{+}, \hb{w}^{-},\hb{u}^{-},\nabla \hb{u}^{+},\nabla \hb{u}^{-},\vec{n} } }
+\newcommand{\hcb}{\mathcal{H}_{c}^{b} \paren{ \hb{u}^{b} \paren{ \hb{u}^{+} },\vec{n} } } 
+\newcommand{\hvb}{\mathcal{H}_{v}^{b} \paren{ \hb{u}^{b} \paren{\hb{u}^{+}},\phi_{i}^{+},\nabla \hb{u}^{+},\vec{n} } }
+\newcommand{\havb}{\mathcal{H}_{ad}^{b} \paren{ \epsilon^{+}, \hb{u}^{b}\paren{ \hb{u}^{+}},{\bf w}^{+}, \nabla \hb{u}^{+},\vec{n} } }
+%Non-linear variables
+\newcommand{\Resid}[1] {{\bf R}(#1)}
+\newcommand{\Residp}[1] {{\bf R}_{p}(#1)}
+%FIgures
+\newcommand{\figwidth}{.48\textwidth}
+\newcommand{\lfigwidth}{.68\textwidth} %small version .68, large version .75
+
+\title{ Coding Style}
+\author{Nicholas K. Burgess}
+\begin{document}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+The code style for  is designed to enhance the readability of the source code, while simultaneously ensuring that the source code documentation is properly populated.  The basic elements of the  coding style include comment specification, function/class header styles, naming conventions and rules constraining the format and layout of the text in the source code files.  
+
+\section{General Text Formatting}
+The general text formatting  is  designed to ensure that code is legible using a variety of text editors.  The following list serves as the general text formatting guidelines.  
+\begin{enumerate}
+\item Each line contains no more than 80 characters
+\item No tab characters are allowed in the source code: please setup your text editor such that pressing the tab key gives you 4 spaces.   
+\end{enumerate}
+
+\section{Commenting Conventions}
+Comments are vital to code readability and comprehension.  
+\begin{enumerate}
+\item The first line in all comments is to begin with $//--->$ or $/*--->$ for single or multiple line comments respectively.  See \figref{fig:comment} for an example.  
+\item Comments should be detailed and specific
+\item Comment frequently even if you think the code speaks for itself. 
+\end{enumerate}
+\begin{figure}[h!]
+\begin{verbatim}
+//---> Get the elements containing node 
+/*---> Check to see if the element containing node 2 is the same 
+ as elem */
+\end{verbatim}
+\caption{Examples of the comment formatting. }
+\label{fig:comment}
+\end{figure} 
+
+\section{Variable Style}
+The following serves as variable naming conventions.  
+\begin{enumerate}
+\item Variable names should be descriptive regardless of how verbose it my seem.  For example a variable describing the element to node mapping array could be called \textbf{e2n}, this is not to to style.  Instead this variable should be named \textbf{Element2Node}.  
+\item Variable names should be lower case and for those names consisting of multiple words should separate the words using the \_ character  : Ex. \textbf{my\_variable} is the acceptable name for the function \textit{my variable}.  
+\item Variables should be sufficiently verbose such that the name conveys the purpose of that object.  
+\item All subscripts should be replaced with an underscore: Ex. $x_{i}$ is coded as x\_i.  
+\item All greek letters are to be spelled out: Ex. $\xi$ is coded as xi.
+\item All derivatives variable names are to begin with a lower case d followed by the dependent variable followed by a lower case d followed by the independent variable.  For example if one has a function $f(x)$ and wants to represent the derivative $\frac{d f}{dx}$ this would be written as dfdx.  The usual subscript and Greek letter rules applied.  Ex. $\frac{d f_{r}}{d\xi}$ is coded as df\_rdxi.  
+\item The \# symbol which means number of something should be written as n\_ .  For example \# elements should be written as \textbf{n\_elements}. 
+\end{enumerate}
+
+\section{Function Style}
+The documentation and coding style for functions is similar to the style for classes with an additional requirement on input/output variable documentation.   
+\begin{enumerate}
+\item Functions names must begin with a capital letter and have words separated by captial letters: Ex. \textbf{FindBcElem}is the acceptable name for the function \textit{find bc elem}.  
+\item Function names should be sufficiently verbose such that the name conveys the purpose of that object.  
+\item All function header lines begin with the Doxygen preamble \textbackslash\textbackslash !.  This preamble ensures Doxygen parses each line of the header.  
+\item All function headers must contain a line: \textbackslash brief followed by a brief description of the function purpose. 
+\item All function headers must contain a line: \textbackslash \textbf{Your Name}.  This is a Doxygen alias for the author.  
+\item Each interface variable of the a function must be documented with a \textbackslash param [in/out] statement.  This statement shows in the variable is an input, output, name and a brief description.  
+\item Each non void function header must contain a line \textbackslash return followed by a brief description of the return of the function.  
+\item The closing bracket of all functions must contain a comment of the form // End  \textbf{FunctionName}
+\end{enumerate}
+A final and somewhat arbitrary formatting standard for function headers is; all function headers must begin and end with a comment line consisting of 78 *'s and the number 80.  \figref{fig:function} displays an example of a properly documented function.  
+
+\begin{figure}[h!]
+\centering
+\begin{verbatim}
+//****************************************************************************80
+//! \brief max_eigenvalue : Computes the largest eigenvalue, use for stability 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \param[in] k The permeability
+//! \param[in] phi The porosity
+//! \param[in] q The state-vector
+//! \return maximum eigenvalue
+//****************************************************************************80
+  realT max_eigenvalue(const realT& k, const realT& phi, 
+		       const Array1D<realT>& q)
+  {
+	...   
+  } \\End max_eigenvalue
+\end{verbatim}
+\caption{Example of a style compliant function declaration.}
+\label{fig:function}
+\end{figure}
+
+
+\section{Class and Class Template Style}
+The coding style for classes governs the layout of classes across the file structure, as well as naming conventions and various documentation requirements.  
+\begin{enumerate}
+ \item All classes should start with a capital letter and each new word in the name should start with a capital letter: Ex. \textbf{UnstGrid} Denotes a class named Unst Grid.  
+\item All classes and class templates are defined by a single ``h.'' file whose name shall be the name of the class: Ex. a class template \textbf{UnstGrid} is declared in \textit{UnstGrid.h}
+\item Any specializations of a class template may resid with the same ".h" file as the generic class template. 
+\item All Class names should be sufficiently verbose such that the name conveys the purpose of that object.  
+\item All class header lines begin with the Doxygen preamble \textbackslash\textbackslash !.  This preamble ensures Doxygen parses each line of the header.  
+\item All class headers must contain a line: \textbackslash brief followed by a brief description.   
+\item All class headers must contain a line: \textbackslash \textbf{Your Name}.  This is a Doxygen alias that shows you are the author and gives your affiliation with ASC.  
+\item All class template headers require a line: \textbackslash tparam \textbf{TemplateParameter} and a description of what that template parameter does.
+\item The closing bracket of all classes must contain a comment of the form // End class \textbf{ClassName}
+\item All class member functions and member data must be documented per the standard specified in subsequent sections.  
+\item All class member variables are to be declared according to variable declaration rules and must have and \_ appended to the name.  Example if the variable x is a class member then it must be declared as x\_. 
+\end{enumerate}
+
+A final and somewhat arbitrary formatting standard for class header is; all class template headers must begin and end with a comment line consisting of 78 *'s and the number 80.
+\figref{fig:class_style} is an example of style compliant class declaration.  
+\begin{figure}[h!]
+\begin{verbatim}
+//****************************************************************************80
+//! \class UnstGrid 
+//! \brief This is the header file defining the class UnstGrid
+//! \nick 
+//! \version $Rev: 5 $
+//! \tparam intT Template argument meant to mimic integer
+//! \tparam realT Template argument meant to mimic real numbers
+//****************************************************************************80
+template < class intT, class realT >  
+class UnstGrid {
+...
+}; // End Class UnstGrid
+\end{verbatim}
+\caption{Example of a style compliant class declaration.}
+\label{fig:class_style}
+\end{figure}
+\subsection{Class member Variables}
+All class member variables (data members) must be documented such that the source code documentation utility Doxygen can properly identify and document each class member variable.  
+\begin{enumerate}
+\item All class member variables must obey the style rules for variables and have an underscore appended to the name.  Ex. A member \textit{n\_face} should be written as \textbf{n\_face\_}.   
+\item All class member variables must be followed  by \textbackslash\textbackslash ! $<$ \textit{description}.  \figref{fig:variable} shows an example of a properly specified class member variable.  
+\end{enumerate}
+
+\begin{figure}[h!]
+\centering
+\begin{verbatim}
+const realT P_ref; //!< Reference Pressure in PSI 
+\end{verbatim}
+\caption{Example of a style compliant class member declaration.}
+\label{fig:variable}
+\end{figure}
+
+
+
+\end{document}
