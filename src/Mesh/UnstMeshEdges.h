@@ -7,6 +7,7 @@
 #include "DataStructures/List2D.h"
 #include "Mesh/ElementTopology.h"
 #include <algorithm>
+#include <vector>
 
 //****************************************************************************80
 //! \brief UnstMeshEdges : A class for extracting edges in a mesh

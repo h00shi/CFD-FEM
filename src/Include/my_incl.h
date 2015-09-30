@@ -64,12 +64,6 @@
 #ifdef HAVE_MPI
 #include <mpi.h> /*<! Include MPI header file if we are compiling with it. */
 #endif
-
-#ifndef INC_VECTOR
-#define INC_VECTOR
-#include <vector>
-#endif
-
 #endif // END INC_MPI
 
 //----> Finally define precision of integer and real 
