@@ -1,0 +1,2 @@
+ADD_EXECUTABLE(ObjectOrientedSpeed.reg ObjectOrientedSpeed.cpp)
+TARGET_LINK_LIBRARIES(ObjectOrientedSpeed.reg DataStructures)

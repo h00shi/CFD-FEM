@@ -1,0 +1,2 @@
+ADD_SUBDIRECTORY(SortingSpeed)
+ADD_SUBDIRECTORY(ObjectOrientedSpeed)
