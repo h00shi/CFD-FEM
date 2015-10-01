@@ -4,7 +4,6 @@ ADD_SUBDIRECTORY(unit_tests)
 ADD_LIBRARY(Mesh 
   UnstMesh.cpp 
   UnstMeshEdges.cpp 
-  ElementTopology.cpp 
   ElementTopologyBar.cpp
   ElementTopologyTriangle.cpp
   ElementTopologyQuadrilateral.cpp

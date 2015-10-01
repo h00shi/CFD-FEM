@@ -1,6 +1,7 @@
 SET(Unit_Tests 
   UnstMesh.test
   DummyMesh.test
+  UnstMeshEdges.test
 )
 
 FOREACH(Unit ${Unit_Tests})

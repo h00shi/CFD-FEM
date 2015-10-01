@@ -2,7 +2,7 @@
 //****************************************************************************80
 UnstMeshEdges::UnstMeshEdges(const intT& nnode, const intT& nelement, 
                              const List2D<intT>& elem2node, 
-                             const List2D<intT> node2elem,
+                             const List2D<intT>& node2elem,
                              const Array1D<intT>& element_type) :
   nnode_(nnode), nelement_(nelement), element2node_(elem2node), 
   node2element_(node2elem), element_type_(element_type)
@@ -10,6 +10,7 @@ UnstMeshEdges::UnstMeshEdges(const intT& nnode, const intT& nelement,
   ComputeNumberOfEdges();
 
   intT nnz_elem2edge = 0;
+ 
   for(intT e = 0; e < nelement_; e++){//Element Loop  
   
     switch (element_type_(e)) {
@@ -50,9 +51,52 @@ UnstMeshEdges::UnstMeshEdges(const intT& nnode, const intT& nelement,
   edge2node_.initialize(nedge_,2);
   node2edge_.initialize(nnode_, nnz_node2edge_);
   nelement_surr_edge_.initialize(nedge_);
-  LastEdgeFromNode_.initialize(nnode_);
-  NextEdgeFromEdge_.initialize(nedge_);
+  element2edge_.initialize(nelement_, nnz_elem2edge);
   
+  LastEdgeFromNode_.initialize(nnode_);
+  LastEdgeFromNode_.set_value(-1);
+  NextEdgeFromEdge_.initialize(nedge_);
+  NextEdgeFromEdge_.set_value(-1);
+
+  for(intT e = 0; e < nelement_; e++){//Element Loop  
+  
+    switch (element_type_(e)) {
+    case ElementTopology::element_types::BAR :
+      element2edge_.set_ncol(e,1);
+      break;
+    case ElementTopology::element_types::TRI : 
+      element2edge_.set_ncol(e,3);
+      break;
+    case ElementTopology::element_types::QUAD :
+      element2edge_.set_ncol(e,4);
+      break;
+    case ElementTopology::element_types::TET : 
+      element2edge_.set_ncol(e,6);
+      break;
+    case ElementTopology::element_types::PRISM :
+      element2edge_.set_ncol(e,9);
+      break;
+    case ElementTopology::element_types::PYR :
+      element2edge_.set_ncol(e,8);
+      break;
+    case ElementTopology::element_types::HEX :
+      element2edge_.set_ncol(e,12);
+      break;
+    default :
+      SystemModule::cout << "ERROR: Invalid Element type detected durning edge "
+                         << "exraction.  " << std::endl;
+      SystemModule::cout << "Element: " << e << " is of type " 
+                         << element_type_(e) << " which is not valid"
+                         << "." << std::endl
+                         << "Valid types are BAR=0, TRI=1, QUAD = 2, TET = 3,"
+                         << " PRISM=4, PYR = 5, HEX = 6" << std::endl;
+      SystemModule::my_exit();
+        
+    }
+  }// End Element Loop 
+
+
+
   Extract();
 
 }//End UnstMeshEdges
@@ -64,6 +108,7 @@ void UnstMeshEdges::ComputeNumberOfEdges()
   intT ne = 0;// Edge counter
   //---> Loop over the nodes
   for(intT n = 0; n < nnode_; n++) { // Node_loop
+  
     intT nn_tot = 0;
     //---> Loop over the elements that surround this node 
     for(intT i = 0; i < node2element_.get_ncol(n); i++){
@@ -111,9 +156,9 @@ void UnstMeshEdges::ComputeNumberOfEdges()
   }// End Node_loop
 
   //---> ne now contains sum over nodes of nedge_per_node*2
-  nedge_ = ne/2;
+  nedge_ = ne/2; 
   nnz_node2edge_ = ne;
-    
+
 }//End ComputeNumberOfEdges
 //****************************************************************************80
 void UnstMeshEdges::Extract()
@@ -169,11 +214,12 @@ void UnstMeshEdges::ExtractEdgesTri(const intT& elem, intT& edge_count)
   intT node2 = element2node_(elem,2);
   
   intT edge;
+ 
   //---> Edge 0
   edge = FormEdge(node0, node1, edge_count);
   element2edge_(elem, 0) = edge;
   nelement_surr_edge_(edge) += 1;
-  
+ 
   //---> Edge 1
   edge = FormEdge(node1, node2, edge_count);
   element2edge_(elem, 1) = edge;
@@ -262,7 +308,7 @@ intT UnstMeshEdges::GetEdgeTag(const intT& node0, const intT& node1,
   intT index_node = max(node0, node1);
   //---> Get the last edge made by the index node
   intT edge = LastEdgeFromNode_(index_node);
-  if( edge == -1) {// EdgeTag
+   if( edge == -1) {// EdgeTag
     //---> Do nothing we've already done this edge
     LastEdgeFromNode_(index_node) = edge_count;
   }
@@ -293,7 +339,7 @@ intT UnstMeshEdges::GetEdgeTag(const intT& node0, const intT& node1,
       NextEdgeFromEdge_(edge) = edge_count;
     }
   } // End EdgeTag
-
+ 
   return tag;
 }// End GetEdgeTag
 

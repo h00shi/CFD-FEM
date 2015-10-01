@@ -30,8 +30,13 @@ public:
 //****************************************************************************80
   UnstMeshEdges(const intT& nnode, const intT& nelement, 
                 const List2D<intT>& elem2node, 
-                const List2D<intT> node2elem,
+                const List2D<intT>& node2elem,
                 const Array1D<intT>& element_type);
+  
+  inline const Array2D<intT>& get_edge2node()const {return edge2node_;}
+  inline const List2D<intT>& get_node2edge() const {return node2edge_;}
+  inline const List2D<intT>& get_edge2element() const {return edge2element_;}
+  inline const List2D<intT>& get_element2edge() const {return element2edge_;}
 
 private:
   const intT& nnode_; //!< Number of nodes from which to build edges
