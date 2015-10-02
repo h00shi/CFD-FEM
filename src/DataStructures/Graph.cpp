@@ -11,6 +11,8 @@ Graph::Graph(List2D<intT>& adj, Array2D<intT>& edge2node) :
   nedge_ = edge2node_.get_size(0); 
   node2self_adj_index_.initialize(nnode_);
   edge2adj_index_.initialize(nedge_,2);
+  
+  FormGraphIndicies();
 }
 //****************************************************************************80
 Graph::Graph(List2D<intT>& adj) :
@@ -20,9 +22,13 @@ Graph::Graph(List2D<intT>& adj) :
     is not the most reliable thing.*/
   nnode_ = adj_.get_lead_size(); 
   nnz_   = adj_.get_total_size();
-  nedge_ = nnz_/2; 
+  nedge_ = (nnz_- nnode_)/2; 
+  edge2node_.initialize(nedge_,2);
   node2self_adj_index_.initialize(nnode_);
   edge2adj_index_.initialize(nedge_,2);
+  
+  FormEdge2Node();
+  FormGraphIndicies();
 }
 //****************************************************************************80
 void Graph::FormEdge2Node() 
@@ -52,7 +58,7 @@ void Graph::FormEdge2Node()
       } 
     }// End Neighbor loop 
   }// End Node loop 
-
+ 
 }// End FormEdge2Node
 
 //****************************************************************************80
@@ -98,3 +104,34 @@ intT Graph::GetEdgeTag(const intT& node0, const intT& node1, const int& iedge,
  
   return tag;
 }// End GetEdgeTag
+//****************************************************************************80
+void Graph::FormGraphIndicies()
+{
+  //---> Setup Self adjacency index
+  for(intT n = 0; n < nnode_; n++){// Node Loop
+    for(intT j = 0; j < adj_.get_ncol(n); j++) { // Neighbor Loop 
+      intT node = adj_(n,j);
+      if(node == n){node2self_adj_index_(n) = j;break;}
+    }// End Neighbor loop
+  }
+  
+  //---> Setup edge adjacency index
+  for(intT e = 0; e < nedge_; e++){ // Edge loop
+    //---> Left and right nodes
+    intT nl = edge2node_(e,0);
+    intT nr = edge2node_(e,1);
+    
+    for(intT j = 0; j < adj_.get_ncol(nl); j++){// left node neighbor idx
+      intT node = adj_(nl,j);
+      if(node == nr){edge2adj_index_(e,0) = j; break;}
+    }// End left node neighbor idx
+    
+    for(intT j = 0; j < adj_.get_ncol(nr); j++){//right node neighbor idx
+      intT node = adj_(nr,j);
+      if(node == nl){edge2adj_index_(e,1) = j; break;}
+    }//End right node neighbor idx
+    
+  }// End Edge loop 
+
+
+}// End FormGraphIndicies

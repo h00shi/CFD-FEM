@@ -92,7 +92,7 @@ void UnstMesh::Diagnostic(std::ostream& out_stream)
   out_stream << bc_local_face_.MemoryDiagnostic("bc_local_face_");
   out_stream << nface_per_bcid_.MemoryDiagnostic("nface_per_bcid_");
   out_stream << node2element_.MemoryDiagnostic("node2element_");
-  out_stream << adj_.MemoryDiagnostic("adj_");
+  out_stream << graph_->get_GraphAdj().MemoryDiagnostic("graph.adj_");
   out_stream << element_vol_.MemoryDiagnostic("element_vol_");
   out_stream << element_sa_.MemoryDiagnostic("element_sa_");
   out_stream << edge2node_.MemoryDiagnostic("edge2node_");
@@ -621,6 +621,7 @@ void UnstMesh::FormConnectivity()
   //---> Form Adjacency
   FormAdjacency();
   
+  
 } // End FormConnectivity
 
 //****************************************************************************80
@@ -847,10 +848,10 @@ void UnstMesh::FormAdjacency()
     nnz_adj += c;
 
   } // End Node_loop 
-  
+  List2D<intT> adj;
   //--------------------------------------------------------------------------
-  adj_.initialize(nnode_, nnz_adj);
-  grid_mem_ +=adj_.get_mem();
+  adj.initialize(nnode_, nnz_adj);
+  grid_mem_ +=adj.get_mem();
   //--------------------------------------------------------------------------
   
   //---> Build Adjacency List
@@ -905,11 +906,11 @@ void UnstMesh::FormAdjacency()
     
     //---> Return size of vector temp which is number of unique adjacent nodes
     intT c = temp.size();
-    adj_.set_ncol(n,c);
+    adj.set_ncol(n,c);
  
-    for (intT i = 0; i < c; i++){adj_(n,i) = temp[i];}
+    for (intT i = 0; i < c; i++){adj(n,i) = temp[i];}
     
   } // End Node_loop 
 
-
+  graph_ = new Graph(adj);
 }// End FormAdjacency

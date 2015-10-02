@@ -19,6 +19,7 @@
 #include "DataStructures/Array2D.h"
 #include "DataStructures/Array1D.h"
 #include "DataStructures/List2D.h"
+#include "DataStructures/Graph.h"
 #include <stdio.h>
 #include "Mesh/UnstMeshElements.h"
 #include "Mesh/ElementTopology.h"
@@ -293,7 +294,7 @@ public:
 //! \version $Rev$
 //! \return adj The adjacency array
 //****************************************************************************80
-  inline const List2D<intT>& get_adj() const {return adj_;}
+  inline const List2D<intT>& get_adj() const {return graph_->get_GraphAdj();}
 
 //****************************************************************************80
 //! \brief get_x : Returns reference to x array, the grid point coordinates
@@ -329,7 +330,10 @@ public:
 //! \version $Rev$
 //! \return edge2node_ The nodes that make up an edge
 //****************************************************************************80
-  inline const Array2D<intT>& get_edge2node() const {return edge2node_;}
+  inline const Array2D<intT>& get_edge2node() const 
+  {
+    return graph_->get_GraphEdge2Node();
+  }
 
 //****************************************************************************80
 //! \brief get_VTKType : Gets the vtk element type corresponding our element
@@ -353,6 +357,11 @@ public:
   {
     return vtk_face_type[ftype];
   }// End get_VTKFaceType
+
+  inline const Graph& get_Graph() const 
+  {
+    return *graph_;
+  }// End get_Graph;
 
 //****************************************************************************80
 //! \brief MemoryDiagnostic : Runs a full diagnostic of the memory for the 
@@ -431,7 +440,7 @@ protected:
   Array1D<intT> nface_per_bcid_; /*!< Gives number of faces for per boundary
                                   id # */
   List2D<intT> node2element_; /*!< Data array for node 2 element linked list */
-  List2D<intT> adj_; /*!< Node adjacency linked list data array - uninitialized*/
+  // List2D<intT> adj_; /*!< Node adjacency linked list data array - uninitialized*/
   Array2D<intT> edge2node_; /*!< Give the two nodes that make up an edge */
   
   //---> UnstMesh real values
@@ -454,6 +463,7 @@ protected:
   std::map<intT,std::string> bcid_tag_; /*!< Boundary id string tag */
   intT vtk_type[7] = {3, 5, 9, 10, 13, 14, 12};
   intT vtk_face_type[4] = {3, 5, 9, 10};
+  Graph* graph_;
 //****************************************************************************80
 //! \brief AllocateMemory : Allocates the memory for the mesh
 //! \details 

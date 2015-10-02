@@ -73,7 +73,38 @@ public:
 //! \return edge2node_ The nodes that are attached to each edge 
 //****************************************************************************80
   inline const Array2D<intT>& get_GraphEdge2Node() const {return edge2node_;}
+  
+//****************************************************************************80
+//! \brief get_GraphNode2SelfIndex : Returns a 1-D array that contains the 
+//!        self neighbor index of the adj.  Example array(i) = j : adj_(i,j) = i
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  inline const Array1D<intT>& get_GraphNode2SelfIndex() const 
+  { 
+    return node2self_adj_index_;
+  }
 
+//****************************************************************************80
+//! \brief get_GraphEdge2AdjIndex : Returns a 2-D array that is 
+//!                                 j = edge2adj_index_(e,0)
+//!		         	  such that adj(edge2node_(e,0),j) = 
+//!				  edg2node_(e,1) and 
+//!				  j = edge2adj_index(e,1) such that 
+//!				  adj(edge2node(e,1),j) = edge2node(e,0)
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  inline const Array2D<intT>& get_GraphEdge2AdjIndex() const
+  {
+    return edge2adj_index_;
+  }
 //****************************************************************************80
 //! \brief NeighborBegin : Returns the iterator the begining of the neighbor 
 //!                        list of the specified node
@@ -161,7 +192,16 @@ private:
 //! \date $Date$ 
 //! 
 //****************************************************************************80
-  
   void FormEdge2Node();
+
+//****************************************************************************80
+//! \brief 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  void FormGraphIndicies();
 }; //End Class Graph
 #endif

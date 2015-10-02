@@ -127,7 +127,6 @@ TEST(CSRMatrix, ThreeFields) {
     index += ncol_per_node(i)*nfld(i) ;
   
   }
-  std::cout << mesh.get_edge2node().get_size(0) << std::endl;
   csr_matrix.Diagnostic(std::cout);
 }
 

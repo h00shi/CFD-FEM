@@ -626,7 +626,7 @@ public:
 //! \date $Date$ 
 //! \param[in] var_name A string containing the variable name
 //****************************************************************************80
-  std::string MemoryDiagnostic(std::string const & var_name) {
+  std::string MemoryDiagnostic(std::string const & var_name) const {
    
      std::ostringstream stream;
      stream << var_name << "(" << this->get_lead_size() << ")(" 
