@@ -32,19 +32,20 @@ public:
 //! \param[in] edge2node The edg2node of graph 
 //! \param[in] nrow_per_node The number of rows per node
 //****************************************************************************80
-  CSRMatrix(const List2D<intT>& adjacency, const Array2D<intT>& edge2node, 
-            const Array1D<intT>& nrow_per_node) 
-    : SparseMatrix<dataT>::SparseMatrix(adjacency, edge2node, nrow_per_node)
+  CSRMatrix(const Graph& graph, const Array1D<intT>& nrow_per_node) : 
+    SparseMatrix<dataT>::SparseMatrix(graph, nrow_per_node)
   {
     //---> Some temporary storage...makes for shorter code;
     intT nrow  = SparseMatrix<dataT>::nrow_;
     intT nnz   = SparseMatrix<dataT>::nnz_;
     intT nnode = SparseMatrix<dataT>::nnode_;
-   
+    const List2D<intT>& adjacency = SparseMatrix<dataT>::graph_.get_GraphAdj();
+    
     //---> Initialize indexing arrays for CSR
     row_offset_.initialize(nrow + 1);
     column_idx_.initialize(nrow, nnz);
-    adj_data_offset_.intialize_copy_pattern(adjacency);
+    adj_data_offset_.initialize_copy_pattern(SparseMatrix<dataT>::
+                                             graph_.get_GraphAdj());
     
     row_offset_(0) = 0;
     intT row = 0;
@@ -81,10 +82,7 @@ public:
             col++;
             icol++;
           }
-	  // std::cout << row << " " << j << " " << adjacency(n,j) << " " 
-	  // 	    << node_start << " " << node_end 
-	  // 	    << " " << col << " " << icol << std::endl;
-	  // SystemModule::pause();
+
           node_start = adjacency(n,j) + 1;
           
         } // neighbor_loop 
@@ -116,6 +114,7 @@ public:
       row_offset_.get_mem() + column_idx_.get_mem();
       
   } // End CSRMatrix
+
 //****************************************************************************80
 //! \brief operator() : A parenthetical operator to access specified spot in 
 //!        matrix based on graph node, neighbor index and block (i,j)
@@ -183,7 +182,7 @@ public:
 			 const intT& block_row, 
 			 const intT& block_col)
   {
-    intT jneighbor = SparseMatrix<dataT>::self_adj_index_(node);
+    intT jneighbor = SparseMatrix<dataT>::graph_.NodeSelfIndex(node);
     return this->operator()(node, jneighbor, block_row, block_col);
        
   }// End Diagonal
@@ -202,7 +201,7 @@ public:
 			       const intT& block_row, 
 			       const intT& block_col) const
   {
-    intT jneighbor = SparseMatrix<dataT>::self_adj_index_(node);
+    intT jneighbor = SparseMatrix<dataT>::graph_.NodeSelfIndex(node);
     return this->operator()(node, jneighbor, block_row, block_col);
   }// End Diagonal
 //****************************************************************************80
@@ -222,10 +221,9 @@ public:
 			    const intT& block_row, 
 			    const intT& block_col)
   {
-    intT node = SparseMatrix<dataT>::edge2node_(edge,side);
-    intT jneighbor = SparseMatrix<dataT>::edge_adj_index_(edge,side);
+    intT node = SparseMatrix<dataT>::graph_.NodeFromEdge(edge,side);
+    intT jneighbor = SparseMatrix<dataT>::graph_.EdgeAdjIndex(edge,side);
     return this->operator()(node, jneighbor, block_row, block_col);
-    
   }// End OffDiagonal
 
 //****************************************************************************80
@@ -245,8 +243,8 @@ public:
 			    const intT& block_row, 
 			    const intT& block_col) const
   {
-    intT node = SparseMatrix<dataT>::edge2node_(edge,side);
-    intT jneighbor = SparseMatrix<dataT>::edge_adj_index_(edge,side);
+    intT node = SparseMatrix<dataT>::graph_.NodeFromEdge(edge,side);
+    intT jneighbor = SparseMatrix<dataT>::graph_.EdgeAdjIndex(edge,side);
     return this->operator()(node, jneighbor, block_row, block_col);
   }// End OffDiagonal
 

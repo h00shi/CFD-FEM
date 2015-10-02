@@ -139,11 +139,24 @@ public:
 //! \date $Date$ 
 //! \param[in] n The node who's neighbor you want
 //****************************************************************************80
-  inline intT& GetNeighbor (const intT& n, const intT& j)
+  inline const intT& Neighbor (const intT& n, const intT& j)const 
   {
     return adj_(n,j);
   } // End GetNeighbor
 
+  inline const intT& NodeFromEdge(const intT& e, const intT& j) const
+  {
+    return edge2node_(e,j);
+  }
+  inline const intT& NodeSelfIndex (const intT& n) const 
+  {
+    return node2self_adj_index_(n);
+  } // End GetNeighbor
+  
+  inline const intT& EdgeAdjIndex (const intT& e, const intT& j) const
+  {
+    return edge2adj_index_(e,j);
+  } // End GetNeighbor
 protected:
   
   List2D<intT> adj_; //!< Adjacency of nodes in the graph

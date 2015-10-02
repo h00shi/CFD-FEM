@@ -1,19 +1,18 @@
 #include "gtest/gtest.h"
 #include "SparseMatrix/CSRMatrix.h"
 #include "Mesh/UnstMesh.h"
-
+#include "DataStructures/Graph.h"
 
 TEST(CSRMatrix, OneField){
   UnstMesh mesh("Square.grid", "Grid-NKB");
   Array1D<intT> nfld(mesh.get_nnode());
   nfld.set_value(1);
-  CSRMatrix<realT> csr_matrix(mesh.get_adj(), mesh.get_edge2node(), nfld);
+  CSRMatrix<realT> csr_matrix(mesh.get_Graph(), nfld);
   const List2D<intT>& adj = mesh.get_adj();
   const List2D<intT>& adj_data_offset = csr_matrix.get_adj_data_offset();
   const Array1D<intT>& rowos = csr_matrix.get_row_offset();
   const List2D<intT>& colidx = csr_matrix.get_column_idx();
-  const Array1D<intT>& node2diag = csr_matrix.get_self_adj_index();
-  std::cout << node2diag << std::endl;
+ 
   //---> Check rowos
   EXPECT_EQ(rowos(0), 0);
   for(intT i = 0; i < adj.get_lead_size(); i++){
@@ -22,9 +21,6 @@ TEST(CSRMatrix, OneField){
     for(intT j = 0; j < adj.get_ncol(i); j++){
       EXPECT_EQ(colidx(i,j),adj(i,j));
       EXPECT_EQ(rowos(i) + j, adj_data_offset(i,j));
-      if( adj(i,j) == i ){
-	EXPECT_EQ(j, node2diag(i));
-      }
     }
   }
 
@@ -35,13 +31,12 @@ TEST(CSRMatrix, TwoFields) {
   Array1D<intT> nfld(mesh.get_nnode());
   nfld.set_value(2);
 
-  CSRMatrix<realT> csr_matrix(mesh.get_adj(), mesh.get_edge2node(), nfld);
+  CSRMatrix<realT> csr_matrix(mesh.get_Graph(), nfld);
   const List2D<intT>& adj = mesh.get_adj();
   const List2D<intT>& adj_data_offset = csr_matrix.get_adj_data_offset();
   const Array1D<intT>& rowos = csr_matrix.get_row_offset();
   const List2D<intT>& colidx = csr_matrix.get_column_idx();
-  const Array1D<intT>& node2diag = csr_matrix.get_self_adj_index();
-  
+   
   Array1D<intT> ncol_per_node(adj.get_lead_size());
   
   for(intT i = 0; i < adj.get_lead_size(); i++){
@@ -70,8 +65,7 @@ TEST(CSRMatrix, TwoFields) {
     intT loc_index = index;
     for(intT j = 0; j < adj.get_ncol(i); j++){
       EXPECT_EQ(loc_index, adj_data_offset(i,j));  
-      if( i == adj(i,j) ) {EXPECT_EQ(j, node2diag(i));}
-      
+            
       loc_index += nfld(adj(i,j));
     }
     index += ncol_per_node(i)*nfld(i) ;
@@ -85,13 +79,12 @@ TEST(CSRMatrix, ThreeFields) {
   Array1D<intT> nfld(mesh.get_nnode());
   nfld.set_value(3);
 
-  CSRMatrix<realT> csr_matrix(mesh.get_adj(), mesh.get_edge2node(), nfld);
+  CSRMatrix<realT> csr_matrix(mesh.get_Graph(), nfld);
   const List2D<intT>& adj = mesh.get_adj();
   const List2D<intT>& adj_data_offset = csr_matrix.get_adj_data_offset();
   const Array1D<intT>& rowos = csr_matrix.get_row_offset();
   const List2D<intT>& colidx = csr_matrix.get_column_idx();
-  const Array1D<intT>& node2diag = csr_matrix.get_self_adj_index();
-  
+   
   Array1D<intT> ncol_per_node(adj.get_lead_size());
   
   for(intT i = 0; i < adj.get_lead_size(); i++){
@@ -120,7 +113,6 @@ TEST(CSRMatrix, ThreeFields) {
     intT loc_index = index;
     for(intT j = 0; j < adj.get_ncol(i); j++){
       EXPECT_EQ(loc_index, adj_data_offset(i,j));  
-      if( i == adj(i,j) ) {EXPECT_EQ(j, node2diag(i));}
       
       loc_index += nfld(adj(i,j));
     }
@@ -161,8 +153,9 @@ TEST(CSRMatrix, Tridiag){
     edge2node(i,1) = i + 1;
   }
   nfld.set_value(1);
+  Graph graph(adj, edge2node);
   
-  CSRMatrix<realT> matrix(adj, edge2node, nfld);
+  CSRMatrix<realT> matrix(graph, nfld);
   matrix(0,0,0,0) = -2.0;
   matrix(0,1,0,0) = 1.0;
   for(intT i = 1; i < adj.get_lead_size() - 1; i++){

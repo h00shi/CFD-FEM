@@ -5,6 +5,7 @@
 #include "DataStructures/Array1D.h"
 #include "DataStructures/Array2D.h"
 #include "DataStructures/List2D.h"
+#include "DataStructures/Graph.h"
 
 //****************************************************************************80
 //! \brief This is the base class for sparse matricies.  
@@ -23,11 +24,8 @@ template <class dataT>
 class SparseMatrix {
 
 protected:
-  //---> References to adjacency
-  const List2D<intT>& adj_;         //!< Adjacency of the graph
-  const Array2D<intT>& edge2node_;  //!< Edge ordering
   const Array1D<intT>& nrow_per_node_;  //!< Number of rows per graph node
- 
+  const Graph& graph_;//!< Graph form which we build the csr matrix
   intT nnode_ ; //!< Number of graph nodes that sparse matrix is built from
   intT nedge_;//!< Number of graph edges
   intT nrow_; //!< Number of rows in the matrix 
@@ -36,12 +34,7 @@ protected:
   
   realT mem_; //!< Number of 
   Array1D<dataT> data_; //!< Data array 
-  Array1D<intT> self_adj_index_; /*!< For a node i self_adj_index_(i) = j :
-				   adjacency(i,j) = i */
-  Array2D<intT> edge_adj_index_; /*!< For an edge e edge_adj_index(e,0) = j :
-				   adjacency(edge2node(e,0),j) = edge2node(e,1)
-				 */
-  
+   
 //****************************************************************************80
 //! \brief SparseMatrix : Constructor of SpareMatrix From Graph
 //! \details 
@@ -52,10 +45,13 @@ protected:
 //! \param[in] edge2node The edg2node of graph 
 //! \param[in] nrow_per_node The number of rows per node
 //****************************************************************************80
-  SparseMatrix(const List2D<intT>& adjacency, const Array2D<intT>& edge2node, 
-	       const Array1D<intT>& nrow_per_node) : 
-    adj_(adjacency), edge2node_(edge2node), nrow_per_node_(nrow_per_node)
+  SparseMatrix(const Graph& graph, const Array1D<intT>& nrow_per_node) : 
+    graph_(graph), nrow_per_node_(nrow_per_node)
   {
+    //---> Reference variables
+    const List2D<intT>& adjacency = graph_.get_GraphAdj();
+    const Array2D<intT>& edge2node = graph_.get_GraphEdge2Node();
+    
     //---> Get the graph info
     nnode_ = adjacency.get_lead_size();
     nedge_ = edge2node.get_size(0);
@@ -79,36 +75,7 @@ protected:
     
     //---> Initialize variables
     data_.initialize(nnz_);
-    self_adj_index_.initialize(nnode_);
-    edge_adj_index_.initialize(nedge_,2);
-    mem_ = data_.get_mem() + self_adj_index_.get_mem() + 
-      edge_adj_index_.get_mem();
-    
-    //---> Setup Self adjacency index
-    for(intT n = 0; n < nnode_; n++){// Node Loop
-      for(intT j = 0; j < adjacency.get_ncol(n); j++) { // Neighbor Loop 
-      	intT node = adjacency(n,j);
-	if(node == n){self_adj_index_(n) = j;break;}
-      }// End Neighbor loop
-    }
-    
-    //---> Setup edge adjacency index
-    for(intT e = 0; e < nedge_; e++){ // Edge loop
-      //---> Left and right nodes
-      intT nl = edge2node(e,0);
-      intT nr = edge2node(e,1);
-      
-      for(intT j = 0; j < adjacency.get_ncol(nl); j++){// left node neighbor idx
-	intT node = adjacency(nl,j);
-	if(node == nr){edge_adj_index_(e,0) = j; break;}
-      }// End left node neighbor idx
-      
-      for(intT j = 0; j < adjacency.get_ncol(nr); j++){//right node neighbor idx
-	intT node = adjacency(nr,j);
-	if(node == nl){edge_adj_index_(e,1) = j; break;}
-      }//End right node neighbor idx
-      
-    }// End Edge loop 
+    mem_ = data_.get_mem();
   
   } //End SparseMatrix
 
@@ -145,7 +112,7 @@ public:
   inline Array1D<dataT>& get_data() { return data_;}
 
 //****************************************************************************80
-//! \brief get_data : Gets the reference to the data Array 
+//! \brief get_data : Gets the reference to the data array 
 //! \details 
 //! \nick 
 //! \version $Rev$ 
@@ -154,30 +121,6 @@ public:
 //****************************************************************************80
   inline const Array1D<dataT>& get_data() const { return data_;}
 
-//****************************************************************************80
-//! \brief get_self_adj_index : Gets the reference to the self_adj_index array 
-//! \details 
-//! \nick 
-//! \version $Rev$ 
-//! \date $Date$ 
-//! 
-//****************************************************************************80
-  inline const Array1D<intT>& get_self_adj_index() const 
-  {
-    return self_adj_index_;
-  } // End get_self_adj_index
-//****************************************************************************80
-//! \brief get_edge_adj_index : Gets the reference to the edge_adj_index
-//! \details 
-//! \nick 
-//! \version $Rev$ 
-//! \date $Date$ 
-//! 
-//****************************************************************************80
-  inline const Array2D<intT>& get_edge_adj_index() const 
-  {
-    return edge_adj_index_;
-  } // end get_edge_adj_index
 //****************************************************************************80
 //! \brief 
 //! \details 
@@ -204,8 +147,6 @@ public:
     out_stream << "Number of Columns: " << ncol_ << std::endl;
     out_stream << std::endl;
     out_stream << data_.MemoryDiagnostic("data_");
-    out_stream << self_adj_index_.MemoryDiagnostic("self_adj_index_");
-    out_stream << edge_adj_index_.MemoryDiagnostic("edge_adj_index_");
   }// End Diagnostic 
 private:
  

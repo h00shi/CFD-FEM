@@ -676,7 +676,6 @@ private:
 //! \version
 //****************************************************************************80
   UnstMesh& operator= (const UnstMesh&) = delete;
-
   
 };
 #endif

@@ -47,7 +47,7 @@ TEST(Graph, Constructor) {
   for(intT i = 0; i < graph->get_nnode(); i++){
     for(intT j = graph->NeighborBegin(i); 
 	j < graph->NeighborEnd(i); j++){
-      EXPECT_EQ(adj2(i,j), graph->GetNeighbor(i,j));
+      EXPECT_EQ(adj2(i,j), graph->Neighbor(i,j));
     }
   }
   
@@ -103,7 +103,7 @@ TEST(Graph, Constructor2) {
 
   for(intT i = 0; i < graph->get_nnode(); i++){
     for(intT j = graph->NeighborBegin(i); j < graph->NeighborEnd(i); j++){
-      EXPECT_EQ(adj2(i,j), graph->GetNeighbor(i,j));
+      EXPECT_EQ(adj2(i,j), graph->Neighbor(i,j));
     }
   }
   

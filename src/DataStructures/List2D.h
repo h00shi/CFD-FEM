@@ -167,7 +167,7 @@ public:
 //! \param[in] other The other list 2D
 //****************************************************************************80
   template <class otherT>
-  inline void intialize_copy_pattern(const List2D<otherT>& other)
+  inline void initialize_copy_pattern(const List2D<otherT>& other)
   {
     if (this->index == NULL && this->size1 == 0){
       //---> Call the initialize function
