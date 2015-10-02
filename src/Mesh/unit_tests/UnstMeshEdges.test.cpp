@@ -16,13 +16,3 @@ TEST(UnstMeshEdges, Construct)
   std::cout << edge2node << std::endl;
 }
 
-TEST(UnstMeshEdges, STLConstruct)
-{
-  UnstMesh mesh("Square.grid", "Grid-NKB");
-  std::set<std::pair<intT>> edge2node;
-  
-  for(intT i = 0; i < mesh.get_nelement(); i++){
-    for(intT j = 0; j < mesh.get_element2node().get_ncol(e); j++){
-     
-      std::pair<intT,intT> edge = 
-}

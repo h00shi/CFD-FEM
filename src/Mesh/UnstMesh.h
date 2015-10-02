@@ -20,7 +20,7 @@
 #include "DataStructures/Array1D.h"
 #include "DataStructures/List2D.h"
 #include <stdio.h>
-//#include "Elements/Element.h"
+#include "Mesh/UnstMeshElements.h"
 #include "Mesh/ElementTopology.h"
 class UnstMesh {
   
@@ -414,7 +414,6 @@ protected:
   intT nbc_quad_; /*!< Number fo 3-D boundary quads in the mesh 
 		    (3-D meshes only) */
 
-  Array1D<intT> nodeitemp_; /*!< Array of the size nnode + 1 for temp usage */
   //---> UnstMesh Description Pointers
   List2D<intT> element2node_; /*!< Element to node array, gives indicies of
                                 nodes on an element */

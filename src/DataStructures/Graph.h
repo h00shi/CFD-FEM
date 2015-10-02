@@ -25,8 +25,16 @@ public:
 //! \param[in] adj The adjacency for this graph 
 //! \param[in] edge2node The nodes attached to each edge
 //****************************************************************************80
-  Graph(List2D<intT>& adj, Array2D<intT>& edge2node);				
-
+  Graph(List2D<intT>& adj, Array2D<intT>& edge2node);	
+			
+//****************************************************************************80
+//! \brief Graph : Constructor for this class. Note will use move constructor 
+//!                of input variables...effectly deleting them. 
+//! \nick
+//! \version $Rev: 5 $
+//! \param[in] adj The adjacency for this graph 
+//****************************************************************************80
+  Graph(List2D<intT>& adj);
 //****************************************************************************80
 //! \brief ~Graph : Destructor for this class
 //! \nick
@@ -126,9 +134,34 @@ private:
 //! \brief Graph : Default Constructor for this class, deleted
 //! \nick
 //! \version $Rev: 5 $
-
 //****************************************************************************80
   Graph() = delete;
+//****************************************************************************80
+//! \brief 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! \param[in] node0 One of the nodes we want to match
+//! \param[in] node1 The other node we ant to match on the edge
+//! \param[in] iedge Most recently constructured edge
+//! \param[out] LastEdgeFromNode Last edge created by each node in the mesh
+//! \param[out] NextEdgeFromEdge Next edge created after each edge
+//! \return tag A tag to decided to create a new edge tag = -1 is new edge
+//****************************************************************************80
+  intT GetEdgeTag(const intT& node0, const intT& node1, const int& iedge,
+                  Array1D<intT>& LastEdgeFromNode,
+                  Array1D<intT>& NextEdgeFromEdge);
 
+//****************************************************************************80
+//! \brief Forms the edge2node list in the case that it's not input
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  
+  void FormEdge2Node();
 }; //End Class Graph
 #endif
