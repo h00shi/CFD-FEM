@@ -67,8 +67,8 @@ protected:
     nnz_ = 0;
     for(intT n = 0; n < nnode_; n++){ // Node loop 
       for(intT j = 0; j < adjacency.get_ncol(n); j++) { // Neighbor Loop 
-	intT node = adjacency(n,j);
-	nnz_ += nrow_per_node(n)*nrow_per_node(node);
+	intT neighbor_node = adjacency(n,j);
+	nnz_ += nrow_per_node(n)*nrow_per_node(neighbor_node);
 
       } // End Neighbor Loop 
     } // End Node loop 
@@ -100,7 +100,15 @@ public:
 //! 
 //****************************************************************************80
   inline const intT& get_ncol() const { return ncol_;}
-
+//****************************************************************************80
+//! \brief get_nnz_ : Gets the number of non-zeros of the matrix 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  inline const intT& get_nnz() const { return nnz_;}
 //****************************************************************************80
 //! \brief get_data : Gets the reference to the data Array 
 //! \details 

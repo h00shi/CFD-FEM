@@ -462,7 +462,6 @@ public:
     return(os);
   } // End operator <<
 
-
 //****************************************************************************80
 //!
 //! \brief get_ptr : Allow access to pointer at specified address
@@ -496,6 +495,39 @@ public:
     this->CheckBounds(i,j);
 #endif
     return(data + index[i] + j);
+    
+  }// End get_ptr
+
+//****************************************************************************80
+//!
+//! \brief get_ptr : Allow access to pointer at specified address
+//! \details Constant correct version
+//! \nick
+//! \version
+//! \param[in] i The global address you want to access
+//****************************************************************************80
+  inline dataT const * get_ptr(const intT& i) const
+  {
+#ifdef DEV_DEBUG
+    this->CheckSize(i);
+#endif
+    return (data + i);
+  }// End get_ptr
+
+//****************************************************************************80
+//!
+//! \brief get_ptr : Allow acess to pointer at specified address
+//! \details
+//! \nick
+//! \version $Rev: 5 $
+//! \param[in] i The global address you want to access
+//****************************************************************************80
+  inline dataT* get_ptr(const intT& i)
+  {
+#ifdef DEV_DEBUG
+    this->CheckSize(i);
+#endif
+    return(data + i);
     
   }// End get_ptr
 
