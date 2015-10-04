@@ -19,7 +19,10 @@ protected:
   Array1D<intT> row_offset_; //!< Row offset pointer as specified by CSR
   List2D<intT>  column_idx_; //!< Column offset point as specified by CSR
   List2D<intT>  adj_data_offset_; //!< Pointer from adj to data indexing 
-
+  Array1D<intT> nnz_node_; /*!< Stores the number of non-zero columns
+                                  for a graph node. NOTE: For block matricies 
+                                  each row within a node has the same number
+                                  of non-zero columns. */ 
 public:
 
 //****************************************************************************80
@@ -46,7 +49,7 @@ public:
     column_idx_.initialize(nrow, nnz);
     adj_data_offset_.initialize_copy_pattern(SparseMatrix<dataT>::
                                              graph_.get_GraphAdj());
-    
+    nnz_node_.initialize(nnode);
     row_offset_(0) = 0;
     intT row = 0;
     for(intT n = 0; n < nnode; n++){// Node loop 
@@ -90,10 +93,10 @@ public:
         row++;
 
       } // End Row var
-     
+      nnz_node_(n) = row_offset_(row) - row_offset_(row - 1);
     } // End node loop 
     
-    //---> Setup the adj_data_offset_ and diag pointers
+    //---> Setup the adj_data_offset_
     
     intT index = 0;
     for(intT n = 0; n < nnode; n++){// Node Loop 
@@ -133,10 +136,8 @@ public:
   {
    
     intT i = adj_data_offset_(node, j_neighbor) + 
-      (row_offset_(node + block_row + 1) - 
-       row_offset_(node + block_row))*block_row + 
+      nnz_node_(node)*block_row + 
       block_col;
-    
     return SparseMatrix<dataT>::data_(i);
   }// End operator()
 
@@ -161,8 +162,7 @@ public:
   {
    
     intT i = adj_data_offset_(node, j_neighbor) + 
-      (row_offset_(node + block_row + 1) - 
-       row_offset_(node + block_row))*block_row + 
+      nnz_node_(node)*block_row + 
       block_col;
     
     return SparseMatrix<dataT>::data_(i);
@@ -280,6 +280,17 @@ public:
   {
     return adj_data_offset_;
   } // End get_adj_data_offset;
+
+//****************************************************************************80
+//! \brief get_nnz_node : Returns an array1D with the number of non-zero columns
+//!                       for each node. 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  inline const Array1D<intT>& get_nnz_node() const {return nnz_node_;}
 
 //****************************************************************************80
 //! \brief  Diagnostic : Returns diagnostic information to specified stream

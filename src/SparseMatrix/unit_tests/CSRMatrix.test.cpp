@@ -12,7 +12,7 @@ TEST(CSRMatrix, OneField){
   const List2D<intT>& adj_data_offset = csr_matrix.get_adj_data_offset();
   const Array1D<intT>& rowos = csr_matrix.get_row_offset();
   const List2D<intT>& colidx = csr_matrix.get_column_idx();
- 
+  const Array1D<intT>& nnz_node = csr_matrix.get_nnz_node();
   //---> Check rowos
   EXPECT_EQ(rowos(0), 0);
   for(intT i = 0; i < adj.get_lead_size(); i++){
@@ -24,6 +24,14 @@ TEST(CSRMatrix, OneField){
     }
   }
 
+  //---> Check nnz_node
+  for(intT i = 0; i < adj.get_lead_size(); i++){
+    intT nnz = 0;
+    for(intT j = 0; j < adj.get_ncol(i); j++){
+      nnz += nfld(adj(i,j));
+    }
+    EXPECT_EQ(nnz, nnz_node(i));
+  }
 }
 
 TEST(CSRMatrix, TwoFields) {
@@ -36,7 +44,8 @@ TEST(CSRMatrix, TwoFields) {
   const List2D<intT>& adj_data_offset = csr_matrix.get_adj_data_offset();
   const Array1D<intT>& rowos = csr_matrix.get_row_offset();
   const List2D<intT>& colidx = csr_matrix.get_column_idx();
-   
+  const Array1D<intT>& nnz_node = csr_matrix.get_nnz_node();
+  
   Array1D<intT> ncol_per_node(adj.get_lead_size());
   
   for(intT i = 0; i < adj.get_lead_size(); i++){
@@ -72,6 +81,14 @@ TEST(CSRMatrix, TwoFields) {
   
   }
   
+  //---> Check nnz_node
+  for(intT i = 0; i < adj.get_lead_size(); i++){
+    intT nnz = 0;
+    for(intT j = 0; j < adj.get_ncol(i); j++){
+      nnz += nfld(adj(i,j));
+    }
+    EXPECT_EQ(nnz, nnz_node(i));
+  }
 }
 
 TEST(CSRMatrix, ThreeFields) {
@@ -84,7 +101,8 @@ TEST(CSRMatrix, ThreeFields) {
   const List2D<intT>& adj_data_offset = csr_matrix.get_adj_data_offset();
   const Array1D<intT>& rowos = csr_matrix.get_row_offset();
   const List2D<intT>& colidx = csr_matrix.get_column_idx();
-   
+  const Array1D<intT>& nnz_node = csr_matrix.get_nnz_node();
+  
   Array1D<intT> ncol_per_node(adj.get_lead_size());
   
   for(intT i = 0; i < adj.get_lead_size(); i++){
@@ -118,6 +136,14 @@ TEST(CSRMatrix, ThreeFields) {
     }
     index += ncol_per_node(i)*nfld(i) ;
   
+  }
+  //---> Check nnz_node
+  for(intT i = 0; i < adj.get_lead_size(); i++){
+    intT nnz = 0;
+    for(intT j = 0; j < adj.get_ncol(i); j++){
+      nnz += nfld(adj(i,j));
+    }
+    EXPECT_EQ(nnz, nnz_node(i));
   }
   csr_matrix.Diagnostic(std::cout);
 }
@@ -158,7 +184,7 @@ TEST(CSRMatrix, Tridiag){
   CSRMatrix<realT> matrix(graph, nfld);
   matrix(0,0,0,0) = -2.0;
   matrix(0,1,0,0) = 1.0;
-  for(intT i = 1; i < adj.get_lead_size() - 1; i++){
+  for(intT i = 1; i < N - 1; i++){
     matrix(i,0,0,0) = -1.0;
     matrix(i,1,0,0) = -2.0;
     matrix(i,2,0,0) = 1.0;
@@ -166,11 +192,10 @@ TEST(CSRMatrix, Tridiag){
   matrix(N-1,0,0,0) = -1.0;
   matrix(N-1,1,0,0) = -2.0;
  
-  for(intT i = 0; i < matrix.get_nrow(); i++){
-    for(intT j = 0; j < matrix.get_column_idx().get_ncol(i); j++){
-      std::cout << matrix(i,j,0,0) << " ";
-    }
-    std::cout << std::endl;
+  for(intT i = 1; i < matrix.get_nrow()-1; i++){
+    EXPECT_DOUBLE_EQ(-1.0, matrix(i,0,0,0));
+    EXPECT_DOUBLE_EQ(-2.0, matrix(i,1,0,0));
+    EXPECT_DOUBLE_EQ(1.0, matrix(i,2,0,0));
   }
 
 }
