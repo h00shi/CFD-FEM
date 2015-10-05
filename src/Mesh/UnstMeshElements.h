@@ -32,6 +32,15 @@ class UnstMeshElements
   UnstMeshElements(const intT& nnode, 
                    const intT& nelement, 
                    List2D<intT>& element2node);
+//****************************************************************************80
+//! \brief Destructor 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  ~UnstMeshElements();
 private:
   intT nelement_; //!< Number of elements in the mesh
   intT nbar_; //!< Number of 1-D bar elements in the mesh
@@ -42,11 +51,24 @@ private:
   intT npyr_; //!< Number of 3-D pyramid elements in the mesh
   intT nhex_; //!< Number of 3-D hex elements in the mesh
   intT nnode_; //!< Number of nodes in the mesh
+  realT mem_;//!< Amount of memory used by this class
   List2D<intT> element2node_; //!< Element2node connectivity
   List2D<intT> node2element_; //!< Node2lement connectivity
   List2D<intT> node2node_;//!< All nodes that share an element with a node
   Array1D<ElementTopology::element_types> element_type_; /*!< The type of each 
                                                           element */
+  Array1D<realT> volume_;//!< Volume of each element in the mesh
+
+//****************************************************************************80
+//! \brief Default constructor.  DELETED
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  UnstMeshElements() = delete;
+  
 //****************************************************************************80
 //! \brief FormNode2Element : Forms the node2element connecitivity
 //! \details 
@@ -65,7 +87,8 @@ private:
 //! \date $Date$ 
 //! 
 //****************************************************************************80
-  void FormAdjacency();
+  void FormNode2Node();
+  void CountElementTypes();
 
 };// UnstMeshElements
 #endif

@@ -51,12 +51,6 @@
 #include <string> 
 #endif
 
-//---> Namespaces
-#ifndef INC_STD
-#define INC_STD
-//#include <stdlib> /*!< Header file for stdlib */
-#endif // END INC_STD
-
 //---> MPI
 #ifndef INC_MPI
 #define INC_MPI
@@ -67,8 +61,7 @@
 #endif // END INC_MPI
 
 //----> Finally define precision of integer and real 
-typedef int intT;
-typedef double realT;
+#include "precision.h"
 
 #include "consts.h"
 #include "MathUtilities/complexify.h"
