@@ -46,14 +46,14 @@ public:
 //! \date $Date$ 
 //! 
 //****************************************************************************80
-  virtual Open(const std::string& filename) = 0;
+  virtual void Open(const std::string& filename) = 0;
   virtual Array2D<realT> ReadNodes() = 0;
-  virtual List2D<intT>  ReadElement2Node() = 0;
-  virtual Array1D<intT> ReadElementType() = 0;
-  virtual Array1D<intT> ElementRegion() = 0;
-  virtual List2D<intT>  ReadBcFace2Node() = 0;
-  virtual Array1D<intT> ReadBcID() = 0;
-  virtual Array1D<intT> ReadBcFaceType() = 0;
+  // virtual List2D<intT>  ReadElement2Node() = 0;
+  // virtual Array1D<intT> ReadElementType() = 0;
+  // virtual Array1D<intT> ReadElementRegion() = 0;
+  // virtual List2D<intT>  ReadBcFace2Node() = 0;
+  // virtual Array1D<intT> ReadBcID() = 0;
+  // virtual Array1D<intT> ReadBcFaceType() = 0;
 
 private:
  
