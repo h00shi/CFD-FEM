@@ -1,12 +1,16 @@
 #include "IO/UnstMeshReaderNKBGrid.h"
 //****************************************************************************80
-UnstMeshReaderNKBGrid::UnstMeshReaderNKBGrid(){is_open_ = false;}
-//****************************************************************************80
-UnstMeshReaderNKBGrid::~UnstMeshReaderNKBGrid(){is_open_ = false;}
-//****************************************************************************80
-void UnstMeshReaderNKBGrid::Open(const std::string& filename)
+UnstMeshReaderNKBGrid::UnstMeshReaderNKBGrid(const std::string& filename) :
+  UnstMeshReader::UnstMeshReader(filename)
 {
-   //---> We know we are reading a 2-D mesh file;
+   OpenAndRead();
+} // End UnstMeshReaderNKBGrid::UnstMeshReaderNKBGrid
+//****************************************************************************80
+UnstMeshReaderNKBGrid::~UnstMeshReaderNKBGrid(){}
+//****************************************************************************80
+void UnstMeshReaderNKBGrid::OpenAndRead()
+{
+  //---> We know we are reading a 2-D mesh file;
   intT ndim = 2;
   
   char char_crap[100];
@@ -17,15 +21,17 @@ void UnstMeshReaderNKBGrid::Open(const std::string& filename)
   intT nnz_elem2node = 0;
   intT nnz_bc_face2node = 0;
    
-  SystemModule::cout << "Opening mesh file: " << filename << std::endl;
+  SystemModule::cout << "Opening mesh file: " << UnstMeshReader::filename_ 
+                     << std::endl;
   /*---> Open the mesh file.  NOTE: must cast string to char* because that 
     is the argument of mesh_file_.open(); */
   
-  mesh_file_ = fopen(filename.c_str(), "r");
+  mesh_file_ = fopen(UnstMeshReader::filename_.c_str(), "r");
   
   if( mesh_file_ == NULL ) { // file_check
      
-    std::cout << "ERROR: Could not open mesh file: " << filename 
+    SystemModule::cout<< "ERROR: Could not open mesh file: " 
+              << UnstMeshReader::filename_ 
 	      << std::endl;
     SystemModule::my_exit();
       
@@ -33,7 +39,7 @@ void UnstMeshReaderNKBGrid::Open(const std::string& filename)
 
 
     //---> Get top line: nnodes nelement nbc_face nbc_id
-  std::cout << "Reading Header" << std::endl;
+  SystemModule::cout<< "Reading Header" << std::endl;
   fscanf(mesh_file_, "%d %d %d %d\n", &nnode, &nelement , &nbc_face, &nbc_id);
   
   x_.initialize(nnode, ndim);
@@ -42,10 +48,10 @@ void UnstMeshReaderNKBGrid::Open(const std::string& filename)
   bc_face_id_.initialize(nbc_face);
   bc_face_type_.initialize(nbc_face);
   
-   //---> Get line of text: Nodes per Cell
+  //---> Get line of text: Nodes per Cell
   // Use fgets to read 100 chars of crap and move one...it's a neat trick
   fgets(char_crap, 100, mesh_file_);
-  std::cout << "Reading Element Type" << std::endl;
+  SystemModule::cout<< "Reading Element Type" << std::endl;
   //---> Loop over elements and get nnodes per element
   for(intT e = 0; e < nelement; e++){
     intT n = 0; 
@@ -63,7 +69,7 @@ void UnstMeshReaderNKBGrid::Open(const std::string& filename)
       element_type_(e) = ElementTopology::element_types::QUAD;
       break;
     default:
-      std::cout << "ERROR: Element " << e
+      SystemModule::cout<< "ERROR: Element " << e
 		<< " has an invalid number of nodes " << n 
 		<< ".  Not sure how this happened..."
 		<< "but it needs to be fixed 2-D grids only please.  " 
@@ -77,16 +83,16 @@ void UnstMeshReaderNKBGrid::Open(const std::string& filename)
   bc_face2node_.initialize(nbc_face, nnz_bc_face2node);
  
   //----------------------------------------------------------------------------
-  std::cout << "Reading Nodal Coordinates" << std::endl;
+  SystemModule::cout<< "Reading Nodal Coordinates" << std::endl;
   //---> Again using gets read line: Nodal Coordinates
   fgets(char_crap, 100, mesh_file_);
   for(intT n = 0; n < nnode; n++){
     fscanf(mesh_file_, "%lf %lf\n", &x_(n,0), &x_(n,1));
   }
-  std::cout << "Reading Element 2 Node Connecitivity" << std::endl;
+  SystemModule::cout<< "Reading Element 2 Node Connecitivity" << std::endl;
   //---> Again using gets read line: Element to Node Connectivity
   fgets(char_crap, 100, mesh_file_);
-  //std::cout << char_crap << std::endl;
+  //SystemModule::cout<< char_crap << std::endl;
   for(intT e = 0; e < nelement; e++){ // Element2node loop 
     intT n0, n1, n2, n3;
    
@@ -121,7 +127,7 @@ void UnstMeshReaderNKBGrid::Open(const std::string& filename)
     } // End Choose element type
   } // End Element2node loop
 
-  std::cout << "Reading Boundary Face 2 Node Connecitivity" << std::endl;
+  SystemModule::cout<< "Reading Boundary Face 2 Node Connecitivity" << std::endl;
   //---> Again using gets read line: Boundary Face Data
   fgets(char_crap, 100, mesh_file_);
   for(intT f = 0; f < nbc_face; f++){// Read Bc Faces
@@ -146,130 +152,100 @@ void UnstMeshReaderNKBGrid::Open(const std::string& filename)
   } // End Read BC faces
 
   fclose(mesh_file_);
-  std::cout << "Done Reading mesh file." << std::endl;
-  is_open_ = true;
+  SystemModule::cout << "Done Reading mesh file." << std::endl;
+  
 }// End UnstMeshReaderNKBGrid::Open
 //****************************************************************************80
 Array2D<realT> UnstMeshReaderNKBGrid::ReadNodes()
 {
-  if(is_open_) {
-    Array2D<realT> xtmp(x_.get_size(0), x_.get_size(1));
+ 
+  Array2D<realT> xtmp(x_.get_size(0), x_.get_size(1));
     
-    memcpy(xtmp.get_ptr(0,0), 
-           x_.get_ptr(0,0), 
-           sizeof(realT)*x_.get_total_size());
+  memcpy(xtmp.get_ptr(0,0), 
+         x_.get_ptr(0,0), 
+         sizeof(realT)*x_.get_total_size());
     
-    return xtmp;
-  }
-  else {
-    SystemModule::cout << "ERROR: Invalid read of nodal coordinates from "
-                       << "and NKB-Grid formatted mesh file." << std::endl;
-  }
-  
+  return xtmp;
 }// End UnstMeshReaderNKBGrid::ReadNodes()
 
 //****************************************************************************80
 List2D<intT> UnstMeshReaderNKBGrid::ReadElement2Node()
 {
-  if(is_open_) {
-    List2D<intT> e2n_tmp;
-    e2n_tmp.initialize_copy_pattern(element2node_);
+
+  List2D<intT> e2n_tmp;
+  e2n_tmp.initialize_copy_pattern(element2node_);
     
-    memcpy(e2n_tmp.get_ptr(0),
-           element2node_.get_ptr(0), 
-           sizeof(intT)*element2node_.get_total_size());
+  memcpy(e2n_tmp.get_ptr(0),
+         element2node_.get_ptr(0), 
+         sizeof(intT)*element2node_.get_total_size());
     
-    return e2n_tmp;
-  }
-  else {
-    SystemModule::cout << "ERROR: Invalid read of element to node from "
-                       << "and NKB-Grid formatted mesh file." << std::endl;
-  }
+  return e2n_tmp;
+  
 }// End UnstMeshReaderNKBGrid::ReadElement2Node
 
 //****************************************************************************80
-Array1D<intT> UnstMeshReaderNKBGrid::ReadElementType()
+Array1D<ElementTopology::element_types> UnstMeshReaderNKBGrid::ReadElementType()
 {
-  if(is_open_) {
-    Array1D<intT> etype_tmp(element_type_.get_size(0));
+ 
+  Array1D<ElementTopology::element_types> etype_tmp(element_type_.get_size(0));
     
-    memcpy(etype_tmp.get_ptr(0), 
-           element_type_.get_ptr(0), 
-           sizeof(intT)*element_type_.get_size(0));
+  memcpy(etype_tmp.get_ptr(0), 
+         element_type_.get_ptr(0), 
+         sizeof(intT)*element_type_.get_size(0));
     
-    return etype_tmp;
-  }
-  else {
-    SystemModule::cout << "ERROR: Invalid read of element type from "
-                       << "and NKB-Grid formatted mesh file." << std::endl;
-  }
+  return etype_tmp;
+ 
 }// End UnstMeshReaderNKBGrid::ReadElementType
 //****************************************************************************80
 Array1D<intT> UnstMeshReaderNKBGrid::ReadElementRegion()
 {
-  if(is_open_) {
-    Array1D<intT> ereg_tmp(element_region_.get_size(0));
+ 
+  Array1D<intT> ereg_tmp(element_region_.get_size(0));
     
-    memcpy(ereg_tmp.get_ptr(0), 
-           element_region_.get_ptr(0), 
-           sizeof(intT)*element_region_.get_size(0));
+  memcpy(ereg_tmp.get_ptr(0), 
+         element_region_.get_ptr(0), 
+         sizeof(intT)*element_region_.get_size(0));
     
-    return ereg_tmp;
-  }
-  else {
-    SystemModule::cout << "ERROR: Invalid read of element region from "
-                       << "and NKB-Grid formatted mesh file." << std::endl;
-  }
+  return ereg_tmp;
+  
 }// End UnstMeshReaderNKBGrid::ReadElementRegion()
 //****************************************************************************80
 List2D<intT> UnstMeshReaderNKBGrid::ReadBcFace2Node()
 {
-  if(is_open_) {
-    List2D<intT> bcf2n_tmp;
-    bcf2n_tmp.initialize_copy_pattern(bc_face2node_);
+
+  List2D<intT> bcf2n_tmp;
+  bcf2n_tmp.initialize_copy_pattern(bc_face2node_);
     
-    memcpy(bcf2n_tmp.get_ptr(0),
-           bc_face2node_.get_ptr(0), 
-           sizeof(intT)*bc_face2node_.get_total_size());
+  memcpy(bcf2n_tmp.get_ptr(0),
+         bc_face2node_.get_ptr(0), 
+         sizeof(intT)*bc_face2node_.get_total_size());
     
-    return bcf2n_tmp;
-  }
-  else {
-    SystemModule::cout << "ERROR: Invalid read of bc-face2node to node from "
-                       << "and NKB-Grid formatted mesh file." << std::endl;
-  }
+  return bcf2n_tmp;
+ 
 }// End UnstMeshReaderNKBGrid::ReadBcFace2Node
 //****************************************************************************80
 Array1D<intT> UnstMeshReaderNKBGrid::ReadBcID()
 {
-  if(is_open_) {
-    Array1D<intT> bcid_tmp(bc_face_id_.get_size(0));
+
+  Array1D<intT> bcid_tmp(bc_face_id_.get_size(0));
     
-    memcpy(bcid_tmp.get_ptr(0), 
-           bc_face_id_.get_ptr(0), 
-           sizeof(intT)*bc_face_id_.get_size(0));
+  memcpy(bcid_tmp.get_ptr(0), 
+         bc_face_id_.get_ptr(0), 
+         sizeof(intT)*bc_face_id_.get_size(0));
     
-    return bcid_tmp;
-  }
-  else {
-    SystemModule::cout << "ERROR: Invalid read of bc-face ID from "
-                       << "and NKB-Grid formatted mesh file." << std::endl;
-  }
+  return bcid_tmp;
+ 
 }// End UnstMeshReaderNKBGrid::ReadBcID
 //****************************************************************************80
 Array1D<intT> UnstMeshReaderNKBGrid::ReadBcFaceType()
 {
-  if(is_open_) {
-    Array1D<intT> bcftype_tmp(bc_face_type_.get_size(0));
+
+  Array1D<intT> bcftype_tmp(bc_face_type_.get_size(0));
     
-    memcpy(bcftype_tmp.get_ptr(0), 
-           bc_face_type_.get_ptr(0), 
-           sizeof(intT)*bc_face_type_.get_size(0));
+  memcpy(bcftype_tmp.get_ptr(0), 
+         bc_face_type_.get_ptr(0), 
+         sizeof(intT)*bc_face_type_.get_size(0));
     
-    return bcftype_tmp;
-  }
-  else {
-    SystemModule::cout << "ERROR: Invalid read of bc-face type from "
-                       << "and NKB-Grid formatted mesh file." << std::endl;
-  }
+  return bcftype_tmp;
+
 }// End UnstMeshReaderNKBGrid::ReadBcFaceType

@@ -7,7 +7,10 @@
 #include "DataStructures/Array2D.h"
 #include "DataStructures/List2D.h"
 #include "Mesh/ElementTopology.h"
-
+#include "IO/UnstMeshReader.h"
+#include "IO/UnstMeshReaderNKBGrid.h"
+#include <vector>
+#include <algorithm>
 //****************************************************************************80
 //! \brief UnstMeshElements : A class that describes elements in an 
 //!                           unstructured Mesh.
@@ -29,9 +32,7 @@ class UnstMeshElements
 //! \date $Date$ 
 //! 
 //****************************************************************************80
-  UnstMeshElements(const intT& nnode, 
-                   const intT& nelement, 
-                   List2D<intT>& element2node);
+  UnstMeshElements(UnstMeshReader& mesh_reader);
 //****************************************************************************80
 //! \brief Destructor 
 //! \details 
@@ -41,6 +42,14 @@ class UnstMeshElements
 //! 
 //****************************************************************************80
   ~UnstMeshElements();
+  
+  inline intT get_nelement() const{return nelement_;}
+  inline const List2D<intT>& get_element2node() const {return element2node_;}
+  inline const List2D<intT>& get_node2element() const {return node2element_;}
+  inline const Array1D<ElementTopology::element_types>& 
+  get_element_type() const {return element_type_;}
+  inline const List2D<intT>& get_node2node() const {return node2node_;}
+  
 private:
   intT nelement_; //!< Number of elements in the mesh
   intT nbar_; //!< Number of 1-D bar elements in the mesh
@@ -89,6 +98,6 @@ private:
 //****************************************************************************80
   void FormNode2Node();
   void CountElementTypes();
-
+  
 };// UnstMeshElements
 #endif

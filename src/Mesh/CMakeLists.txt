@@ -5,6 +5,7 @@ ADD_LIBRARY(Mesh
   UnstMesh.cpp 
   UnstMeshEdges.cpp 
   UnstMeshElements.cpp
+  UnstMeshGeom.cpp
   ElementTopologyBar.cpp
   ElementTopologyTriangle.cpp
   ElementTopologyQuadrilateral.cpp

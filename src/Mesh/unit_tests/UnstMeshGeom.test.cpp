@@ -4,24 +4,20 @@
 
 TEST(UnstMeshGoem, Init) 
 {
-  const intT N = 11;
-  Array2D<realT> x(N,3);
-
-  for(intT i = 0; i < N; i++){
-    x(i,0) = (realT)i + 0;
-    x(i,1) = (realT)i + 1;
-    x(i,2) = (realT)i + 2;
-  }
+  UnstMeshReader* mesh_reader = new UnstMeshReaderNKBGrid("Square.grid");
+  UnstMeshGeom mesh_geom(*mesh_reader);
   
-  // UnstMeshGeom mesh_geom(std::move(x));
-
-  // EXPECT_EQ(0,x.get_size(0));
-  // EXPECT_EQ(0,x.get_size(1));
+  EXPECT_EQ(25, mesh_geom.get_nnode());
+  EXPECT_EQ(2, mesh_geom.get_ndim());
+  const Array2D<realT>& x = mesh_geom.get_x();
   
-  // for(intT i = 0; i < N; i++){
-  //   EXPECT_DOUBLE_EQ((realT)i + 0, mesh_geom.get_x()(i,0));
-  //   EXPECT_DOUBLE_EQ((realT)i + 1, mesh_geom.get_x()(i,1));
-  //   EXPECT_DOUBLE_EQ((realT)i + 2, mesh_geom.get_x()(i,2));
-  // }
+  //---> Check nodal coordinates
+  EXPECT_DOUBLE_EQ(-1.0, x(0,0));
+  EXPECT_DOUBLE_EQ(-0.5, x(0,1));
+  EXPECT_DOUBLE_EQ(-0.5, x(5,0));
+  EXPECT_DOUBLE_EQ(-0.5, x(5,1));
+  EXPECT_DOUBLE_EQ(1.0, x(23,0));
+  EXPECT_DOUBLE_EQ(.25, x(23,1));
+  
   
 }

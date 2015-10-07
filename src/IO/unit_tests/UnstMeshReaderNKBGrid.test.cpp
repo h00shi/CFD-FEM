@@ -2,9 +2,8 @@
 #include "gtest/gtest.h"
 TEST(UnstMeshReaderNKBGrid, ReadIn)
 {
-  UnstMeshReaderNKBGrid grid_reader;
+  UnstMeshReaderNKBGrid grid_reader("Square.grid");
 
-  grid_reader.Open("Square.grid");
   Array2D<realT> x = grid_reader.ReadNodes();
   
   //---> Check nodal coordinates
@@ -26,7 +25,7 @@ TEST(UnstMeshReaderNKBGrid, ReadIn)
   EXPECT_EQ(6, e2n(9,2));
   
   //---> Check Element Type
-  Array1D<intT> etype = grid_reader.ReadElementType();
+  Array1D<ElementTopology::element_types> etype = grid_reader.ReadElementType();
   for(intT i = 0; i < etype.get_size(0); i++){
     EXPECT_EQ(ElementTopology::element_types::TRI, etype(i));
   }

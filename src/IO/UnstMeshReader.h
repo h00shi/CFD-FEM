@@ -1,10 +1,11 @@
 // -*-c++-*-
 #ifndef UNSTMESHREADER_H
-#define UNSTMESHREDEAR_H
+#define UNSTMESHREADER_H
 #include "my_incl.h"
 #include "DataStructures/Array1D.h"
 #include "DataStructures/Array2D.h"
 #include "DataStructures/List2D.h"
+#include "Mesh/ElementTopology.h"
 
 //****************************************************************************80
 //! \brief This is the base class for reading unstructure meshes.  All classes
@@ -26,7 +27,7 @@ public:
 //! \version $Rev$ 
 //! \date $Date$ 
 //****************************************************************************80
-  UnstMeshReader();
+  UnstMeshReader(const std::string& filename);
 
 //****************************************************************************80
 //! \brief Destructor
@@ -46,16 +47,15 @@ public:
 //! \date $Date$ 
 //! 
 //****************************************************************************80
-  virtual void Open(const std::string& filename) = 0;
   virtual Array2D<realT> ReadNodes() = 0;
-  // virtual List2D<intT>  ReadElement2Node() = 0;
-  // virtual Array1D<intT> ReadElementType() = 0;
-  // virtual Array1D<intT> ReadElementRegion() = 0;
-  // virtual List2D<intT>  ReadBcFace2Node() = 0;
-  // virtual Array1D<intT> ReadBcID() = 0;
-  // virtual Array1D<intT> ReadBcFaceType() = 0;
+  virtual List2D<intT>  ReadElement2Node() = 0;
+  virtual Array1D<ElementTopology::element_types> ReadElementType() = 0;
+  virtual Array1D<intT> ReadElementRegion() = 0;
+  virtual List2D<intT>  ReadBcFace2Node() = 0;
+  virtual Array1D<intT> ReadBcID() = 0;
+  virtual Array1D<intT> ReadBcFaceType() = 0;
 
-private:
- 
+protected:
+  std::string filename_;
 };// End UnstMeshReader
 #endif

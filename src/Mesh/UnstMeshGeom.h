@@ -4,6 +4,9 @@
 #include "my_incl.h"
 #include "DataStructures/Array2D.h"
 #include "SystemUtils/SystemModule.h"
+#include "IO/UnstMeshReader.h"
+#include "IO/UnstMeshReaderNKBGrid.h"
+
 //****************************************************************************80
 //! \brief A class for storing and maining the mesh geometry
 //! \details 
@@ -15,9 +18,7 @@
 class UnstMeshGeom 
 {
 public:
-  
-  //UnstMeshGeom(const intT& ndim, const intT& nnode, Array2D<realT>& x);
-  UnstMeshGeom(std::string const & filename, std::string const & file_type);
+  UnstMeshGeom(UnstMeshReader& mesh_reader);
   ~UnstMeshGeom();
 
   inline const intT& get_ndim() const {return ndim_;}
