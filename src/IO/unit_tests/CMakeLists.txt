@@ -1,5 +1,4 @@
 SET(Unit_Tests
-    UnstMeshWriterCGNS.test
     UnstMeshWriterVTK.test
     UnstMeshReaderNKBGrid.test
 )

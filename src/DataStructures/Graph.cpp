@@ -53,8 +53,8 @@ void Graph::FormEdge2Node()
                               NextEdgeFromEdge);
         if( tag == -1){
           //---> Create a new edge
-          edge2node_(iedge,0) = max(n,node);
-          edge2node_(iedge,1) = min(n,node);
+          edge2node_(iedge,0) = std::max(n,node);
+          edge2node_(iedge,1) = std::min(n,node);
           ++iedge;
         }
       } 
@@ -69,7 +69,7 @@ intT Graph::GetEdgeTag(const intT& node0, const intT& node1, const int& iedge,
                        Array1D<intT>& NextEdgeFromEdge)
 {
   intT tag = -1;
-  intT index_node = max(node0, node1);
+  intT index_node = std::max(node0, node1);
   //---> Get the last edge made by the index node
   intT edge = LastEdgeFromNode(index_node);
    if( edge == -1) {// EdgeTag
@@ -82,7 +82,8 @@ intT Graph::GetEdgeTag(const intT& node0, const intT& node1, const int& iedge,
       //---> Check to see if edge is an edge connecting node0 and node1
       intT nL = edge2node_(edge,0);
       intT nR = edge2node_(edge,1);
-      if( max(node0,node1) == nL && min(node0,node1) == nR){ // Check Nodes
+      if( std::max(node0,node1) == nL && std::min(node0,node1) == nR){
+        // Check Nodes
         //---> Edge edge does conntect node0 and node1
         tag = edge;
         cont = false;

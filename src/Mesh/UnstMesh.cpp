@@ -610,12 +610,10 @@ void UnstMesh::FormConnectivity()
   //---> Get boundary face connectivity
   FormBcFaceConnectivity();
 
-  //---> Count element types and store connectivity for each type...for
-  //     CGNS Output;
+  //---> Count element types and store connectivity for each type.
   CountElementTypes();
 
-  //---> Count bc face types and store connectivity for each type...for
-  //     CGNS Output;
+  //---> Count bc face types and store connectivity for each type.
   CountBcFaceTypes();
   
   //---> Form Adjacency

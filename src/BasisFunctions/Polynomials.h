@@ -13,6 +13,7 @@
 
 #include "my_incl.h"
 #include "consts.h"
+#include <math.h>
 
 namespace Polynomials {
 //****************************************************************************80

@@ -14,7 +14,7 @@
 //****************************************************************************80
 #include "my_incl.h"
 #include "SystemUtils/SystemModule.h"
-
+#include <sstream>
 template <typename dataT>
 class Array2D
 {

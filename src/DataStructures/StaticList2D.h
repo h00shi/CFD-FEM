@@ -16,7 +16,7 @@
 #include "my_incl.h"
 #include "SystemUtils/SystemModule.h"
 #include <initializer_list>
-
+#include <sstream>
 template <class dataT, intT nrow, intT nnz>
 class StaticList2D
 {

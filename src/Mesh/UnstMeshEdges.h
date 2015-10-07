@@ -8,6 +8,7 @@
 #include "Mesh/ElementTopology.h"
 #include <algorithm>
 #include <vector>
+#include <cmath>
 
 //****************************************************************************80
 //! \brief UnstMeshEdges : A class for extracting edges in a mesh

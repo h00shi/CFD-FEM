@@ -5,7 +5,7 @@ std::string DummyMesh::SetupCubicHexMesh(const realT& Lx, const realT& Ly,
                                          const intT& Ny, const intT& Nz)
 {
   //---> Setup mesh stream
-  ostringstream mesh_stream;
+  std::ostringstream mesh_stream;
   mesh_stream.precision(std::numeric_limits<realT>::digits10);
     
   intT nnode = (Nx)*(Ny)*(Nz);

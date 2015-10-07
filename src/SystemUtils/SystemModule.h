@@ -14,7 +14,9 @@
 //! \date $Date: 2013-10-21 14:35:02 -0700 (Mon, 21 Oct 2013) $
 //****************************************************************************80
 #include <stdlib.h>
-#include "my_incl.h"
+#include <limits>
+#include <iostream>
+#include "precision.h"
 
 namespace SystemModule {
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,10 +34,6 @@ namespace SystemModule {
   
   void my_exit(); /*!< Namespace member function my_exit(), 
 		   \refcpp{SystemModule} */
-  void writeout();/*!< Namespace member function writeout(), 
-		    \refcpp{SystemModule} */ 
-  bool string_to_bool(std::string); /*!< Namespace memeber function 
-				      string_to_bool, \refcpp{SystemModule} */
   void pause(); /*!< Namespace member function pause, \refcpp{SystemModule} */
  
   class pout; /*!< Namespace member class pout for parallel output */
@@ -161,11 +159,10 @@ public:
 //! \nick
 //! \version $Rev$
 //****************************************************************************80
-  const intT& GetOutputRank() const {return output_rank_;}
+  inline const intT& GetOutputRank() const {return output_rank_;}
 private:
   intT output_rank_;
 
 }; //End class pout
 
-//#define pout pout()
 #endif

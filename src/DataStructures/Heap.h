@@ -3,6 +3,8 @@
 #define HEAP_H
 #include "my_incl.h"
 #include "Array1D.h"
+#include <cmath>
+
 //****************************************************************************80
 //! \class Heap
 //! \brief Class contains data for building a heap

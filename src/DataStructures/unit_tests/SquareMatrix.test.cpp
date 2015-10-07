@@ -233,105 +233,105 @@ TEST(SquareMatrix, eval_LU2) {
   EXPECT_NEAR(ExpLUResult(3,3),unit(pivot(3),3),small);
 }
 
-TEST(SquareMatrix, eval_LU3) {
-  Array1D<int> pivot(5);
-  SquareMatrix<double> unit(5), ExpLUResult(5);
+// TEST(SquareMatrix, eval_LU3) {
+//   Array1D<int> pivot(5);
+//   SquareMatrix<double> unit(5), ExpLUResult(5);
   
-  unit(0,0) = 3.88762;
-  unit(0,1) = 1.69154;
-  unit(0,2) = -2.07394;
-  unit(0,3) = 1.6199;
-  unit(0,4) = 4.50208;
+//   unit(0,0) = 3.88762;
+//   unit(0,1) = 1.69154;
+//   unit(0,2) = -2.07394;
+//   unit(0,3) = 1.6199;
+//   unit(0,4) = 4.50208;
   
-  unit(1,0) = -2.83669;
-  unit(1,1) = 10.0125;
-  unit(1,2) = -3.9293;
-  unit(1,3) = 2.95569;
-  unit(1,4) = 3.82807;
+//   unit(1,0) = -2.83669;
+//   unit(1,1) = 10.0125;
+//   unit(1,2) = -3.9293;
+//   unit(1,3) = 2.95569;
+//   unit(1,4) = 3.82807;
   
-  unit(2,0) = 1.34247;
-  unit(2,1) = -2.47754;
-  unit(2,2) = 9.67165;
-  unit(2,3) = -2.10167;
-  unit(2,4) = -0.829575;
+//   unit(2,0) = 1.34247;
+//   unit(2,1) = -2.47754;
+//   unit(2,2) = 9.67165;
+//   unit(2,3) = -2.10167;
+//   unit(2,4) = -0.829575;
   
-  unit(3,0) = -0.991873;
-  unit(3,1) = 1.82176;
-  unit(3,2) = -2.10167;
-  unit(3,3) = 7.51674;
-  unit(3,4) = 0.64796; 
+//   unit(3,0) = -0.991873;
+//   unit(3,1) = 1.82176;
+//   unit(3,2) = -2.10167;
+//   unit(3,3) = 7.51674;
+//   unit(3,4) = 0.64796; 
  
-  unit(4,0) = -4.76361;
-  unit(4,1) = 6.3756;
-  unit(4,2) = -6.89025;
-  unit(4,3) = 5.3251;
-  unit(4,4) = 17.9026; 
+//   unit(4,0) = -4.76361;
+//   unit(4,1) = 6.3756;
+//   unit(4,2) = -6.89025;
+//   unit(4,3) = 5.3251;
+//   unit(4,4) = 17.9026; 
 
-  unit.LUdecomp(pivot);
+//   unit.LUdecomp(pivot);
  
-  ExpLUResult(0,0) = -4.76361000000000 ;
-  ExpLUResult(0,1) = 6.37560000000000;
-  ExpLUResult(0,2) = -6.890250000000000;
-  ExpLUResult(0,3) = 5.325100000000000;
-  ExpLUResult(0,4) = 17.902600000000000;
+//   ExpLUResult(0,0) = -4.76361000000000 ;
+//   ExpLUResult(0,1) = 6.37560000000000;
+//   ExpLUResult(0,2) = -6.890250000000000;
+//   ExpLUResult(0,3) = 5.325100000000000;
+//   ExpLUResult(0,4) = 17.902600000000000;
 
-  ExpLUResult(1,0) =-0.816107951742481;
-  ExpLUResult(1,1) =6.89471785712936;
-  ExpLUResult(1,2) =-7.69712781449363;
-  ExpLUResult(1,3) =5.96575645382389;
-  ExpLUResult(1,4) =19.1125342168649;
+//   ExpLUResult(1,0) =-0.816107951742481;
+//   ExpLUResult(1,1) =6.89471785712936;
+//   ExpLUResult(1,2) =-7.69712781449363;
+//   ExpLUResult(1,3) =5.96575645382389;
+//   ExpLUResult(1,4) =19.1125342168649;
   
-  ExpLUResult(2,0) =0.595491654438546;
-  ExpLUResult(2,1) =0.901542824052500;
-  ExpLUResult(2,2) =7.11307671896682;
-  ExpLUResult(2,3) =-5.59374753004051;
-  ExpLUResult(2,4) =-24.0635469654240;
+//   ExpLUResult(2,0) =0.595491654438546;
+//   ExpLUResult(2,1) =0.901542824052500;
+//   ExpLUResult(2,2) =7.11307671896682;
+//   ExpLUResult(2,3) =-5.59374753004051;
+//   ExpLUResult(2,4) =-24.0635469654240;
   
-  ExpLUResult(3,0) = 0.208218766859588;
-  ExpLUResult(3,1) = 0.0716839238749926;
-  ExpLUResult(3,2) = -0.0161997855341865;
-  ExpLUResult(3,3) = 5.88968790278431;
-  ExpLUResult(3,4) = -4.83958304347208;
+//   ExpLUResult(3,0) = 0.208218766859588;
+//   ExpLUResult(3,1) = 0.0716839238749926;
+//   ExpLUResult(3,2) = -0.0161997855341865;
+//   ExpLUResult(3,3) = 5.88968790278431;
+//   ExpLUResult(3,4) = -4.83958304347208;
 
-  ExpLUResult(4,0) = -0.281817781052605;
-  ExpLUResult(4,1) = -0.0987397264439268;
-  ExpLUResult(4,2) = 0.979863287669927;
-  ExpLUResult(4,3) = 0.928606568229258;
-  ExpLUResult(4,4) = 34.1759172514949;
+//   ExpLUResult(4,0) = -0.281817781052605;
+//   ExpLUResult(4,1) = -0.0987397264439268;
+//   ExpLUResult(4,2) = 0.979863287669927;
+//   ExpLUResult(4,3) = 0.928606568229258;
+//   ExpLUResult(4,4) = 34.1759172514949;
 
-  double small = 1.e-13;
+//   double small = 1.e-13;
 
-  EXPECT_NEAR(ExpLUResult(0,0),unit(pivot(0),0),small);
-  EXPECT_NEAR(ExpLUResult(0,1),unit(pivot(0),1),small);
-  EXPECT_NEAR(ExpLUResult(0,2),unit(pivot(0),2),small);
-  EXPECT_NEAR(ExpLUResult(0,3),unit(pivot(0),3),small);
-  EXPECT_NEAR(ExpLUResult(0,4),unit(pivot(0),4),small);
+//   EXPECT_NEAR(ExpLUResult(0,0),unit(pivot(0),0),small);
+//   EXPECT_NEAR(ExpLUResult(0,1),unit(pivot(0),1),small);
+//   EXPECT_NEAR(ExpLUResult(0,2),unit(pivot(0),2),small);
+//   EXPECT_NEAR(ExpLUResult(0,3),unit(pivot(0),3),small);
+//   EXPECT_NEAR(ExpLUResult(0,4),unit(pivot(0),4),small);
  
-  EXPECT_NEAR(ExpLUResult(1,0),unit(pivot(1),0),small);
-  EXPECT_NEAR(ExpLUResult(1,1),unit(pivot(1),1),small);
-  EXPECT_NEAR(ExpLUResult(1,2),unit(pivot(1),2),small);
-  EXPECT_NEAR(ExpLUResult(1,3),unit(pivot(1),3),small);
-  EXPECT_NEAR(ExpLUResult(1,4),unit(pivot(1),4),small);
+//   EXPECT_NEAR(ExpLUResult(1,0),unit(pivot(1),0),small);
+//   EXPECT_NEAR(ExpLUResult(1,1),unit(pivot(1),1),small);
+//   EXPECT_NEAR(ExpLUResult(1,2),unit(pivot(1),2),small);
+//   EXPECT_NEAR(ExpLUResult(1,3),unit(pivot(1),3),small);
+//   EXPECT_NEAR(ExpLUResult(1,4),unit(pivot(1),4),small);
    
-  EXPECT_NEAR(ExpLUResult(2,0),unit(pivot(2),0),small);
-  EXPECT_NEAR(ExpLUResult(2,1),unit(pivot(2),1),small);
-  EXPECT_NEAR(ExpLUResult(2,2),unit(pivot(2),2),small);
-  EXPECT_NEAR(ExpLUResult(2,3),unit(pivot(2),3),small);
-  EXPECT_NEAR(ExpLUResult(2,4),unit(pivot(2),4),small);
+//   EXPECT_NEAR(ExpLUResult(2,0),unit(pivot(2),0),small);
+//   EXPECT_NEAR(ExpLUResult(2,1),unit(pivot(2),1),small);
+//   EXPECT_NEAR(ExpLUResult(2,2),unit(pivot(2),2),small);
+//   EXPECT_NEAR(ExpLUResult(2,3),unit(pivot(2),3),small);
+//   EXPECT_NEAR(ExpLUResult(2,4),unit(pivot(2),4),small);
 
-  EXPECT_NEAR(ExpLUResult(3,0),unit(pivot(3),0),small);
-  EXPECT_NEAR(ExpLUResult(3,1),unit(pivot(3),1),small);
-  EXPECT_NEAR(ExpLUResult(3,2),unit(pivot(3),2),small);
-  EXPECT_NEAR(ExpLUResult(3,3),unit(pivot(3),3),small);
-  EXPECT_NEAR(ExpLUResult(3,4),unit(pivot(3),4),small);
+//   EXPECT_NEAR(ExpLUResult(3,0),unit(pivot(3),0),small);
+//   EXPECT_NEAR(ExpLUResult(3,1),unit(pivot(3),1),small);
+//   EXPECT_NEAR(ExpLUResult(3,2),unit(pivot(3),2),small);
+//   EXPECT_NEAR(ExpLUResult(3,3),unit(pivot(3),3),small);
+//   EXPECT_NEAR(ExpLUResult(3,4),unit(pivot(3),4),small);
   
-  EXPECT_NEAR(ExpLUResult(4,0),unit(pivot(4),0),small);
-  EXPECT_NEAR(ExpLUResult(4,1),unit(pivot(4),1),small);
-  EXPECT_NEAR(ExpLUResult(4,2),unit(pivot(4),2),small);
-  EXPECT_NEAR(ExpLUResult(4,3),unit(pivot(4),3),small);
-  EXPECT_NEAR(ExpLUResult(4,4),unit(pivot(4),4),small);
+//   EXPECT_NEAR(ExpLUResult(4,0),unit(pivot(4),0),small);
+//   EXPECT_NEAR(ExpLUResult(4,1),unit(pivot(4),1),small);
+//   EXPECT_NEAR(ExpLUResult(4,2),unit(pivot(4),2),small);
+//   EXPECT_NEAR(ExpLUResult(4,3),unit(pivot(4),3),small);
+//   EXPECT_NEAR(ExpLUResult(4,4),unit(pivot(4),4),small);
   
-}
+// }
 
 TEST(SquareMatrix, inv3){
 

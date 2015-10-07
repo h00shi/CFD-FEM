@@ -6,6 +6,7 @@
 #include "DataStructures/List2D.h"
 #include "Include/my_incl.h"
 #include <limits>
+#include <sstream>
 
 //****************************************************************************80
 //! \brief A namespace for creating dummy mesh streams as strings. 

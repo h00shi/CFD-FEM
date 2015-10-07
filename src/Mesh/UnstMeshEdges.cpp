@@ -285,8 +285,8 @@ intT UnstMeshEdges::FormEdge(const intT& node0, const intT& node1,
   
   if( next_edge == -1) {
     //---> Mark edge2node for a new edge;
-    edge2node_(edge_count, 0) = max(node0, node1);
-    edge2node_(edge_count, 1) = min(node0, node1);
+    edge2node_(edge_count, 0) = std::max(node0, node1);
+    edge2node_(edge_count, 1) = std::min(node0, node1);
     
     //---> Set the return value to be edge
     edge = edge_count;
@@ -305,7 +305,7 @@ intT UnstMeshEdges::GetEdgeTag(const intT& node0, const intT& node1,
                                const intT& edge_count)
 {
   intT tag = -1;
-  intT index_node = max(node0, node1);
+  intT index_node = std::max(node0, node1);
   //---> Get the last edge made by the index node
   intT edge = LastEdgeFromNode_(index_node);
    if( edge == -1) {// EdgeTag
@@ -318,7 +318,7 @@ intT UnstMeshEdges::GetEdgeTag(const intT& node0, const intT& node1,
       //---> Check to see if edge is an edge connecting node0 and node1
       intT nL = edge2node_(edge,0);
       intT nR = edge2node_(edge,1);
-      if( max(node0,node1) == nL && min(node0,node1) == nR){ // Check Nodes
+      if( std::max(node0,node1) == nL && std::min(node0,node1) == nR){ // Check Nodes
         //---> Edge edge does conntect node0 and node1
         tag = edge;
         cont = false;

@@ -13,56 +13,17 @@
 //! \date $Date: 2013-10-21 14:35:02 -0700 (Mon, 21 Oct 2013) $
 //****************************************************************************80
 
-//---> Basic includes... we'll have these all the time. */
-#ifndef INC_MATH
-#define INC_MATH
-#include <math.h>    /*!< Always include the math library. */ 
-#endif
-
-#ifndef INC_COMPLEX
-#define INC_COMPLEX
-#include <complex> /*!< Include the native C++ complex template we'll use 
-		     this. */
-#endif
-
-#ifndef INC_STDIO
-#define INC_STDIO
-#include <stdio.h> /*!< Standard IO header file...may need for IO. */
-#endif
-
-#ifndef INC_IOSTREAM
-#define INC_IOSTREAM
-#include <iostream> /*!< IOSTREAM header file gives access to ofstream object. */
-#endif
-
-#ifndef INC_IOMANIP
-#define INC_IOMANIP
-#include <iomanip> /*!< Header file for manipulating IO. */
-#endif
-
-#ifndef INC_SSTREAM
-#define INC_SSTREAM
-#include <sstream> /*!< Yet another IO related header file...why so many C++? */
-#endif // END INC_SSTREAM
-
-//---> 
 #ifndef INC_STRING
 #define INC_STRING
 #include <string> 
 #endif
 
-//---> MPI
-#ifndef INC_MPI
-#define INC_MPI
-
-#ifdef HAVE_MPI
-#include <mpi.h> /*<! Include MPI header file if we are compiling with it. */
+#ifndef INC_IOSTREAM
+#define INC_IOSTREAM
+#include <iostream>
 #endif
-#endif // END INC_MPI
+
 
 //----> Finally define precision of integer and real 
 #include "precision.h"
-
-#include "consts.h"
-#include "MathUtilities/complexify.h"
 #endif //END MY_INCL_H

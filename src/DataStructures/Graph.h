@@ -9,6 +9,7 @@
 //! \version $Rev: 5 $
 //****************************************************************************80
 #include "my_incl.h"
+#include <cmath>
 #include "SystemUtils/SystemModule.h"
 #include "DataStructures/Array1D.h"
 #include "DataStructures/Array2D.h"

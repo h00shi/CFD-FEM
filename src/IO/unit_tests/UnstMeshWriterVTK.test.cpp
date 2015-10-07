@@ -2,7 +2,7 @@
 #include "Mesh/UnstMesh.h"
 #include "IO/UnstMeshWriterVTK.h"
 
-TEST(CGNS, Write){
+TEST(VTK, Write){
   UnstMesh mesh("Square.grid","Grid-NKB");
   mesh.Diagnostic(std::cout);
   UnstMeshWriterVTK writer(mesh);
