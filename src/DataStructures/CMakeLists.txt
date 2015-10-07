@@ -9,4 +9,5 @@ ADD_LIBRARY(DataStructures
   Heap.cpp
   SquareMatrix.cpp 
   Graph.cpp)
+
 TARGET_LINK_LIBRARIES(DataStructures SystemUtils)

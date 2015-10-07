@@ -44,7 +44,7 @@ namespace ElementTopology
   */
   enum face_types: intT{
     FACE_NODE = 0,
-    FACE_EDGE = 1,
+    FACE_BAR = 1,
     FACE_TRI = 2,
     FACE_QUAD = 3,
   };

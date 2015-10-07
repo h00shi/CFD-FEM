@@ -1,2 +1,2 @@
 ADD_EXECUTABLE(ObjectOrientedSpeed.reg ObjectOrientedSpeed.cpp)
-TARGET_LINK_LIBRARIES(ObjectOrientedSpeed.reg DataStructures)
+TARGET_LINK_LIBRARIES(ObjectOrientedSpeed.reg SystemUtils DataStructures)

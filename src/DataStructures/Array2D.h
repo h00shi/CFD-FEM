@@ -215,10 +215,10 @@ public:
     //---> The return of this operator is the ith reference of data pointer
     return (data[i*size2 + j]);
   } // End
-
+ 
 //****************************************************************************80
 //!
-//! \brief get_dims  : For the specified index gets the size of that dimension
+//! \brief get_size  : For the specified index gets the size of that dimension
 //! \details
 //! \nick
 //! \version $Rev: 5 $
@@ -239,7 +239,16 @@ public:
     } // End check_dim
 
   }// End get_size
-
+  
+//****************************************************************************80
+//!
+//! \brief get_total_size  : Gets the total size
+//! \details
+//! \nick
+//! \version $Rev: 5 $
+//****************************************************************************8
+  intT get_total_size() const {return size1*size2;}
+  
 //****************************************************************************80
 //!
 //! \brief get_mem : Diagnostic routine to query how much memory the class is

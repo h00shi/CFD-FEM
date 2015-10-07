@@ -44,28 +44,7 @@ public:
 //! \param[in] nnz The number of of non-zero entries in the sparse matrix
 //****************************************************************************80
   ~MKLDSS();
- 
-  
-//****************************************************************************80
-//! \brief Create : Wrapper for MKL DSS creation.
-//! \details
-//! \nick
-//! \version $Rev$
-//! \date $Date$
-//****************************************************************************80
-  void Create();
-  
-//****************************************************************************80
-//! \brief  MKLDSSDeleleFactorization : Call the delete function to delete
-//!         factorized matrix for MKL DSS Solver.
-//! \details
-//! \nick
-//! \version $Rev$
-//! \date $Date$
-//!
-//****************************************************************************80
-  void Delete();
-
+   
 //****************************************************************************80
 //! \brief MKLDSSFactorize : For objects of type MatrixCSR perform a sparese LU
 //!                    LU factorization using Intel MKL Direct Sparse Solver
@@ -122,6 +101,28 @@ private:
 //! 
 //****************************************************************************80
   MKLDSS() = delete;
+
+   
+//****************************************************************************80
+//! \brief Create : Wrapper for MKL DSS creation.
+//! \details
+//! \nick
+//! \version $Rev$
+//! \date $Date$
+//****************************************************************************80
+  void Create();
+  
+//****************************************************************************80
+//! \brief  MKLDSSDeleleFactorization : Call the delete function to delete
+//!         factorized matrix for MKL DSS Solver.
+//! \details
+//! \nick
+//! \version $Rev$
+//! \date $Date$
+//!
+//****************************************************************************80
+  void Delete();
+
 };// End class MKLDSS
 
 

@@ -5,7 +5,6 @@ SET(Unit_Tests
 FOREACH(Unit ${Unit_Tests})
   ADD_EXECUTABLE(${Unit}.unit ${Unit}.cpp )
   TARGET_LINK_LIBRARIES(${Unit}.unit 
-    SystemUtils 
     SparseMatrix 
     DataStructures 
     LinearSolver

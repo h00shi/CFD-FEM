@@ -2,6 +2,7 @@
 #ifndef UNSTMESHREADERNKBGRID_H
 #define UNSTMESHREDEARNKBGRID_H
 #include "my_incl.h"
+#include <cstring>
 #include "IO/UnstMeshReader.h"
 #include "Mesh/ElementTopology.h"
 //****************************************************************************80
@@ -46,12 +47,12 @@ public:
 //****************************************************************************80
   void Open(const std::string& filename);
   Array2D<realT> ReadNodes();
-  // List2D<intT>  ReadElement2Node();
-  // Array1D<intT> ReadElementType();
-  // Array1D<intT> ReadElementRegion();
-  // List2D<intT>  ReadBcFace2Node();
-  // Array1D<intT> ReadBcID();
-  // Array1D<intT> ReadBcFaceType();
+  List2D<intT>  ReadElement2Node();
+  Array1D<intT> ReadElementType();
+  Array1D<intT> ReadElementRegion();
+  List2D<intT>  ReadBcFace2Node();
+  Array1D<intT> ReadBcID();
+  Array1D<intT> ReadBcFaceType();
  
 private:
   bool is_open_;

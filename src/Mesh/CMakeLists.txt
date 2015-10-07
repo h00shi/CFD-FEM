@@ -13,4 +13,4 @@ ADD_LIBRARY(Mesh
   ElementTopologyPyramid.cpp
   ElementTopologyHexahedron.cpp
   DummyMesh.cpp)
-TARGET_LINK_LIBRARIES(Mesh SystemUtils DataStructures)
+TARGET_LINK_LIBRARIES(Mesh IO SystemUtils DataStructures)
