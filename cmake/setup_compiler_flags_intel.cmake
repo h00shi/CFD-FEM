@@ -21,7 +21,7 @@ IF (CMAKE_BUILD_TYPE MATCHES "Debug")
   SET (CMAKE_CXX_FLAGS_DEBUG "-g -O0 -finline -w3 -diag-error 1599,3280")
   IF (ICC_WITH_REMARKS_SUPPRESSION)
     SET(CMAKE_CXX_FLAGS_DEBUG  
-      "${CMAKE_CXX_FLAGS_DEBUG} -diag-disable 383,981,2547,424")
+      "${CMAKE_CXX_FLAGS_DEBUG} -diag-disable 383,981,2547,424,1572")
   ENDIF ()
 # explicitly turn on warnings
 # SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -finline -Wunused-variable "

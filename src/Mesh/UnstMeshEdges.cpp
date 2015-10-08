@@ -318,7 +318,7 @@ intT UnstMeshEdges::GetEdgeTag(const intT& node0, const intT& node1,
       //---> Check to see if edge is an edge connecting node0 and node1
       intT nL = edge2node_(edge,0);
       intT nR = edge2node_(edge,1);
-      if( std::max(node0,node1) == nL && std::min(node0,node1) == nR){ // Check Nodes
+      if(std::max(node0,node1) == nL && std::min(node0,node1) == nR){ // Check Nodes
         //---> Edge edge does conntect node0 and node1
         tag = edge;
         cont = false;

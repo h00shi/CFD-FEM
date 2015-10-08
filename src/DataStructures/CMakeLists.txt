@@ -8,6 +8,7 @@ ADD_LIBRARY(DataStructures
   List2D.cpp 
   Heap.cpp
   SquareMatrix.cpp 
-  Graph.cpp)
+  Graph.cpp
+  EdgeSet.cpp)
 
 TARGET_LINK_LIBRARIES(DataStructures SystemUtils)
