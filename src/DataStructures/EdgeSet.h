@@ -4,7 +4,9 @@
 #include "my_incl.h"
 #include "DataStructures/Array1D.h"
 #include "DataStructures/Array2D.h"
-
+#include "DataStructures/List2D.h"
+#include <cmath>
+#include <algorithm>
 //****************************************************************************80
 //! \brief A class to represent edges as pairs of nodes in a unique fashion.   
 //! \details 
@@ -38,6 +40,41 @@ public:
 //! \param[in] node1 Second node on the edge
 //****************************************************************************80
   void InsertEdge(const intT& node0, const intT& node1);
+  
+//****************************************************************************80
+//! \brief Uses the move constructor to remove the edge2node array from the 
+//!        class.  Class will no longer function this way and must be deleted. 
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+  inline Array2D<intT> RemoveEdge2Node() {return std::move(edge2node_);}
+
+//****************************************************************************80
+//! \brief FormNode2Edge Given that the edge2node array has not yet been removed
+//!        we form the inverse map node2edge and return it to user.  
+//! \details 
+//! \nick 
+//! \version $Rev$ 
+//! \date $Date$ 
+//! 
+//****************************************************************************80
+ List2D<intT> FormNode2Edge();
+
+ //***************************************************************************80
+ //! \brief Form node adjacency, which is a list of all nodes surrounding a node
+ //! including the node itself. This list is sorted by the node numbers of all
+ //! neighboring nodes.
+ //! \details
+ //! \nick
+ //! \version $Rev$
+ //! \date $Date$
+ //!
+ //****************************************************************************80
+ List2D<intT> FormNodeAdj();
+
 private:
   intT nnode_; //!< Number of nodes in set
   intT nedge_; //!< Number of edges in set

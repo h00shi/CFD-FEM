@@ -4,7 +4,10 @@ EdgeSet::EdgeSet(const intT& nnode, const intT& nedge) : nnode_(nnode),
                                                          nedge_(nedge)
 {
   last_edge_from_node_.initialize(nnode_);
+  last_edge_from_node_.set_value(-1);
+  
   next_edge_from_edge_.initialize(nedge_);
+  next_edge_from_edge_.set_value(-1);
   edge2node_.initialize(nedge_, 2);
   iedge_ = 0;
 }// End EdgeSet::EdgeSet
@@ -37,7 +40,7 @@ intT EdgeSet::GetEdgeTag(const intT& node0, const intT& node1)
       intT nL = edge2node_(edge,0);
       intT nR = edge2node_(edge,1);
       if(std::max(node0,node1) == nL && std::min(node0,node1) == nR){ // Check Nodes
-        //---> Edge edge does conntect node0 and node1
+        //---> Edge edge does connect node0 and node1
         tag = edge;
         cont = false;
       }
@@ -60,3 +63,91 @@ intT EdgeSet::GetEdgeTag(const intT& node0, const intT& node1)
  
   return tag;
 }
+//****************************************************************************80
+List2D<intT> EdgeSet::FormNode2Edge()
+{
+  Array1D<intT> nedge_per_node(nnode_);
+  for(intT i = 0; i < nedge_; i++){
+    intT nL = edge2node_(i,0);
+    intT nR = edge2node_(i,1);
+    
+    nedge_per_node(nL) += 1;
+    nedge_per_node(nR) += 1;
+  }
+  
+  intT nnz = 0;
+  for(intT i = 0; i < nnode_; i++){
+	  nnz += nedge_per_node(i);
+  }
+  //---> Instantiate
+  List2D<intT> node2edge(nnode_, nnz);
+  //---> Set number of columns
+  node2edge.set_ncol(nedge_per_node);
+  //---> Reset to zero to be used as helper/counter
+  nedge_per_node.set_value(0);
+  for(intT i = 0; i < nedge_; i++)
+  {
+	  //---> Get Nodes left and right
+	  intT nL = edge2node_(i,0);
+	  intT nR = edge2node_(i,1);
+
+	  //---> Inform each node that edge i is incident on them.
+	  node2edge(nL, nedge_per_node(nL)) = i;
+	  node2edge(nR, nedge_per_node(nR)) = i;
+
+	  //---> Increment local counters
+	  nedge_per_node(nL) += 1;
+	  nedge_per_node(nR) += 1;
+
+  }
+  return node2edge;
+}// End EdgeSet::FormNode2Edge()
+//****************************************************************************80
+List2D<intT> EdgeSet::FormNodeAdj()
+{
+  Array1D<intT> nnode_per_node(nnode_);
+  nnode_per_node.set_value(1); //---> Set adjacency
+  for(intT i = 0; i < nedge_; i++){
+    intT nL = edge2node_(i,0);
+    intT nR = edge2node_(i,1);
+
+    nnode_per_node(nL) += 1;
+    nnode_per_node(nR) += 1;
+  }
+
+  intT nnz = 0;
+  for(intT i = 0; i < nnode_; i++){
+	  nnz += nnode_per_node(i);
+  }
+  //---> Instantiate
+  List2D<intT> adj(nnode_, nnz);
+  //---> Set number of columns
+  adj.set_ncol(nnode_per_node);
+  //---> Reset to zero to be used as helper/counter
+  nnode_per_node.set_value(1);
+  //---> Set self adjacency first
+  for(intT i = 0; i < nnode_; i++){adj(i,0) = i;}
+
+  for(intT i = 0; i < nedge_; i++)
+  {
+	  //---> Get Nodes left and right
+	  intT nL = edge2node_(i,0);
+	  intT nR = edge2node_(i,1);
+
+	  //---> Inform each node that edge i is incident on them.
+	  adj(nL, nnode_per_node(nL)) = nR;
+	  adj(nR, nnode_per_node(nR)) = nL;
+
+	  //---> Increment local counters
+	  nnode_per_node(nL) += 1;
+	  nnode_per_node(nR) += 1;
+
+  }
+
+  for(intT i = 0; i < nnode_; i++){
+	  intT ncol = adj.get_ncol(i);
+	  std::sort(adj.get_ptr(i,0), adj.get_ptr(i,0) + ncol);
+  }
+  //---> Now loop and sort
+  return adj;
+}// End EdgeSet::FormNode2Edge()

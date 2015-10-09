@@ -7,6 +7,7 @@ SET(Unit_Tests
   List2D.test
   Graph.test
   StaticList2D.test
+  EdgeSet.test
 )
 
 FOREACH(Unit ${Unit_Tests})
