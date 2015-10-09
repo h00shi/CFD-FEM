@@ -16,6 +16,7 @@ namespace ElementTopology
 //****************************************************************************8
   class Quadrilateral
   {
+  public:
     static const intT Type;
     static const intT nNode;
     static const intT nEdge;

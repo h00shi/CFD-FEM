@@ -47,15 +47,23 @@ public:
 //! \date $Date$ 
 //! 
 //****************************************************************************80
+  inline intT ReadNnode() const {return nnode_;}
+  inline intT ReadNelement()const {return nelement_;}
+  inline intT ReadNbcFace() const {return nbc_face_;}
+  inline intT ReadNbcID() const {return nbc_id_;}
   virtual Array2D<realT> ReadNodes() = 0;
   virtual List2D<intT>  ReadElement2Node() = 0;
   virtual Array1D<ElementTopology::element_types> ReadElementType() = 0;
   virtual Array1D<intT> ReadElementRegion() = 0;
   virtual List2D<intT>  ReadBcFace2Node() = 0;
   virtual Array1D<intT> ReadBcID() = 0;
-  virtual Array1D<intT> ReadBcFaceType() = 0;
+  virtual Array1D<ElementTopology::face_types> ReadBcFaceType() = 0;
 
 protected:
   std::string filename_;
+  intT nnode_;
+  intT nelement_;
+  intT nbc_face_;
+  intT nbc_id_;
 };// End UnstMeshReader
 #endif

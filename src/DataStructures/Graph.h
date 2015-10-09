@@ -107,13 +107,13 @@ public:
     return edge2adj_index_;
   }
 //****************************************************************************80
-//! \brief NeighborBegin : Returns the iterator the begining of the neighbor 
+//! \brief NeighborBegin : Returns the iterator the beginning of the neighbor
 //!                        list of the specified node
 //! \nick
 //! \version $Rev: 5 $
-//! \return n The node who's neighbors you want to access; 
+//! \return 0 We always begin at zero
 //****************************************************************************8
-  inline intT NeighborBegin(const intT& n)
+  inline intT NeighborBegin(const intT&)
   {
     return 0;
   }// End NeighborBegin

@@ -152,6 +152,12 @@ void UnstMeshReaderNKBGrid::OpenAndRead()
   } // End Read BC faces
 
   fclose(mesh_file_);
+  //---> Set internal class memebers
+  UnstMeshReader::nnode_ = nnode;
+  UnstMeshReader::nelement_ = nelement;
+  UnstMeshReader::nbc_face_ = nbc_face;
+  UnstMeshReader::nbc_id_ = nbc_id;
+
   SystemModule::cout << "Done Reading mesh file." << std::endl;
   
 }// End UnstMeshReaderNKBGrid::Open
@@ -191,7 +197,7 @@ Array1D<ElementTopology::element_types> UnstMeshReaderNKBGrid::ReadElementType()
     
   memcpy(etype_tmp.get_ptr(0), 
          element_type_.get_ptr(0), 
-         sizeof(intT)*element_type_.get_size(0));
+         sizeof(ElementTopology::face_types)*element_type_.get_size(0));
     
   return etype_tmp;
  
@@ -237,14 +243,14 @@ Array1D<intT> UnstMeshReaderNKBGrid::ReadBcID()
  
 }// End UnstMeshReaderNKBGrid::ReadBcID
 //****************************************************************************80
-Array1D<intT> UnstMeshReaderNKBGrid::ReadBcFaceType()
+Array1D<ElementTopology::face_types> UnstMeshReaderNKBGrid::ReadBcFaceType()
 {
 
-  Array1D<intT> bcftype_tmp(bc_face_type_.get_size(0));
+  Array1D<ElementTopology::face_types> bcftype_tmp(bc_face_type_.get_size(0));
     
   memcpy(bcftype_tmp.get_ptr(0), 
          bc_face_type_.get_ptr(0), 
-         sizeof(intT)*bc_face_type_.get_size(0));
+         sizeof(ElementTopology::face_types)*bc_face_type_.get_size(0));
     
   return bcftype_tmp;
 

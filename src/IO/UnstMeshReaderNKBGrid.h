@@ -1,6 +1,6 @@
 // -*-c++-*-
 #ifndef UNSTMESHREADERNKBGRID_H
-#define UNSTMESHREDEARNKBGRID_H
+#define UNSTMESHREADERNKBGRID_H
 #include "my_incl.h"
 #include <cstring>
 #include "IO/UnstMeshReader.h"
@@ -35,14 +35,13 @@ public:
 //! 
 //****************************************************************************80
   ~UnstMeshReaderNKBGrid();
-
   Array2D<realT> ReadNodes();
   List2D<intT>  ReadElement2Node();
   Array1D<ElementTopology::element_types> ReadElementType();
   Array1D<intT> ReadElementRegion();
   List2D<intT>  ReadBcFace2Node();
   Array1D<intT> ReadBcID();
-  Array1D<intT> ReadBcFaceType();
+  Array1D<ElementTopology::face_types> ReadBcFaceType();
  
 private:
   FILE* mesh_file_;

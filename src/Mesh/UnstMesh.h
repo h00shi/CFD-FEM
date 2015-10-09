@@ -7,8 +7,6 @@
 //! \nick 
 //! \version $Rev: 5 $
 //! \date $Date: 2013-10-21 14:35:02 -0700 (Mon, 21 Oct 2013) $
-//! \tparam intT Template argument meant to mimic integer
-//! \tparam realT Template argument meant to mimic real numbers
 //****************************************************************************80
 #include "my_incl.h"
 #include "SystemUtils/SystemModule.h"
@@ -226,7 +224,7 @@ public:
 //! \details
 //! \nick
 //! \version $Rev$
-//! \return bc_face2node bc_face to node connecitivity
+//! \return bc_face2node bc_face to node connectivity
 //****************************************************************************80
   inline const List2D<intT>& get_bc_face2node() const {return bc_face2node_;}
 
@@ -587,7 +585,7 @@ protected:
 			   const Array1D<intT>& elem_nodes);    
 
 //****************************************************************************80
-//! \brief FormNode2Element : Forms the node2element connecitivity
+//! \brief FormNode2Element : Forms the node2element connectivity
 //! \details 
 //! \nick 
 //! \version $Rev$ 

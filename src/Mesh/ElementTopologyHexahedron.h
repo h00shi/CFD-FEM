@@ -15,6 +15,7 @@ namespace ElementTopology
 //****************************************************************************8
   class Hexahedron
   {
+  public:
     static const intT Type;
     static const intT nNode;
     static const intT nEdge;

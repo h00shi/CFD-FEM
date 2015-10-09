@@ -5,7 +5,6 @@
 #include "DataStructures/Array2D.h"
 #include "SystemUtils/SystemModule.h"
 #include "IO/UnstMeshReader.h"
-#include "IO/UnstMeshReaderNKBGrid.h"
 
 //****************************************************************************80
 //! \brief A class for storing and maining the mesh geometry
@@ -28,9 +27,17 @@ public:
 private:
   intT ndim_; //!< Number of physical dimensions
   intT nnode_;//!< Number of nodes
-
-  Array2D<realT> x_;//!< The coordinates of each node in the vector
   
+  Array2D<realT> x_; /*!< Coordinates, stores all the coordinates depending on
+                number of dimensions.
+                \verbatim
+                1-D : (x)
+                2-D : (x,y)
+                3-D : (x,y,z)
+                \endverbatim
+              */
+
+
   
   
 };// End UnstMeshGeom

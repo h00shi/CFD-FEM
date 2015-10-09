@@ -42,14 +42,20 @@ class UnstMeshElements
 //! 
 //****************************************************************************80
   ~UnstMeshElements();
-  
+
   inline intT get_nelement() const{return nelement_;}
+  inline intT get_nbar() const {return(nbar_);}
+  inline intT get_ntri() const {return(ntri_);}
+  inline intT get_nquad() const {return(nquad_);}
+  inline intT get_ntet() const {return(ntet_);}
+  inline intT get_nprism() const {return(nprism_);}
+  inline intT get_npyr() const {return(npyr_);}
+  inline intT get_nhex() const {return(nhex_);}
   inline const List2D<intT>& get_element2node() const {return element2node_;}
   inline const List2D<intT>& get_node2element() const {return node2element_;}
   inline const Array1D<ElementTopology::element_types>& 
   get_element_type() const {return element_type_;}
-  inline const List2D<intT>& get_node2node() const {return node2node_;}
-  
+
 private:
   intT nelement_; //!< Number of elements in the mesh
   intT nbar_; //!< Number of 1-D bar elements in the mesh
@@ -63,7 +69,6 @@ private:
   realT mem_;//!< Amount of memory used by this class
   List2D<intT> element2node_; //!< Element2node connectivity
   List2D<intT> node2element_; //!< Node2lement connectivity
-  List2D<intT> node2node_;//!< All nodes that share an element with a node
   Array1D<ElementTopology::element_types> element_type_; /*!< The type of each 
                                                           element */
   Array1D<realT> volume_;//!< Volume of each element in the mesh
@@ -89,14 +94,13 @@ private:
   void FormNode2Element();
 
 //****************************************************************************80
-//! \brief FormNode2Node : Forms the list of node2node connectivity
+//! \brief Count the types of elements in the mesh
 //! \details 
 //! \nick 
 //! \version $Rev$ 
 //! \date $Date$ 
 //! 
 //****************************************************************************80
-  void FormNode2Node();
   void CountElementTypes();
   
 };// UnstMeshElements

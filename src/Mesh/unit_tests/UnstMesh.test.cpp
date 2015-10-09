@@ -4,7 +4,6 @@
 #include "DataStructures/List2D.h"
 #include "gtest/gtest.h"
 
-static const realT small = 5.0e-15;
 TEST(UnstMesh, InitfromFile) 
 {
 
@@ -18,12 +17,12 @@ TEST(UnstMesh, Coords) {
 UnstMesh mesh("Square.grid", "Grid-NKB");
 const Array2D<realT>& x = mesh.get_x();
 
-  EXPECT_NEAR(-1.0, x(0,0), small);
-  EXPECT_NEAR(-0.5, x(0,1), small);
-  EXPECT_NEAR(0.0, x(13,0), small);
-  EXPECT_NEAR(.25, x(13,1), small);
-  EXPECT_NEAR(1.0, x(24,0), small);
-  EXPECT_NEAR(0.5, x(24,1), small); 
+  EXPECT_DOUBLE_EQ(-1.0, x(0,0));
+  EXPECT_DOUBLE_EQ(-0.5, x(0,1));
+  EXPECT_DOUBLE_EQ(0.0, x(13,0));
+  EXPECT_DOUBLE_EQ(.25, x(13,1));
+  EXPECT_DOUBLE_EQ(1.0, x(24,0));
+  EXPECT_DOUBLE_EQ(0.5, x(24,1));
 }
 
 TEST(UnstMesh, Element2node) {

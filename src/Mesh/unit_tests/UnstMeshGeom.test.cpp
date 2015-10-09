@@ -1,7 +1,7 @@
 #include "Mesh/UnstMeshGeom.h"
 #include "DataStructures/Array2D.h"
 #include "gtest/gtest.h"
-
+#include "IO/UnstMeshReaderNKBGrid.h"
 TEST(UnstMeshGoem, Init) 
 {
   UnstMeshReader* mesh_reader = new UnstMeshReaderNKBGrid("Square.grid");
@@ -19,5 +19,5 @@ TEST(UnstMeshGoem, Init)
   EXPECT_DOUBLE_EQ(1.0, x(23,0));
   EXPECT_DOUBLE_EQ(.25, x(23,1));
   
-  
+  delete mesh_reader;
 }

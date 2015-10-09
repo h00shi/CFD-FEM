@@ -1,8 +1,10 @@
 SET(Unit_Tests 
-  UnstMesh.test
   DummyMesh.test
-  UnstMeshEdges.test
   UnstMeshGeom.test
+  UnstMeshElements.test
+  UnstMeshBcFaces.test
+  UnstMeshEdges.test
+  UnstMesh.test
 )
 
 FOREACH(Unit ${Unit_Tests})

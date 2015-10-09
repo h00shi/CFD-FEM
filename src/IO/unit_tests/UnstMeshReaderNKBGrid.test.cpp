@@ -6,6 +6,12 @@ TEST(UnstMeshReaderNKBGrid, ReadIn)
 
   Array2D<realT> x = grid_reader.ReadNodes();
   
+  //---> Check mesh sizes
+  EXPECT_EQ(25, grid_reader.ReadNnode());
+  EXPECT_EQ(32, grid_reader.ReadNelement());
+  EXPECT_EQ(16, grid_reader.ReadNbcFace());
+  EXPECT_EQ(4, grid_reader.ReadNbcID());
+
   //---> Check nodal coordinates
   EXPECT_DOUBLE_EQ(-1.0, x(0,0));
   EXPECT_DOUBLE_EQ(-0.5, x(0,1));
@@ -49,7 +55,7 @@ TEST(UnstMeshReaderNKBGrid, ReadIn)
   EXPECT_EQ(0, bc_id(0));
   EXPECT_EQ(0, bc_id(2));
 
-  Array1D<intT> bc_face_type = grid_reader.ReadBcFaceType();
+  Array1D<ElementTopology::face_types> bc_face_type = grid_reader.ReadBcFaceType();
   for(intT i = 0; i < bc_face_type.get_size(0); i++){
     EXPECT_EQ(ElementTopology::face_types::FACE_BAR, bc_face_type(i));
   }

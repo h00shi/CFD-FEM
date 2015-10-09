@@ -1,10 +1,11 @@
 #include "DataStructures/Graph.h"
+#include "DataStructures/EdgeSet.h"
 //****************************************************************************80
 Graph::Graph(List2D<intT>& adj, Array2D<intT>& edge2node) :
   adj_(std::move(adj)),
   edge2node_(std::move(edge2node))
 {
-  /*---> For Robustness Set these values here because order of intializer list
+  /*---> For Robustness Set these values here because order of initializer list
     is not the most reliable thing.*/
   nnode_ = adj_.get_lead_size(); 
   nnz_   = adj_.get_total_size();
@@ -18,7 +19,7 @@ Graph::Graph(List2D<intT>& adj, Array2D<intT>& edge2node) :
 Graph::Graph(List2D<intT>& adj) :
   adj_(std::move(adj))
 {
-  /*---> For Robustness Set these values here because order of intializer list
+  /*---> For Robustness Set these values here because order of initializer list
     is not the most reliable thing.*/
   nnode_ = adj_.get_lead_size(); 
   nnz_   = adj_.get_total_size();
@@ -35,32 +36,20 @@ Graph::~Graph(){}
 //****************************************************************************80
 void Graph::FormEdge2Node() 
 {
-  
-  Array1D<intT> LastEdgeFromNode(nnode_);
-  Array1D<intT> NextEdgeFromEdge(nedge_);
-  LastEdgeFromNode.set_value(-1);
-  NextEdgeFromEdge.set_value(-1);
-  
-  intT iedge = 0;
-  for(intT n = 0; n < nnode_; n++){// Node loop 
-    for(int j = 0; j < adj_.get_ncol(n); j++){// Neighbor loop 
-      intT node = adj_(n,j);
-      if(node == n) {
-        //---> Do nothing...we don't need self adj for edges
-      }
-      else {
-        intT tag = GetEdgeTag(n, node, iedge, LastEdgeFromNode, 
-                              NextEdgeFromEdge);
-        if( tag == -1){
-          //---> Create a new edge
-          edge2node_(iedge,0) = std::max(n,node);
-          edge2node_(iedge,1) = std::min(n,node);
-          ++iedge;
+  //---> Now form edge2node using EdgeSet class
+  EdgeSet edges(nnode_,nedge_);
+  for(intT n = 0; n < nnode_; n++){// Node loop
+      for(int j = 0; j < adj_.get_ncol(n); j++){// Neighbor loop
+        intT node = adj_(n,j);
+        if(node == n) {
+          //---> Do nothing...we don't need self adj for edges
         }
-      } 
-    }// End Neighbor loop 
-  }// End Node loop 
- 
+        else {
+            edges.InsertEdge(n, node);
+        }
+      }
+  }
+  edge2node_ = edges.RemoveEdge2Node();
 }// End FormEdge2Node
 
 //****************************************************************************80

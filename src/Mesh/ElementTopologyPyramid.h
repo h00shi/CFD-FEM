@@ -15,6 +15,7 @@ namespace ElementTopology
 //****************************************************************************8
   class Pyramid
   {
+  public:
     static const intT Type;
     static const intT nNode;
     static const intT nEdge;
