@@ -4,7 +4,7 @@ SET(Unit_Tests
   UnstMeshElements.test
   UnstMeshBcFaces.test
   UnstMeshEdges.test
-  UnstMesh.test
+  CGMesh.test
 )
 
 FOREACH(Unit ${Unit_Tests})

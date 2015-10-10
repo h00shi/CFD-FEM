@@ -64,6 +64,28 @@ public:
 //!
 //****************************************************************************80
   void Write(const std::string& fbase);
+//****************************************************************************80
+//! \brief get_VTKType : Gets the vtk element type corresponding our element
+//!        type
+//! \details
+//! \nick
+//! \version $Rev$
+//! \param[in] etype Our element type
+//****************************************************************************80
+  inline intT get_VTKType(const intT& etype) const {return vtk_type[etype];}
+
+//****************************************************************************80
+//! \brief get_VTKFaceType : Gets the vtk face type corresponding to our face
+//!        type.
+//! \details
+//! \nick
+//! \version $Rev$
+//! \param[in] ftype Our face type
+//****************************************************************************80
+  inline intT get_VTKFaceType(const intT& ftype) const
+  {
+    return vtk_face_type[ftype];
+  }// End get_VTKFaceType
 
 private:
 //****************************************************************************80
@@ -79,7 +101,8 @@ private:
 private:
   vtkSmartPointer< vtkUnstructuredGrid > vtk_mesh_; /*!< VTK mesh datastructure
 						      required to write */
-
+  intT vtk_type[7] = {3, 5, 9, 10, 13, 14, 12};
+  intT vtk_face_type[4] = {3, 5, 9, 10};
 };// End Class UnstMeshWriterVTK
 
 #endif

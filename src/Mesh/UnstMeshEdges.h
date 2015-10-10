@@ -7,6 +7,7 @@
 #include "DataStructures/List2D.h"
 #include "Mesh/ElementTopology.h"
 #include "Mesh/UnstMeshElements.h"
+#include "Mesh/UnstMeshBcFaces.h"
 #include "DataStructures/EdgeSet.h"
 #include <algorithm>
 #include <vector>
@@ -31,7 +32,8 @@ public:
 //! \date $Date$ 
 //! 
 //****************************************************************************80
-  UnstMeshEdges(UnstMeshElements& mesh_elements);
+  UnstMeshEdges(UnstMeshElements& mesh_elements,
+                UnstMeshBcFaces& mesh_bc_faces);
   
   inline const Array2D<intT>& get_edge2node()const {return edge2node_;}
   inline const List2D<intT>& get_node2edge() const {return node2edge_;}
@@ -40,6 +42,8 @@ public:
 
 private:
   const UnstMeshElements& mesh_elements_;//!< Reference to elements of mesh
+  const UnstMeshBcFaces& mesh_bc_faces_;/*!< Reference to boundary faces of
+                                            of mesh*/
   intT nedge_; //!< The number of edges...must be predicted
   intT nnz_node2edge_; //!< Number of non-zero entries n nnz_node2edge
   Array2D<intT> edge2node_;//!< Lists nodes attached to each edge

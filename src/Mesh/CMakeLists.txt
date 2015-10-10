@@ -7,6 +7,7 @@ ADD_LIBRARY(Mesh
   UnstMeshBcFaces.cpp
   UnstMeshEdges.cpp 
   UnstMesh.cpp 
+  CGMesh.cpp
   ElementTopology.cpp
   ElementTopologyBar.cpp
   ElementTopologyTriangle.cpp

@@ -1,14 +1,16 @@
 #include "gtest/gtest.h"
 #include "SparseMatrix/CSRMatrix.h"
-#include "Mesh/UnstMesh.h"
+#include "Mesh/CGMesh.h"
 #include "DataStructures/Graph.h"
-
+#include "IO/UnstMeshReaderNKBGrid.h"
 TEST(CSRMatrix, OneField){
-  UnstMesh mesh("Square.grid", "Grid-NKB");
-  Array1D<intT> nfld(mesh.get_nnode());
+  UnstMeshReaderNKBGrid mesh_reader("Square.grid");
+  CGMesh mesh(mesh_reader);
+  Array1D<intT> nfld(mesh.get_MeshGeom().get_nnode());
   nfld.set_value(1);
   CSRMatrix<realT> csr_matrix(mesh.get_Graph(), nfld);
-  const List2D<intT>& adj = mesh.get_adj();
+
+  const List2D<intT>& adj = mesh.get_Graph().get_GraphAdj();
   const List2D<intT>& adj_data_offset = csr_matrix.get_adj_data_offset();
   const Array1D<intT>& rowos = csr_matrix.get_row_offset();
   const List2D<intT>& colidx = csr_matrix.get_column_idx();
@@ -35,12 +37,12 @@ TEST(CSRMatrix, OneField){
 }
 
 TEST(CSRMatrix, TwoFields) {
-  UnstMesh mesh("Square.grid", "Grid-NKB");
-  Array1D<intT> nfld(mesh.get_nnode());
+  UnstMeshReaderNKBGrid mesh_reader("Square.grid");
+  CGMesh mesh(mesh_reader);
+  Array1D<intT> nfld(mesh.get_MeshGeom().get_nnode());
   nfld.set_value(2);
-
   CSRMatrix<realT> csr_matrix(mesh.get_Graph(), nfld);
-  const List2D<intT>& adj = mesh.get_adj();
+  const List2D<intT>& adj = mesh.get_Graph().get_GraphAdj();
   const List2D<intT>& adj_data_offset = csr_matrix.get_adj_data_offset();
   const Array1D<intT>& rowos = csr_matrix.get_row_offset();
   const List2D<intT>& colidx = csr_matrix.get_column_idx();
@@ -92,12 +94,12 @@ TEST(CSRMatrix, TwoFields) {
 }
 
 TEST(CSRMatrix, ThreeFields) {
-  UnstMesh mesh("Square.grid", "Grid-NKB");
-  Array1D<intT> nfld(mesh.get_nnode());
+  UnstMeshReaderNKBGrid mesh_reader("Square.grid");
+  CGMesh mesh(mesh_reader);
+  Array1D<intT> nfld(mesh.get_MeshGeom().get_nnode());
   nfld.set_value(3);
-
   CSRMatrix<realT> csr_matrix(mesh.get_Graph(), nfld);
-  const List2D<intT>& adj = mesh.get_adj();
+  const List2D<intT>& adj = mesh.get_Graph().get_GraphAdj();
   const List2D<intT>& adj_data_offset = csr_matrix.get_adj_data_offset();
   const Array1D<intT>& rowos = csr_matrix.get_row_offset();
   const List2D<intT>& colidx = csr_matrix.get_column_idx();

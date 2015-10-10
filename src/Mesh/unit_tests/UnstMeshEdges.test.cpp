@@ -1,4 +1,3 @@
-#include "Mesh/UnstMeshElements.h"
 #include "Mesh/UnstMeshEdges.h"
 #include "DataStructures/Array1D.h"
 #include "DataStructures/Array2D.h"
@@ -9,8 +8,9 @@ TEST(UnstMeshEdges, Construct)
 {
   UnstMeshReader* mesh_reader = new UnstMeshReaderNKBGrid("Square.grid");
   UnstMeshElements mesh_elem(*mesh_reader);
+  UnstMeshBcFaces mesh_bc_faces(*mesh_reader);
 
-  UnstMeshEdges mesh_edges(mesh_elem);
+  UnstMeshEdges mesh_edges(mesh_elem, mesh_bc_faces);
   
   const Array2D<intT>& edge2node = mesh_edges.get_edge2node();
   EXPECT_EQ(7, edge2node(9,0));

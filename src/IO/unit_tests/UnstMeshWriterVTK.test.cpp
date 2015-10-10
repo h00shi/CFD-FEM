@@ -1,9 +1,10 @@
 #include "gtest/gtest.h"
-#include "Mesh/UnstMesh.h"
+#include "Mesh/CGMesh.h"
 #include "IO/UnstMeshWriterVTK.h"
 
 TEST(VTK, Write){
-  UnstMesh mesh("Square.grid","Grid-NKB");
+  UnstMeshReaderNKBGrid grid_reader("Square.grid");
+  CGMesh mesh(grid_reader);
   mesh.Diagnostic(std::cout);
   UnstMeshWriterVTK writer(mesh);
   

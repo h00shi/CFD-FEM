@@ -11,7 +11,7 @@
 #include "DataStructures/Array1D.h"
 #include "IO/UnstMeshReader.h"
 #include "Mesh/UnstMeshElements.h"
-
+#include <map>
 //****************************************************************************80
 //! \class UnstMeshBcFaces
 //! \brief Container for boundary face information.
@@ -192,6 +192,7 @@ public:
 				    boundary
 				    face this gives the element number attached
 				    to it. */
+  std::map<intT,std::string> bcid_tag_; /*!< Boundary id string tag */
 //****************************************************************************80
 //! \brief FindBcElement : Find the element containing the specified boundary
 //!        face

@@ -1,14 +1,20 @@
 #include "IO/UnstMeshWriterVTK.h"
+#include "Mesh/UnstMeshGeom.h"
+#include "Mesh/UnstMeshElements.h"
+
 //****************************************************************************80
 UnstMeshWriterVTK::UnstMeshWriterVTK(const UnstMesh& mesh_ref) :
-  UnstMeshWriter::UnstMeshWriter(mesh_ref)
+UnstMeshWriter::UnstMeshWriter(mesh_ref)
 {
   //---> Do some necessary initialization for the mesh
   vtk_mesh_ = vtkSmartPointer<vtkUnstructuredGrid>::New();
 
-  intT nnode = UnstMeshWriter::mesh_.get_nnode();
-  int ndim = UnstMeshWriter::mesh_.get_ndim();
-  Array2D<realT> const & x = UnstMeshWriter::mesh_.get_x();
+  intT nnode = UnstMeshWriter::mesh_.get_MeshGeom().get_nnode();
+  intT ndim = UnstMeshWriter::mesh_.get_MeshGeom().get_ndim();
+  Array2D<realT> const & x = UnstMeshWriter::mesh_.get_MeshGeom().get_x();
+  Array1D<ElementTopology::element_types> const & element_type =
+      UnstMeshWriter::mesh_.get_MeshElements().get_element_type();
+
 #ifdef DEV_DEBUG
   assert(ndim <= 3 and ndim > 0);
 #endif  
@@ -25,42 +31,42 @@ UnstMeshWriterVTK::UnstMeshWriterVTK(const UnstMesh& mesh_ref) :
   }
   vtk_mesh_->SetPoints(vtk_points);
 
-  intT nelement = UnstMeshWriter::mesh_.get_nelement();
-  List2D<intT> const & element2node = UnstMeshWriter::mesh_.get_element2node();
+  intT nelement = UnstMeshWriter::mesh_.get_MeshElements().get_nelement();
+  List2D<intT> const & element2node =
+      UnstMeshWriter::mesh_.get_MeshElements().get_element2node();
   vtkCell* vtk_cell = vtkTetra::New(); 
 
   for(intT e = 0; e < nelement; e++){ // Element loop 
     intT const vtk_cell_type = 
-      UnstMeshWriter::
-      mesh_.get_VTKType(UnstMeshWriter::mesh_.get_element_type()(e));
-   
+        this->get_VTKType(element_type(e));
+
     if(vtk_cell->GetCellType() != vtk_cell_type){ //Check delete element type
       vtk_cell->Delete();
       switch(vtk_cell_type){// Switch cell type
-      case VTKCellType::VTK_LINE:
-	vtk_cell = vtkLine::New();
-	break;
-      case VTKCellType::VTK_TRIANGLE:
-	vtk_cell = vtkTriangle::New();
-	break;
-      case VTKCellType::VTK_QUAD:
-	vtk_cell = vtkQuad::New();
-	break;
-      case VTKCellType::VTK_TETRA:
-	vtk_cell = vtkTetra::New();
-	break;
-      case VTKCellType::VTK_WEDGE:
-	vtk_cell = vtkWedge::New();
-	break;
-      case VTKCellType::VTK_PYRAMID:
-	vtk_cell = vtkPyramid::New();
-	break;
-      case VTKCellType::VTK_HEXAHEDRON:
-	vtk_cell = vtkHexahedron::New();
-	break;
-      default:
-	std::cerr << "Unsupported vtkcell_type found in WriteUnstGridVTK\n";
-	exit(EXIT_FAILURE);
+        case VTKCellType::VTK_LINE:
+          vtk_cell = vtkLine::New();
+          break;
+        case VTKCellType::VTK_TRIANGLE:
+          vtk_cell = vtkTriangle::New();
+          break;
+        case VTKCellType::VTK_QUAD:
+          vtk_cell = vtkQuad::New();
+          break;
+        case VTKCellType::VTK_TETRA:
+          vtk_cell = vtkTetra::New();
+          break;
+        case VTKCellType::VTK_WEDGE:
+          vtk_cell = vtkWedge::New();
+          break;
+        case VTKCellType::VTK_PYRAMID:
+          vtk_cell = vtkPyramid::New();
+          break;
+        case VTKCellType::VTK_HEXAHEDRON:
+          vtk_cell = vtkHexahedron::New();
+          break;
+        default:
+          std::cerr << "Unsupported vtkcell_type found in WriteUnstGridVTK\n";
+          exit(EXIT_FAILURE);
       }// Switch cell type
     }// Check delete current element type
 
@@ -69,10 +75,10 @@ UnstMeshWriterVTK::UnstMeshWriterVTK(const UnstMesh& mesh_ref) :
       vtk_cell->GetPointIds()->SetId(j,element2node(e,j));
     }
     vtk_mesh_->InsertNextCell(vtk_cell_type, vtk_cell->GetPointIds());
-    
+
   }// End Element Loop 
   vtk_cell->Delete();
-  
+
 }// End UnstMeshWriterVTK::UnstMeshWriterVTK
 
 //****************************************************************************80

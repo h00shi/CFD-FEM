@@ -1,8 +1,9 @@
 #include "Mesh/UnstMeshEdges.h"
 #include "DataStructures/EdgeSet.h"
 //****************************************************************************80
-UnstMeshEdges::UnstMeshEdges(UnstMeshElements& mesh_elements) :
-mesh_elements_(mesh_elements)
+UnstMeshEdges::UnstMeshEdges(UnstMeshElements& mesh_elements,
+                             UnstMeshBcFaces& mesh_bc_faces) :
+mesh_elements_(mesh_elements), mesh_bc_faces_(mesh_bc_faces)
 {
   ComputeNumberOfEdges();
   intT nnz_elem2edge = 0;
@@ -116,43 +117,43 @@ void UnstMeshEdges::ComputeNumberOfEdges()
   intT ne = 0;// Edge counter
   //---> Loop over the nodes
   for(intT n = 0; n < node2element.get_lead_size(); n++) { // Node_loop
-  
+
     intT nn_tot = 0;
     //---> Loop over the elements that surround this node 
     for(intT i = 0; i < node2element.get_ncol(n); i++){
       intT e = node2element(n,i);
       nn_tot += element2node.get_ncol(e);
     }
-    
+
     //---> Temporary array for nodes attached to node n
     std::vector<int> list_of_neighbors (nn_tot,-1);
-    
+
     //---> Initialize counter
     intT neighbor_count = 0;
-    
+
     //---> Now loop over the elements containing that node
     for( intT i = 0; i < node2element.get_ncol(n); i++ ) {// element_loop
       //---> Get element containing node n
       intT e = node2element(n, i);
-      
+
       //---> Loop over nodes attached to elem
       for ( intT j = 0; j < element2node.get_ncol(e); j++){ // Node_on_element
-	
-	//---> Get node index of jth node attached to elem
-	intT node = element2node(e, j);
+
+        //---> Get node index of jth node attached to elem
+        intT node = element2node(e, j);
         //---> Store node in temp 
-	list_of_neighbors[neighbor_count] = node;
+        list_of_neighbors[neighbor_count] = node;
         //---> Increment counter
-	neighbor_count += 1;
+        neighbor_count += 1;
       } // Node_on_element
-      
+
     } // End element_loop 
 
     //---> Sort all possible nodes adjacent to node n in lexigraphical order
     std::sort(list_of_neighbors.begin(), list_of_neighbors.end());
     //---> Define variables to use unique function 
     std::vector<int>::iterator itemp;
-    
+
     /*---> Eliminate all duplicate nodes from list temp NOTE: Must call
       sort first for std::unique to work as expected.  */
     itemp = std::unique(list_of_neighbors.begin(), list_of_neighbors.end());
@@ -164,7 +165,10 @@ void UnstMeshEdges::ComputeNumberOfEdges()
   }// End Node_loop
 
   //---> ne now contains sum over nodes of nedge_per_node*2
-  nedge_ = ne/2; 
+  intT nquad_face = mesh_elements_.get_nquad() + mesh_elements_.get_nprism()*3/2 +
+      mesh_elements_.get_npyr()*2/2 + mesh_elements_.get_nhex()*6/2 +
+      mesh_bc_faces_.get_nbc_quad()/2;
+  nedge_ = ne/2 - 2*(nquad_face);
   nnz_node2edge_ = ne;
 
 }//End ComputeNumberOfEdges
