@@ -83,6 +83,20 @@ public:
 
 //****************************************************************************80
 //!
+//! \brief List2D constructor that takes an Array1D with the number of columns
+//!        per row;
+//! \details
+//! \nick
+//! \version $Rev: 5 $
+//! \param[in] ncol The number of columns per row
+//****************************************************************************80
+  List2D(const Array1D<intT>& ncol ) : List2D() {
+
+    this->initialize(ncol);
+
+  }// End List2D
+//****************************************************************************80
+//!
 //! \brief List2D : List2D class move constructor
 //! \details
 //! \nick
@@ -230,7 +244,23 @@ public:
     }// end check input sizes
   } // End initialize
 
+//****************************************************************************80
+//!
+//! \brief Initialization that takes an Array1D with the number of columns
+//!        per row;
+//! \details
+//! \nick
+//! \version $Rev: 5 $
+//! \param[in] ncol The number of columns per row
+//****************************************************************************80
+  inline void initialize(const Array1D<intT>& ncol ) {
 
+    intT nnz = 0;
+    for(intT i = 0; i < ncol.get_size(0); i++){nnz += ncol(i);}
+    this->initialize(ncol.get_size(0), nnz);
+    this->set_ncol(ncol);
+
+  }// End List2D
 
 //****************************************************************************80
 //!

@@ -202,7 +202,46 @@ TEST(List2D, access) {
   EXPECT_DOUBLE_EQ(1.0, y(0));
   EXPECT_DOUBLE_EQ(4.0, y(14));
 }
+//--->This tests all the possible data access of a List2D object with
+//    size construction
+TEST(List2DAltContructor, access) {
+  Array1D<int> ncol(6);
 
+  // x
+  // x x x
+  // x x
+  // x x x x x
+  // x x x x x x x
+  // x x x x
+  ncol(0) = 1;
+  ncol(1) = 3;
+  ncol(2) = 2;
+  ncol(3) = 5;
+  ncol(4) = 7;
+  ncol(5) = 4;
+  List2D<double> x(ncol);
+  List2D<double> const & y = x;
+
+  x.set_value(0.0);
+  x(0,0) = 1.0;
+  x(4,3) = 4.0;
+
+  //(i,j) indexing
+  EXPECT_DOUBLE_EQ(1.0, x(0,0));
+  EXPECT_DOUBLE_EQ(4.0, x(4,3));
+
+  //(i) indexing
+  EXPECT_DOUBLE_EQ(1.0, x(0));
+  EXPECT_DOUBLE_EQ(4.0, x(14));
+
+  //(i,j) indexing - constant
+  EXPECT_DOUBLE_EQ(1.0, y(0,0));
+  EXPECT_DOUBLE_EQ(4.0, y(4,3));
+
+  //(i) indexing - constant
+  EXPECT_DOUBLE_EQ(1.0, y(0));
+  EXPECT_DOUBLE_EQ(4.0, y(14));
+}
 //--->This tests all the possible data access of a List2D object with
 //    default construction
 TEST(List2D, access2) {
@@ -239,7 +278,45 @@ TEST(List2D, access2) {
   EXPECT_DOUBLE_EQ(1.0, y(0));
   EXPECT_DOUBLE_EQ(4.0, y(14));
 }
+TEST(List2DAltContructor, access2) {
+  Array1D<int> ncol(6);
 
+  // x
+  // x x x
+  // x x
+  // x x x x x
+  // x x x x x x x
+  // x x x x
+  ncol(0) = 1;
+  ncol(1) = 3;
+  ncol(2) = 2;
+  ncol(3) = 5;
+  ncol(4) = 7;
+  ncol(5) = 4;
+  List2D<double> x;
+  x.initialize(ncol);
+  List2D<double> const & y = x;
+
+  x.set_value(0.0);
+  x(0,0) = 1.0;
+  x(4,3) = 4.0;
+
+  //(i,j) indexing
+  EXPECT_DOUBLE_EQ(1.0, x(0,0));
+  EXPECT_DOUBLE_EQ(4.0, x(4,3));
+
+  //(i) indexing
+  EXPECT_DOUBLE_EQ(1.0, x(0));
+  EXPECT_DOUBLE_EQ(4.0, x(14));
+
+  //(i,j) indexing - constant
+  EXPECT_DOUBLE_EQ(1.0, y(0,0));
+  EXPECT_DOUBLE_EQ(4.0, y(4,3));
+
+  //(i) indexing - constant
+  EXPECT_DOUBLE_EQ(1.0, y(0));
+  EXPECT_DOUBLE_EQ(4.0, y(14));
+}
 //--->This tests thse use of std::Sort on the rows of List2D
 TEST(List2D, sortRows) {
   List2D<double> x(4,11);

@@ -12,15 +12,17 @@ EdgeSet::EdgeSet(const intT& nnode, const intT& nedge) : nnode_(nnode),
   iedge_ = 0;
 }// End EdgeSet::EdgeSet
 //****************************************************************************80
-void EdgeSet::InsertEdge(const intT& node0, const intT& node1)
+intT EdgeSet::InsertEdge(const intT& node0, const intT& node1)
 {
   intT tag = GetEdgeTag(node0, node1);
   if(tag == -1) {
     edge2node_(iedge_,0) = std::max(node0, node1);
     edge2node_(iedge_,1) = std::min(node0, node1);
+    tag = iedge_;
     iedge_ += 1;
   }
-  return;
+
+  return tag;
 }// End EdgeSet::InsertEdge
 //****************************************************************************80
 intT EdgeSet::GetEdgeTag(const intT& node0, const intT& node1)

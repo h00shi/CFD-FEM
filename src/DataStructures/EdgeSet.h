@@ -38,8 +38,9 @@ public:
 //! \date $Date$ 
 //! \param[in] node0 First node on the edge
 //! \param[in] node1 Second node on the edge
+//! \return The unique edge made out of the two input nodes
 //****************************************************************************80
-  void InsertEdge(const intT& node0, const intT& node1);
+  intT InsertEdge(const intT& node0, const intT& node1);
   
 //****************************************************************************80
 //! \brief Uses the move constructor to remove the edge2node array from the 
@@ -74,7 +75,7 @@ public:
  //!
  //****************************************************************************80
  List2D<intT> FormNodeAdj();
-
+ inline intT get_nedge() const {return nedge_;}
 private:
   intT nnode_; //!< Number of nodes in set
   intT nedge_; //!< Number of edges in set
