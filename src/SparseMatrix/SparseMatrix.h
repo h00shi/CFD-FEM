@@ -46,7 +46,7 @@ protected:
 //! \param[in] nrow_per_node The number of rows per node
 //****************************************************************************80
   SparseMatrix(const Graph& graph, const Array1D<intT>& nrow_per_node) : 
-    graph_(graph), nrow_per_node_(nrow_per_node)
+   nrow_per_node_(nrow_per_node), graph_(graph)
   {
     //---> Reference variables
     const List2D<intT>& adjacency = graph_.get_GraphAdj();

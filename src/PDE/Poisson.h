@@ -67,7 +67,7 @@ public:
 //! \param[out] flux The flux flux vector
 //! \param[out] src The source term vector 
 //****************************************************************************80
-  void cg_vol_res(const int& ndim, const int& nfld, const Array1D<realT>& q,
+  void cg_vol_res(const int& ndim, const int& nfld, const Array1D<realT>&,
 	     const Array2D<realT>& dq, Array2D<realT>& flux,
 	     Array1D<realT>& src) {
 

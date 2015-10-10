@@ -16,7 +16,6 @@ realT Polynomials::Jacobi(const intT& n, const intT& alpha, const intT& beta,
   realT an4;
   realT ar;
   realT br;
-  realT im1;
     
   //---> Function result variable 
   realT p;

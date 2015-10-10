@@ -334,7 +334,6 @@ public:
     
     //---> Local Variables
     realT Nx = n(0);
-    realT Nmag = sqrt(Nx*Nx);
     FTtype rho = q(0);
     FTtype dbyrho = 1.0/q(0);
     FTtype u = q(1)*dbyrho;
@@ -345,7 +344,6 @@ public:
     FTtype c = sqrt(gamma*p/rho);
     //  Helper division variables
     FTtype dbyc2 = 1.0/(c*c);
-    realT dbyNmag = 1.0/(Nmag);
     realT dbygm1 = 1.0/gm1;
     //  Eigen values
     FTtype lam1 = abs(un - vgn);
@@ -424,7 +422,7 @@ public:
 //****************************************************************************80
   template<class FTtype>
   void get_bc_q(const intT& bc_type, const Array1D<realT>& norm, 
-		const Array1D<realT>& tang, const Array1D<realT>& vg, 
+		const Array1D<realT>&, const Array1D<realT>& vg,
 		const Array1D<FTtype>& q, Array1D<FTtype>& qb)
   {
 

@@ -498,7 +498,7 @@ public:
 //****************************************************************************80
   template<class FTtype>
   void get_bc_q(const intT& bc_type, const Array1D<realT>& norm, 
-		const Array1D<realT>& tang, const Array1D<realT>& vg, 
+		const Array1D<realT>&, const Array1D<realT>& vg,
 		const Array1D<FTtype>& q, Array1D<FTtype>& qb)
   {
 

@@ -2,8 +2,11 @@
 #include "DataStructures/Array1D.h"
 #include "gtest/gtest.h"
 #include "my_incl.h"
-void quadpoly (const Array1D<double>&, Array1D<double>& );
 
+void quadpoly (const Array1D<double>& x, Array1D<double>& y)
+{
+  y(0) = x(0) + x(1) + x(2) ;
+}
 //****************************************************************************80
 //! \file tetelement_test.cpp
 //! \brief Collection of google tests for namespace Polynomials
@@ -586,8 +589,5 @@ TEST(TetElement, bc_geom) {
 }
 
 
-void quadpoly (const Array1D<double>& x, Array1D<double>& y)
-{
-  y(0) = x(0) + x(1) + x(2) ;
-}
+
 

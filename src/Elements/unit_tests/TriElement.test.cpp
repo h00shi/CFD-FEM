@@ -4,8 +4,10 @@
 #include "gtest/gtest.h"
 #include "my_incl.h"
 
-void quadpoly (const Array1D<double>&, Array1D<double>& );
-
+void quadpoly (const Array1D<double>& x, Array1D<double>& y)
+{
+  y(0) = x(0) + x(1) ;
+}
 //****************************************************************************80
 //! \file trielement_test.cpp
 //! \brief Collection of google tests for namespace Polynomials
@@ -300,7 +302,4 @@ TEST(Triangle, BasisSummation) {
 
 
 
-void quadpoly (const Array1D<double>& x, Array1D<double>& y)
-{
-  y(0) = x(0) + x(1) ;
-}
+

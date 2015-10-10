@@ -45,29 +45,9 @@ public:
 //! \param[in] n3 The size of the third array dimension
 //! \param[in] n4 The size of the fourth array dimension
 //****************************************************************************80
-  Array4D(intT n1, intT n2, intT n3, intT n4){
-    //---> Set the zie
-    size1 = n1;
-    size2 = n2;
-    size3 = n3;
-    size4 = n4;
-
-    //---> Set array to null
-    data = NULL;
-
-    //---> Allocate the data in size1 is bigger than 1
-    if( size1*size2*size3*size4 > 0) { // check_size
-      mem = 
-	SystemModule::alloc_mem< dataT, int, double>(data,
-						     size1*size2*size3*size4);
-
-      //---> Loop over data and set the value to zero;
-      for( intT i = 0; i < size1*size2*size3*size4; i++) {// init_loop
-        data[i] = (dataT) -999999999999999999999;
-      }// end init_loop
-
-    }// End check_destructor
-
+  Array4D(intT n1, intT n2, intT n3, intT n4) : Array4D()
+  {
+    this->initialize(n1, n2, n3, n4);
   } // End Array4D
 
 //****************************************************************************80

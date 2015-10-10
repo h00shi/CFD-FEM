@@ -44,40 +44,9 @@ public:
 //! \param[in] n1 The size of the leading list dimension
 //! \param[in] n Total size of the all the data
 //****************************************************************************80
-  List2D(intT nrow, intT n){
-    //---> Set array to null
-    index = NULL;
-    data  = NULL;
+  List2D(intT nrow, intT n): List2D(){
+    this->initialize(nrow,n);
 
-    //---> Set default values of memory and sizes
-    mem   = 0.0;
-    size1 = nrow;
-    size  = n;
-
-    //---> Allocate index if requested number of rows is positive
-    if(nrow > 0) { //check row request
-      //---> Set the size
-      size1 = nrow;
-      //---> Allocate
-      mem += SystemModule::alloc_mem< int, int, double>(index, size1 + 1);
-      //---> Set up columns of each row to be zero
-      index[0] = 0;
-      for(intT i = 0; i < nrow; i++){
-        index[i + 1] = index[i] + 0;
-      }
-    }//end check row request
-
-    //---> Allocate data if requested number of total size is positive
-    if(n > 0) { // check input total size
-      //---> Set the size
-      size = n;
-      //---> Allocate
-      mem += SystemModule::alloc_mem< dataT, int, double>(data, size);
-      //---> Loop over data and set the value to zero;
-      for( intT i = 0; i < size; i++) {// init_loop
-        data[i] = (dataT) 0;
-      }// end init_loop
-    }//end check total size
 
   } // End List2D
 
@@ -91,9 +60,7 @@ public:
 //! \param[in] ncol The number of columns per row
 //****************************************************************************80
   List2D(const Array1D<intT>& ncol ) : List2D() {
-
     this->initialize(ncol);
-
   }// End List2D
 //****************************************************************************80
 //!

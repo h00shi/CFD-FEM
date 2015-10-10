@@ -8,6 +8,20 @@
 void quadpoly (const Array1D<realT>&, Array1D<realT>& );
 void p3poly (const Array1D<realT>&, Array1D<realT>& );
 void p4poly (const Array1D<realT>&, Array1D<realT>& );
+void quadpoly (const Array1D<realT>& x, Array1D<realT>& y)
+{
+  y(0) = x(0)*x(0);
+}
+
+void p3poly(const Array1D<realT>& x, Array1D<realT>& y)
+{
+  y(0) = x(0)*x(0)*x(0) + x(0)*x(0) + 1;
+}
+
+void p4poly(const Array1D<realT>& x, Array1D<realT>& y)
+{
+  y(0) = x(0)*x(0)*x(0)*x(0) + x(0)*x(0)*x(0) + x(0)*x(0);
+}
 
 //****************************************************************************80
 //! \file barelement_test.cpp
@@ -222,17 +236,3 @@ TEST(BarElement, bc_geom) {
   
 }
 
-void quadpoly (const Array1D<realT>& x, Array1D<realT>& y)
-{
-  y(0) = x(0)*x(0);
-}
-
-void p3poly(const Array1D<realT>& x, Array1D<realT>& y)
-{
-  y(0) = x(0)*x(0)*x(0) + x(0)*x(0) + 1;
-}
-
-void p4poly(const Array1D<realT>& x, Array1D<realT>& y)
-{
-  y(0) = x(0)*x(0)*x(0)*x(0) + x(0)*x(0)*x(0) + x(0)*x(0);
-}

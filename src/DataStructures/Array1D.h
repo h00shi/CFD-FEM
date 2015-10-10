@@ -41,26 +41,8 @@ public:
 //! \version $Rev: 5 $
 //! \param[in] n The size of the array you are declaring
 //****************************************************************************80
-  Array1D(intT n){
-    //---> Set array to null
-    data = NULL;
-
-    //---> Set default values of memory and size
-    mem = 0.0;
-    size1 = n;
-
-    //---> Allocate the data in size1 is bigger than 1
-    if( n > 0) { // check_size
-      //---> Set the size
-      size1 = n;
-      //---> Allocate
-      mem = SystemModule::alloc_mem< dataT, intT, double>(data, size1);
-      //---> Loop over data and set the value to zero;
-      for( intT i = 0; i < size1; i++) {// init_loop
-        data[i] = (dataT) 0;
-      }// end init_loop
-
-    }// End check_destructor
+  Array1D(intT n) : Array1D() {
+    this->initialize(n);
   } // End Array1D
 
 //****************************************************************************80

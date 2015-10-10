@@ -45,27 +45,9 @@ public:
 //! \param[in] n2 The size of the second array dimension
 //! \param[in] n3 The size of the thrid array dimension
 //****************************************************************************80
-  Array3D(intT n1, intT n2, intT n3){
-    //---> Set the zie
-    size1 = n1;
-    size2 = n2;
-    size3 = n3;
-
-    //---> Set array to null
-    data = NULL;
-
-    //---> Allocate the data in size1 is bigger than 1
-    if( size1*size2*size3 > 0) { // check_size
-      mem = SystemModule::alloc_mem< dataT, int, double>(data,
-                                                          size1*size2*size3);
-
-      //---> Loop over data and set the value to zero;
-      for( intT i = 0; i < size1*size2*size3; i++) {// init_loop
-        data[i] = (dataT) -999999999999999999999;
-      }// end init_loop
-
-    }// End check_destructor
-
+  Array3D(intT n1, intT n2, intT n3) : Array3D()
+  {
+    this->initialize(n1,n2,n3);
   } // End Array3D
 
 //****************************************************************************80

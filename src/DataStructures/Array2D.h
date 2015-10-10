@@ -44,24 +44,8 @@ public:
 //! \param[in] n1 The size of the first array dimension
 //! \param[in] n2 The size of the second array dimension
 //****************************************************************************80
-  Array2D(intT n1, intT n2){
-    //---> Set array to null
-    data = NULL;
-
-    //---> Set default values of memory and sizes
-    mem = 0.0;
-    size1 = n1;
-    size2 = n2;
-
-    //---> Allocate the data if size request is bigger than 1
-    if( n1*n2 > 0) { // check_size
-       //---> Allocate
-      mem = SystemModule::alloc_mem< dataT, int, double>(data, size1*size2);
-      //---> Loop over data and set the value to zero;
-      for( intT i = 0; i < size1*size2; i++) {// init_loop
-        data[i] = (dataT) 0;
-      }// end init_loop
-    }// End check_destructor
+  Array2D(intT n1, intT n2) : Array2D(){
+    this->initialize(n1, n2);
   } // End Array2D
 
 //****************************************************************************80
