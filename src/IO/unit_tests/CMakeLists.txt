@@ -1,6 +1,7 @@
 SET(Unit_Tests
     UnstMeshWriterVTK.test
     UnstMeshReaderNKBGrid.test
+    UnstMeshReaderGMSH.test
 )
 
 FOREACH(Unit ${Unit_Tests})
@@ -11,4 +12,5 @@ FOREACH(Unit ${Unit_Tests})
 ENDFOREACH()
 # Files to copy for unit tests
 FILE (COPY "../../Mesh/unit_tests/Square.grid" DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
-
+FILE (COPY "Circle.msh" DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
+FILE (COPY "Circle.idmap" DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
