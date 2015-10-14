@@ -1,10 +1,9 @@
 # Number of GMSH ID's
-3
-# Boundary Face ID Mappings
 2
+# Boundary Face ID Mappings
+1
 # GMSH-ID Solver-ID
-0 0
-1 1
+1 0
 # Volume Region ID Mappings
 1
 # GMSH-ID Solver-ID

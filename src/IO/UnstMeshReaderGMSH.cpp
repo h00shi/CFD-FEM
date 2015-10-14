@@ -127,10 +127,10 @@ void UnstMeshReaderGMSH::ReadASCII()
     fscanf(mesh_file_,"\n");
 
     nnode_per_entity(elem-1) = n;
-    if(global_id_2_bc_id_(id)){
+    if(gmsh_id_is_bc_[id]){
       UnstMeshReader::nbc_face_++;
     }
-    if(global_id_2_region_id_(id)){
+    if(gmsh_id_is_region_[id]){
       UnstMeshReader::nelement_++;
     }
 
@@ -139,8 +139,6 @@ void UnstMeshReaderGMSH::ReadASCII()
   entity2node_.initialize(nnode_per_entity);
   bc_face2entity_.initialize(UnstMeshReader::nbc_face_);
   elem2entity_.initialize(UnstMeshReader::nelement_);
-
-  //std::cout << nnode_per_entity << std::endl;
 
   //---> Rewind file;
   rewind(mesh_file_);
@@ -182,11 +180,11 @@ void UnstMeshReaderGMSH::ReadASCII()
     }
 
     fscanf(mesh_file_,"\n");
-    if(global_id_2_bc_id_(id)){
+    if(gmsh_id_is_bc_[id]){
       bc_face2entity_(ibc_face) = elem - 1;
       ibc_face++;
     }
-    if(global_id_2_region_id_(id)){
+    if(gmsh_id_is_region_[id]){
       elem2entity_(ielem) = elem - 1;
       ielem++;
     }
@@ -220,47 +218,59 @@ void UnstMeshReaderGMSH::ReadIdMap(const std::string& idmap_filename)
   SystemModule::cout << "Reading IDMAP File... " << std::endl;
   //---> Read Header
   fgets(char_crap, 100, idmap_file_);
+
+  //---> Read number of GMSH ID's
+  intT ngmsh_id;
+  fscanf(idmap_file_, "%d \n", &ngmsh_id);
+  fgets(char_crap, 100, idmap_file_);
+  gmsh_id_.initialize(ngmsh_id);
+
+  //---> Read Boundary Boundary ID Mapping
   fscanf(idmap_file_, "%d \n", &(UnstMeshReader::nbc_id_));
-  bc_id_2_global_id_.initialize(UnstMeshReader::nbc_id_);
+
   fgets(char_crap, 100, idmap_file_);
   for(intT i = 0; i < UnstMeshReader::nbc_id_; i++){
-    intT n1;
-    intT n2;
-    fscanf(idmap_file_,"%d %d \n", &n1, &n2);
-    bc_id_2_global_id_(n2) = n1;
+    intT gmsh_id;
+    intT bc_id;
+    fscanf(idmap_file_,"%d %d \n", &gmsh_id, &bc_id);
+    gmsh_id_(i) = gmsh_id;
+    gmsh_id_2_bc_id_[gmsh_id] = bc_id;
+    gmsh_id_is_bc_[gmsh_id] = true;
   }
 
+  //---> Read Region ID Mapping
   fgets(char_crap, 100, idmap_file_);
   fscanf(idmap_file_, "%d \n", &n_region_id_);
-  region_id_2_global_id_.initialize(n_region_id_);
+  //region_id_2_global_id_.initialize(n_region_id_);
   fgets(char_crap, 100, idmap_file_);
   for(intT i = 0; i < n_region_id_; i++){
-    intT n1;
-    intT n2;
-    fscanf(idmap_file_,"%d %d \n", &n1, &n2);
-    region_id_2_global_id_(n2) = n1;
+    intT gmsh_id;
+    intT region_id;
+    fscanf(idmap_file_,"%d %d \n", &gmsh_id, &region_id);
+    gmsh_id_(UnstMeshReader::nbc_id_+ i) = gmsh_id;
+    // region_id_2_global_id_(n2) = n1;
+    gmsh_id_2_region_[gmsh_id] = region_id;
+    gmsh_id_is_region_[gmsh_id] = true;
   }
 
-  global_id_2_bc_id_.initialize(UnstMeshReader::nbc_id_ + n_region_id_);
-  global_id_2_region_id_.initialize(UnstMeshReader::nbc_id_ + n_region_id_);
-  gmsh_id_2_my_id_.initialize(UnstMeshReader::nbc_id_ + n_region_id_);
-  for(intT i = 0; i < UnstMeshReader::nbc_id_; i++){
-    intT gid = bc_id_2_global_id_(i);
-    gmsh_id_2_my_id_(gid) = i;
-    global_id_2_bc_id_(gid) = true;
-    global_id_2_region_id_(gid) = false;
+  SystemModule::cout << "Boundary Mapping information " << std::endl;
+  for(intT i = 0; i < UnstMeshReader::nbc_id_; i++) {
+    std::cout << "Boundary : "<< i << " GMSH ID: " << gmsh_id_(i)
+                        << " Boundary ID: " << gmsh_id_2_bc_id_[gmsh_id_(i)];
+    if( gmsh_id_is_bc_[gmsh_id_(i)] ){
+      std::cout << " This is a boundary!";
+    }
+    std::cout << std::endl;
   }
-  for(intT i = 0; i < n_region_id_; i++){
-    intT gid = region_id_2_global_id_(i);
-    gmsh_id_2_my_id_(gid) = i;
-    global_id_2_bc_id_(gid) = false;
-    global_id_2_region_id_(gid) = true;
-  }
-
-  SystemModule::cout << "Mapping the following GMSH id numbers: " << std::endl;
-  for(intT i = 0; i < UnstMeshReader::nbc_id_ + n_region_id_; i++){
-   std::cout << "GMSH ID: " << i << " Maps to ID: " << gmsh_id_2_my_id_(i)
-             << std::endl;
+  for(intT i = 0; i < n_region_id_; i++) {
+    intT j = UnstMeshReader::nbc_id_ + i;
+    std::cout << "Region : "<< i << " GMSH ID: "
+        << gmsh_id_(j)
+        << " Region ID: " << gmsh_id_2_region_[gmsh_id_(j)];
+    if(gmsh_id_is_region_[gmsh_id_(j)]){
+      std::cout << " This is a region!";
+    }
+    std::cout << std::endl;
   }
 
   SystemModule::cout << "Done Reading IDMAP File." << std::endl;
@@ -352,7 +362,7 @@ Array1D<intT> UnstMeshReaderGMSH::ReadElementRegion()
 
   for(intT e = 0; e < UnstMeshReader::nelement_; e++){
      intT entity = elem2entity_(e);
-     ereg_tmp(e) = gmsh_id_2_my_id_(entity_type_(entity));
+     ereg_tmp(e) = gmsh_id_2_region_[entity_type_(entity)];
    }
 
   return ereg_tmp;
@@ -385,7 +395,7 @@ Array1D<intT> UnstMeshReaderGMSH::ReadBcID()
   Array1D<intT> bcid_tmp(UnstMeshReader::nbc_face_);
   for(intT f = 0; f < UnstMeshReader::nbc_face_; f++){
      intT entity = bc_face2entity_(f);
-     bcid_tmp(f) = gmsh_id_2_my_id_(entity_id_(entity));
+     bcid_tmp(f) = gmsh_id_2_bc_id_[entity_id_(entity)];
   }
 
   return bcid_tmp;

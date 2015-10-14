@@ -13,6 +13,7 @@
 #include "DataStructures/Array2D.h"
 #include "DataStructures/List2D.h"
 #include <cstring>
+#include <unordered_map>
 //****************************************************************************80
 //! \brief This A class to read GMSH files.
 //! \details
@@ -62,15 +63,12 @@ private:
   Array1D<intT> entity_id_;
   Array1D<intT> elem2entity_;
   Array1D<intT> bc_face2entity_;
-  Array1D<bool> global_id_2_bc_id_;
-  Array1D<bool> global_id_2_region_id_;
-  Array1D<intT> bc_id_2_global_id_;
-  Array1D<intT> region_id_2_global_id_;
-  Array1D<intT> gmsh_id_2_my_id_;
+  std::unordered_map<intT, intT> gmsh_id_2_bc_id_;
+  std::unordered_map<intT, intT> gmsh_id_2_region_;
+  std::unordered_map<intT, bool> gmsh_id_is_bc_;
+  std::unordered_map<intT, bool> gmsh_id_is_region_;
+  Array1D<intT> gmsh_id_;//!< Mapping an index to a gmsh_id
 
-//  List2D<intT> bc_face2node_;
-//  Array1D<intT> bc_face_id_;
-//  Array1D<intT> bc_face_type_;
 
   //---> Reads file if it's ASCII
   void ReadASCII();
