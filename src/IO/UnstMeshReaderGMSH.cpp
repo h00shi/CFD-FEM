@@ -39,9 +39,13 @@ UnstMeshReaderGMSH(const std::string& filename,
   intT real_size_bytes;
   fscanf(mesh_file_, "%lf %d %d\n", &version, &type_flag, &real_size_bytes);
   if(type_flag == 0){
-    SystemModule::cout << "Detected GMSH ASCII File Version:  " << version << std::endl;
+    SystemModule::cout << "Detected GMSH ASCII File Version:  "
+        << version << std::endl;
     ReadASCII();}
-  else if(type_flag == 1){ReadBinary();}
+  else if(type_flag == 1){
+    SystemModule::cout << "Detected GMSH BINARY File Version:  "
+        << version << std::endl;
+    ReadBinary();}
   else{
     SystemModule::cout<< "ERROR: GMSH File header did not specify ASCII or BINARY." << std::endl
         << " The type value read in is: " << type_flag << ", which should be 0 = ASCII or "
@@ -191,8 +195,8 @@ void UnstMeshReaderGMSH::ReadASCII()
   }// End Element Loop
 
   SystemModule::cout << "Detected the following mesh file Parameters: " << std::endl
-                     << "nElement: " << ielem << std::endl
-                     << "nBcFace: " << ibc_face << std::endl;
+      << "nElement: " << ielem << std::endl
+      << "nBcFace: " << ibc_face << std::endl;
 
 
 }// End ReadASCII
@@ -256,7 +260,7 @@ void UnstMeshReaderGMSH::ReadIdMap(const std::string& idmap_filename)
   SystemModule::cout << "Boundary Mapping information " << std::endl;
   for(intT i = 0; i < UnstMeshReader::nbc_id_; i++) {
     std::cout << "Boundary : "<< i << " GMSH ID: " << gmsh_id_(i)
-                        << " Boundary ID: " << gmsh_id_2_bc_id_[gmsh_id_(i)];
+                            << " Boundary ID: " << gmsh_id_2_bc_id_[gmsh_id_(i)];
     if( gmsh_id_is_bc_[gmsh_id_(i)] ){
       std::cout << " This is a boundary!";
     }
@@ -280,6 +284,195 @@ void UnstMeshReaderGMSH::ReadIdMap(const std::string& idmap_filename)
 //****************************************************************************80
 void UnstMeshReaderGMSH::ReadBinary()
 {
+
+  //---> We know we are reading a 2-D mesh file;
+  intT ndim = 3;
+  intT icrap;
+  fread(&icrap, sizeof(intT), 1, mesh_file_);
+  fscanf(mesh_file_, "\n");
+
+  char char_crap[100];
+  intT nnode;
+
+  //---> Two lines of Crap
+  fgets(char_crap, 100, mesh_file_);
+  fgets(char_crap, 100, mesh_file_);
+  //---> Read number of nodes;
+  fscanf(mesh_file_, "%d \n", &nnode);
+  UnstMeshReader::nnode_= nnode;
+
+  x_.initialize(nnode, ndim);
+  realT xyz[3];
+  for(intT n = 0; n < nnode; n++){
+    intT node;
+    fread(&node, sizeof(intT), 1, mesh_file_);
+    fread(xyz, sizeof(realT), 3, mesh_file_);
+    x_(node - 1,0) = xyz[0];
+    x_(node - 1,1) = xyz[1];
+    x_(node - 1,2) = xyz[2];
+  }
+
+  fscanf(mesh_file_, "\n");
+  //---> Two more lines of crap
+  fgets(char_crap, 100, mesh_file_);
+  fgets(char_crap, 100, mesh_file_);
+  //---> Read Elements
+  fscanf(mesh_file_, "%d \n", &nentity_);
+
+  entity_type_.initialize(nentity_);
+  entity_id_.initialize(nentity_);
+  Array1D<intT> nnode_per_entity(nentity_);
+
+  intT ientity = 0;
+  while(ientity < nentity_){
+    int elem_header[3]={0,100,200};
+    fread(elem_header, sizeof(intT), 3, mesh_file_);
+
+    intT type = elem_header[0];
+    ientity += elem_header[1];
+    intT ntag = elem_header[2];
+    intT n;
+    switch(gmsh_type_map_[type]) {
+      case ElementTopology::element_types::BAR :
+        n = ElementTopology::Bar::nNode;
+        break;
+      case ElementTopology::element_types::TRI :
+        n = ElementTopology::Triangle::nNode;
+        break;
+      case ElementTopology::element_types::QUAD :
+        n = ElementTopology::Quadrilateral::nNode;
+        break;
+      case ElementTopology::element_types::TET :
+        n = ElementTopology::Tetrahedron::nNode;
+        break;
+      case ElementTopology::element_types::PRISM :
+        n = ElementTopology::Prism::nNode;
+        break;
+      case ElementTopology::element_types::PYR :
+        n = ElementTopology::Pyramid::nNode;
+        break;
+      case ElementTopology::element_types::HEX :
+        n = ElementTopology::Hexahedron::nNode;
+        break;
+    }
+
+    intT ndata = 1 + ntag + n;
+    intT elem_data[ndata];
+    for(intT i = 0; i < elem_header[1]; i++){ // Element Loop
+      fread(elem_data, sizeof(intT), ndata, mesh_file_);
+
+      intT elem = elem_data[0];
+      intT id = elem_data[1];
+      //---> Skip 1 to ntag -1 columns
+      entity_type_(elem - 1) = type;
+      entity_id_(elem - 1) = id;
+      nnode_per_entity(elem - 1) = n;
+      if(gmsh_id_is_bc_[id]){
+
+        UnstMeshReader::nbc_face_++;
+      }
+      if(gmsh_id_is_region_[id]){
+
+        UnstMeshReader::nelement_++;
+      }
+
+    }// End Element Loop
+
+
+  } // End While
+
+  entity2node_.initialize(nnode_per_entity);
+  bc_face2entity_.initialize(UnstMeshReader::nbc_face_);
+  elem2entity_.initialize(UnstMeshReader::nelement_);
+
+  //---> Second Loop to read element numbers
+  //---> Rewind file;
+  realT rcrap;
+  rewind(mesh_file_);
+  fgets(char_crap, 100, mesh_file_);
+  fscanf(mesh_file_, "%lf %d %d\n", &rcrap, &icrap, &icrap);
+  fread(&icrap, sizeof(intT), 1, mesh_file_);
+  fscanf(mesh_file_, "\n");
+
+  //---> Two lines of Crap
+  fgets(char_crap, 100, mesh_file_);
+  fgets(char_crap, 100, mesh_file_);
+  //---> Read number of nodes;
+  fscanf(mesh_file_, "%d \n", &nnode);
+
+  for(intT n = 0; n < nnode; n++){
+    fread(&icrap, sizeof(intT), 1, mesh_file_);
+    fread(xyz, sizeof(realT), 3, mesh_file_);
+  }
+
+  fscanf(mesh_file_, "\n");
+  //---> Two more lines of crap
+  fgets(char_crap, 100, mesh_file_);
+  fgets(char_crap, 100, mesh_file_);
+  //---> Read Elements
+  fscanf(mesh_file_, "%d \n", &nentity_);
+
+  ientity = 0;
+  intT ibc_face = 0;
+  intT ielem = 0;
+  int elem_header[3];
+  while(ientity < nentity_){
+    fread(elem_header, sizeof(intT), 3, mesh_file_);
+
+    intT type = elem_header[0];
+    ientity += elem_header[1];
+    intT ntag = elem_header[2];
+    intT n;
+    switch(gmsh_type_map_[type]) {
+      case ElementTopology::element_types::BAR :
+        n = ElementTopology::Bar::nNode;
+        break;
+      case ElementTopology::element_types::TRI :
+        n = ElementTopology::Triangle::nNode;
+        break;
+      case ElementTopology::element_types::QUAD :
+        n = ElementTopology::Quadrilateral::nNode;
+        break;
+      case ElementTopology::element_types::TET :
+        n = ElementTopology::Tetrahedron::nNode;
+        break;
+      case ElementTopology::element_types::PRISM :
+        n = ElementTopology::Prism::nNode;
+        break;
+      case ElementTopology::element_types::PYR :
+        n = ElementTopology::Pyramid::nNode;
+        break;
+      case ElementTopology::element_types::HEX :
+        n = ElementTopology::Hexahedron::nNode;
+        break;
+    }
+
+    intT ndata = 1 + ntag + n;
+    intT elem_data[ndata];
+    for(intT i = 0; i < elem_header[1]; i++){ // Element Loop
+      fread(elem_data, sizeof(intT), ndata, mesh_file_);
+
+      std::cout << "Element Data: " << 1 + ntag + n  << " ";
+      for(intT j = 0; j < ndata; j++){std::cout << elem_data[j] << " ";}
+      std::cout << std::endl;
+      intT elem = elem_data[0];
+      intT id = elem_data[1];
+      for(intT j = 0; j < n; j++){
+        entity2node_(elem-1,j) = elem_data[1 + ntag + j] - 1;
+      }
+      if(gmsh_id_is_bc_[id]){
+        bc_face2entity_(ibc_face) = elem - 1;
+        ibc_face++;
+      }
+      if(gmsh_id_is_region_[id]){
+        elem2entity_(ielem) = elem - 1;
+        ielem++;
+      }
+
+    }// End Element Loop
+
+
+  } // End While
 
   return;
 }
@@ -326,28 +519,28 @@ Array1D<ElementTopology::element_types> UnstMeshReaderGMSH::ReadElementType()
   for(intT e = 0; e < UnstMeshReader::nelement_; e++){
     intT entity = elem2entity_(e);
     switch(gmsh_type_map_[entity_type_(entity)]) {
-        case ElementTopology::element_types::BAR :
-          etype_tmp(e) = ElementTopology::element_types::BAR;
-          break;
-        case ElementTopology::element_types::TRI :
-          etype_tmp(e) = ElementTopology::element_types::TRI;
-          break;
-        case ElementTopology::element_types::QUAD :
-          etype_tmp(e) = ElementTopology::element_types::QUAD;
-          break;
-        case ElementTopology::element_types::TET :
-          etype_tmp(e) = ElementTopology::element_types::TET;
-          break;
-        case ElementTopology::element_types::PRISM :
-          etype_tmp(e) = ElementTopology::element_types::PRISM;
-          break;
-        case ElementTopology::element_types::PYR :
-          etype_tmp(e) = ElementTopology::element_types::PYR;
-          break;
-        case ElementTopology::element_types::HEX :
-          etype_tmp(e) = ElementTopology::element_types::HEX;
-          break;
-      }
+      case ElementTopology::element_types::BAR :
+        etype_tmp(e) = ElementTopology::element_types::BAR;
+        break;
+      case ElementTopology::element_types::TRI :
+        etype_tmp(e) = ElementTopology::element_types::TRI;
+        break;
+      case ElementTopology::element_types::QUAD :
+        etype_tmp(e) = ElementTopology::element_types::QUAD;
+        break;
+      case ElementTopology::element_types::TET :
+        etype_tmp(e) = ElementTopology::element_types::TET;
+        break;
+      case ElementTopology::element_types::PRISM :
+        etype_tmp(e) = ElementTopology::element_types::PRISM;
+        break;
+      case ElementTopology::element_types::PYR :
+        etype_tmp(e) = ElementTopology::element_types::PYR;
+        break;
+      case ElementTopology::element_types::HEX :
+        etype_tmp(e) = ElementTopology::element_types::HEX;
+        break;
+    }
 
   }
 
@@ -361,9 +554,9 @@ Array1D<intT> UnstMeshReaderGMSH::ReadElementRegion()
   Array1D<intT> ereg_tmp(UnstMeshReader::nelement_);
 
   for(intT e = 0; e < UnstMeshReader::nelement_; e++){
-     intT entity = elem2entity_(e);
-     ereg_tmp(e) = gmsh_id_2_region_[entity_type_(entity)];
-   }
+    intT entity = elem2entity_(e);
+    ereg_tmp(e) = gmsh_id_2_region_[entity_type_(entity)];
+  }
 
   return ereg_tmp;
 
@@ -394,8 +587,8 @@ Array1D<intT> UnstMeshReaderGMSH::ReadBcID()
 
   Array1D<intT> bcid_tmp(UnstMeshReader::nbc_face_);
   for(intT f = 0; f < UnstMeshReader::nbc_face_; f++){
-     intT entity = bc_face2entity_(f);
-     bcid_tmp(f) = gmsh_id_2_bc_id_[entity_id_(entity)];
+    intT entity = bc_face2entity_(f);
+    bcid_tmp(f) = gmsh_id_2_bc_id_[entity_id_(entity)];
   }
 
   return bcid_tmp;

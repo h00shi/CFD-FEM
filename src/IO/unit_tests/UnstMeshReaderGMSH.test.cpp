@@ -167,4 +167,85 @@ TEST(GMSH_Reader, Read3D_ASCII)
     EXPECT_EQ(ElementTopology::face_types::FACE_TRI, bc_face_type(i));
   }
 
+}TEST(GMSH_Reader, Read3D_BINARY)
+{
+  UnstMeshReaderGMSH mesh_reader("Box.msh-bin", "Box.idmap");
+   EXPECT_EQ(292, mesh_reader.ReadNnode());
+   EXPECT_EQ(1129, mesh_reader.ReadNelement());
+   EXPECT_EQ(396, mesh_reader.ReadNbcFace());
+   EXPECT_EQ(1, mesh_reader.ReadNbcID());
+
+   Array2D<realT> x = mesh_reader.ReadNodes();
+   EXPECT_EQ(292, x.get_size(0));
+   EXPECT_EQ(3, x.get_size(1));
+
+   EXPECT_DOUBLE_EQ(0.0, x(0,0));
+   EXPECT_DOUBLE_EQ(0.0, x(0,1));
+   EXPECT_DOUBLE_EQ(0.0, x(0,2));
+
+   EXPECT_DOUBLE_EQ(1.0, x(6,0));
+   EXPECT_DOUBLE_EQ(1.0, x(6,1));
+   EXPECT_DOUBLE_EQ(1.0, x(6,2));
+
+   EXPECT_DOUBLE_EQ(0.508718729019165, x(291,0));
+   EXPECT_DOUBLE_EQ(0.2503562569618225, x(291,1));
+   EXPECT_DOUBLE_EQ(0.6738438010215759, x(291,2));
+
+   List2D<intT> elem2node = mesh_reader.ReadElement2Node();
+   EXPECT_EQ(1129, elem2node.get_lead_size());
+   EXPECT_EQ(1129*4, elem2node.get_total_size());
+
+   EXPECT_EQ(4, elem2node.get_ncol(0));
+   EXPECT_EQ(285, elem2node(0,0));
+   EXPECT_EQ(268, elem2node(0,1));
+   EXPECT_EQ(267, elem2node(0,2));
+   EXPECT_EQ(207, elem2node(0,3));
+
+   EXPECT_EQ(4, elem2node.get_ncol(360));
+   EXPECT_EQ(88, elem2node(360,0));
+   EXPECT_EQ(234, elem2node(360,1));
+   EXPECT_EQ(83, elem2node(360,2));
+   EXPECT_EQ(96, elem2node(360,3));
+
+   EXPECT_EQ(4, elem2node.get_ncol(1128));
+   EXPECT_EQ(186, elem2node(1128,0));
+   EXPECT_EQ(220, elem2node(1128,1));
+   EXPECT_EQ(189, elem2node(1128,2));
+   EXPECT_EQ(194, elem2node(1128,3));
+   Array1D<ElementTopology::element_types> elem_type =
+       mesh_reader.ReadElementType();
+
+   EXPECT_EQ(mesh_reader.ReadNelement(), elem_type.get_size(0));
+   for(intT i = 0; i < elem_type.get_size(0); i++){
+     EXPECT_EQ(ElementTopology::element_types::TET, elem_type(i));
+   }
+
+   Array1D<intT> elem_region = mesh_reader.ReadElementRegion();
+
+   EXPECT_EQ(mesh_reader.ReadNelement(), elem_region.get_size(0));
+   for(intT i = 0; i < elem_type.get_size(0); i++){
+     EXPECT_EQ(0, elem_region(i));
+   }
+   List2D<intT> bc_face2node = mesh_reader.ReadBcFace2Node();
+   EXPECT_EQ(396, bc_face2node.get_lead_size());
+   EXPECT_EQ(396*3, bc_face2node.get_total_size());
+
+   EXPECT_EQ(3, bc_face2node.get_ncol(0));
+   EXPECT_EQ(58, bc_face2node(0,0));
+   EXPECT_EQ(72, bc_face2node(0,1));
+   EXPECT_EQ(73, bc_face2node(0,2));
+
+   EXPECT_EQ(3, bc_face2node.get_ncol(395));
+   EXPECT_EQ(179, bc_face2node(395,0));
+   EXPECT_EQ(199, bc_face2node(395,1));
+   EXPECT_EQ(192, bc_face2node(395,2));
+
+   Array1D<intT> bc_id = mesh_reader.ReadBcID();
+   EXPECT_EQ(0, bc_id(0));
+   EXPECT_EQ(0, bc_id(40));
+
+   Array1D<ElementTopology::face_types> bc_face_type = mesh_reader.ReadBcFaceType();
+   for(intT i = 0; i < bc_face_type.get_size(0); i++){
+     EXPECT_EQ(ElementTopology::face_types::FACE_TRI, bc_face_type(i));
+   }
 }
