@@ -30,174 +30,44 @@ UnstMeshReaderGMSH(const std::string& filename,
     SystemModule::my_exit();
 
   } //End file_check;
-  SystemModule::cout<< "Reading Header" << std::endl;
-  //---> Read crap that is the first line
-  char char_crap[100];
-  fgets(char_crap, 12, mesh_file_);
-  realT version;
-  intT type_flag;
-  intT real_size_bytes;
-  fscanf(mesh_file_, "%lf %d %d\n", &version, &type_flag, &real_size_bytes);
-  if(type_flag == 0){
-    SystemModule::cout << "Detected GMSH ASCII File Version:  "
-        << version << std::endl;
-    ReadASCII();}
-  else if(type_flag == 1){
-    SystemModule::cout << "Detected GMSH BINARY File Version:  "
-        << version << std::endl;
-    ReadBinary();}
-  else{
-    SystemModule::cout<< "ERROR: GMSH File header did not specify ASCII or BINARY." << std::endl
-        << " The type value read in is: " << type_flag << ", which should be 0 = ASCII or "
-        << " 1 = BINARY. The file name is: " << UnstMeshReader::filename_
-        << std::endl;
-    SystemModule::my_exit();
+
+  //---> Read Header;
+  file_type ft = ReadHeader();
+
+  //---> Now read file based on type
+  switch (ft){
+    case file_type::ASCII :
+      ReadFileASCII();
+      break;
+    case file_type::BINARY :
+      ReadFileBinary();
+      break;
   }
+
   fclose(mesh_file_);
 }// End UnstMeshReaderGMSH::UnstMeshReaderGMSH
 //****************************************************************************80
-void UnstMeshReaderGMSH::ReadASCII()
+void UnstMeshReaderGMSH::ReadFileASCII()
 {
-  //---> We know we are reading a 2-D mesh file;
-  intT ndim = 3;
-
-  char char_crap[100];
-  intT nnode;
-
   //---> Two lines of Crap
-  fgets(char_crap, 100, mesh_file_);
-  fgets(char_crap, 100, mesh_file_);
-  //---> Read number of nodes;
-  fscanf(mesh_file_, "%d \n", &nnode);
-  UnstMeshReader::nnode_= nnode;
-
-  x_.initialize(nnode, ndim);
-  for(intT n = 0; n < nnode; n++){
-    intT node;
-    realT x;
-    realT y;
-    realT z;
-    fscanf(mesh_file_, "%d %lf %lf %lf\n", &node, &x, &y, &z);
-    x_(node - 1,0) = x;
-    x_(node - 1,1) = y;
-    x_(node - 1,2) = z;
-  }
-  //---> Two more lines of crap
-  fgets(char_crap, 100, mesh_file_);
-  fgets(char_crap, 100, mesh_file_);
-  //---> Read Elements
-  fscanf(mesh_file_, "%d \n", &nentity_);
-
-  entity_type_.initialize(nentity_);
-  entity_id_.initialize(nentity_);
-  Array1D<intT> nnode_per_entity(nentity_);
-
-  for(intT e = 0; e < nentity_; e++){ // Element Loop
-    intT elem;
-    intT type;
-    intT ntag;
-    intT id;
-    intT icrap;
-    fscanf(mesh_file_,"%d %d %d %d", &elem, &type, &ntag, &id);
-    //---> Skip 1 to ntag -1 columns
-    entity_type_(elem - 1) = type;
-    entity_id_(elem - 1) = id;
-    for(intT i = 1; i < ntag; i++){fscanf(mesh_file_,"%d",&icrap);}
-    intT n;
-    switch(gmsh_type_map_[type]) {
-      case ElementTopology::element_types::BAR :
-        n = ElementTopology::Bar::nNode;
-        break;
-      case ElementTopology::element_types::TRI :
-        n = ElementTopology::Triangle::nNode;
-        break;
-      case ElementTopology::element_types::QUAD :
-        n = ElementTopology::Quadrilateral::nNode;
-        break;
-      case ElementTopology::element_types::TET :
-        n = ElementTopology::Tetrahedron::nNode;
-        break;
-      case ElementTopology::element_types::PRISM :
-        n = ElementTopology::Prism::nNode;
-        break;
-      case ElementTopology::element_types::PYR :
-        n = ElementTopology::Pyramid::nNode;
-        break;
-      case ElementTopology::element_types::HEX :
-        n = ElementTopology::Hexahedron::nNode;
-        break;
-    }
-    for(intT i = 0; i < n; i++){fscanf(mesh_file_,"%d",&icrap);}
-    fscanf(mesh_file_,"\n");
-
-    nnode_per_entity(elem-1) = n;
-    if(gmsh_id_is_bc_[id]){
-      UnstMeshReader::nbc_face_++;
-    }
-    if(gmsh_id_is_region_[id]){
-      UnstMeshReader::nelement_++;
-    }
-
-  }// End Element Loop
-
-  entity2node_.initialize(nnode_per_entity);
-  bc_face2entity_.initialize(UnstMeshReader::nbc_face_);
-  elem2entity_.initialize(UnstMeshReader::nelement_);
+  SkipLine();
+  SkipLine();
+  ReadNodesASCII(UnstMeshReaderGMSH::read_mode::STORE);
+  SkipLine();
+  SkipLine();
+  CountElementsASCII();
 
   //---> Rewind file;
   rewind(mesh_file_);
-  fgets(char_crap, 12, mesh_file_);
-  realT rcrap;
-  intT icrap;
-  fscanf(mesh_file_, "%lf %d %d\n", &rcrap, &icrap, &icrap);
-  //---> Two lines of Crap
-  fgets(char_crap, 100, mesh_file_);
-  fgets(char_crap, 100, mesh_file_);
-  //---> Read number of nodes;
-  fscanf(mesh_file_, "%d \n", &icrap);
-
-  for(intT n = 0; n < nnode; n++){
-    fscanf(mesh_file_, "%d %lf %lf %lf\n", &icrap, &rcrap, &rcrap, &rcrap);
-  }
+  ReadHeader();
+  SkipLine();
+  SkipLine();
+  ReadNodesASCII(read_mode::SKIP);
   //---> Two more lines of crap
-  fgets(char_crap, 100, mesh_file_);
-  fgets(char_crap, 100, mesh_file_);
+  SkipLine();
+  SkipLine();
   //---> Read Elements
-  fscanf(mesh_file_, "%d \n", &icrap);
-
-  intT ielem = 0;
-  intT ibc_face = 0;
-  for(intT e = 0; e < nentity_; e++){ // Element Loop
-    intT elem;
-    intT type;
-    intT ntag;
-    intT id;
-    fscanf(mesh_file_,"%d %d %d %d", &elem, &type, &ntag, &id);
-
-    for(intT i = 1; i < ntag; i++){fscanf(mesh_file_,"%d",&icrap);}
-
-    intT n = entity2node_.get_ncol(elem-1);
-
-    for(intT i = 0; i < n; i++){
-      fscanf(mesh_file_,"%d",&icrap);
-      entity2node_(elem - 1, i) = icrap - 1;
-    }
-
-    fscanf(mesh_file_,"\n");
-    if(gmsh_id_is_bc_[id]){
-      bc_face2entity_(ibc_face) = elem - 1;
-      ibc_face++;
-    }
-    if(gmsh_id_is_region_[id]){
-      elem2entity_(ielem) = elem - 1;
-      ielem++;
-    }
-  }// End Element Loop
-
-  SystemModule::cout << "Detected the following mesh file Parameters: " << std::endl
-      << "nElement: " << ielem << std::endl
-      << "nBcFace: " << ibc_face << std::endl;
-
+  ReadElementsASCII();
 
 }// End ReadASCII
 //****************************************************************************80
@@ -282,197 +152,28 @@ void UnstMeshReaderGMSH::ReadIdMap(const std::string& idmap_filename)
 }// End UnstMeshReaderGMSH::ReadIdMap
 
 //****************************************************************************80
-void UnstMeshReaderGMSH::ReadBinary()
+void UnstMeshReaderGMSH::ReadFileBinary()
 {
-
-  //---> We know we are reading a 2-D mesh file;
-  intT ndim = 3;
-  intT icrap;
-  fread(&icrap, sizeof(intT), 1, mesh_file_);
-  fscanf(mesh_file_, "\n");
-
-  char char_crap[100];
-  intT nnode;
-
   //---> Two lines of Crap
-  fgets(char_crap, 100, mesh_file_);
-  fgets(char_crap, 100, mesh_file_);
-  //---> Read number of nodes;
-  fscanf(mesh_file_, "%d \n", &nnode);
-  UnstMeshReader::nnode_= nnode;
+  SkipLine();
+  SkipLine();
+  ReadNodesBinary(read_mode::STORE);
+  SkipLine();
+  SkipLine();
 
-  x_.initialize(nnode, ndim);
-  realT xyz[3];
-  for(intT n = 0; n < nnode; n++){
-    intT node;
-    fread(&node, sizeof(intT), 1, mesh_file_);
-    fread(xyz, sizeof(realT), 3, mesh_file_);
-    x_(node - 1,0) = xyz[0];
-    x_(node - 1,1) = xyz[1];
-    x_(node - 1,2) = xyz[2];
-  }
-
-  fscanf(mesh_file_, "\n");
-  //---> Two more lines of crap
-  fgets(char_crap, 100, mesh_file_);
-  fgets(char_crap, 100, mesh_file_);
   //---> Read Elements
-  fscanf(mesh_file_, "%d \n", &nentity_);
+  CountElementsBinary();
 
-  entity_type_.initialize(nentity_);
-  entity_id_.initialize(nentity_);
-  Array1D<intT> nnode_per_entity(nentity_);
-
-  intT ientity = 0;
-  while(ientity < nentity_){
-    int elem_header[3]={0,100,200};
-    fread(elem_header, sizeof(intT), 3, mesh_file_);
-
-    intT type = elem_header[0];
-    ientity += elem_header[1];
-    intT ntag = elem_header[2];
-    intT n;
-    switch(gmsh_type_map_[type]) {
-      case ElementTopology::element_types::BAR :
-        n = ElementTopology::Bar::nNode;
-        break;
-      case ElementTopology::element_types::TRI :
-        n = ElementTopology::Triangle::nNode;
-        break;
-      case ElementTopology::element_types::QUAD :
-        n = ElementTopology::Quadrilateral::nNode;
-        break;
-      case ElementTopology::element_types::TET :
-        n = ElementTopology::Tetrahedron::nNode;
-        break;
-      case ElementTopology::element_types::PRISM :
-        n = ElementTopology::Prism::nNode;
-        break;
-      case ElementTopology::element_types::PYR :
-        n = ElementTopology::Pyramid::nNode;
-        break;
-      case ElementTopology::element_types::HEX :
-        n = ElementTopology::Hexahedron::nNode;
-        break;
-    }
-
-    intT ndata = 1 + ntag + n;
-    intT elem_data[ndata];
-    for(intT i = 0; i < elem_header[1]; i++){ // Element Loop
-      fread(elem_data, sizeof(intT), ndata, mesh_file_);
-
-      intT elem = elem_data[0];
-      intT id = elem_data[1];
-      //---> Skip 1 to ntag -1 columns
-      entity_type_(elem - 1) = type;
-      entity_id_(elem - 1) = id;
-      nnode_per_entity(elem - 1) = n;
-      if(gmsh_id_is_bc_[id]){
-
-        UnstMeshReader::nbc_face_++;
-      }
-      if(gmsh_id_is_region_[id]){
-
-        UnstMeshReader::nelement_++;
-      }
-
-    }// End Element Loop
-
-
-  } // End While
-
-  entity2node_.initialize(nnode_per_entity);
-  bc_face2entity_.initialize(UnstMeshReader::nbc_face_);
-  elem2entity_.initialize(UnstMeshReader::nelement_);
-
-  //---> Second Loop to read element numbers
-  //---> Rewind file;
-  realT rcrap;
+  //---> Rewind file to read in element connecitivity
   rewind(mesh_file_);
-  fgets(char_crap, 100, mesh_file_);
-  fscanf(mesh_file_, "%lf %d %d\n", &rcrap, &icrap, &icrap);
-  fread(&icrap, sizeof(intT), 1, mesh_file_);
-  fscanf(mesh_file_, "\n");
-
-  //---> Two lines of Crap
-  fgets(char_crap, 100, mesh_file_);
-  fgets(char_crap, 100, mesh_file_);
-  //---> Read number of nodes;
-  fscanf(mesh_file_, "%d \n", &nnode);
-
-  for(intT n = 0; n < nnode; n++){
-    fread(&icrap, sizeof(intT), 1, mesh_file_);
-    fread(xyz, sizeof(realT), 3, mesh_file_);
-  }
-
-  fscanf(mesh_file_, "\n");
+  ReadHeader();
+  SkipLine();
+  SkipLine();
+  ReadNodesBinary(read_mode::SKIP);
   //---> Two more lines of crap
-  fgets(char_crap, 100, mesh_file_);
-  fgets(char_crap, 100, mesh_file_);
-  //---> Read Elements
-  fscanf(mesh_file_, "%d \n", &nentity_);
-
-  ientity = 0;
-  intT ibc_face = 0;
-  intT ielem = 0;
-  int elem_header[3];
-  while(ientity < nentity_){
-    fread(elem_header, sizeof(intT), 3, mesh_file_);
-
-    intT type = elem_header[0];
-    ientity += elem_header[1];
-    intT ntag = elem_header[2];
-    intT n;
-    switch(gmsh_type_map_[type]) {
-      case ElementTopology::element_types::BAR :
-        n = ElementTopology::Bar::nNode;
-        break;
-      case ElementTopology::element_types::TRI :
-        n = ElementTopology::Triangle::nNode;
-        break;
-      case ElementTopology::element_types::QUAD :
-        n = ElementTopology::Quadrilateral::nNode;
-        break;
-      case ElementTopology::element_types::TET :
-        n = ElementTopology::Tetrahedron::nNode;
-        break;
-      case ElementTopology::element_types::PRISM :
-        n = ElementTopology::Prism::nNode;
-        break;
-      case ElementTopology::element_types::PYR :
-        n = ElementTopology::Pyramid::nNode;
-        break;
-      case ElementTopology::element_types::HEX :
-        n = ElementTopology::Hexahedron::nNode;
-        break;
-    }
-
-    intT ndata = 1 + ntag + n;
-    intT elem_data[ndata];
-    for(intT i = 0; i < elem_header[1]; i++){ // Element Loop
-      fread(elem_data, sizeof(intT), ndata, mesh_file_);
-
-      std::cout << "Element Data: " << 1 + ntag + n  << " ";
-      for(intT j = 0; j < ndata; j++){std::cout << elem_data[j] << " ";}
-      std::cout << std::endl;
-      intT elem = elem_data[0];
-      intT id = elem_data[1];
-      for(intT j = 0; j < n; j++){
-        entity2node_(elem-1,j) = elem_data[1 + ntag + j] - 1;
-      }
-      if(gmsh_id_is_bc_[id]){
-        bc_face2entity_(ibc_face) = elem - 1;
-        ibc_face++;
-      }
-      if(gmsh_id_is_region_[id]){
-        elem2entity_(ielem) = elem - 1;
-        ielem++;
-      }
-
-    }// End Element Loop
-
-
-  } // End While
+  SkipLine();
+  SkipLine();
+  ReadElementsBinary();
 
   return;
 }
@@ -619,3 +320,350 @@ Array1D<ElementTopology::face_types> UnstMeshReaderGMSH::ReadBcFaceType()
   return bcftype_tmp;
 
 }// End UnstMeshReaderGMSH::ReadBcFaceType
+//****************************************************************************80
+void UnstMeshReaderGMSH::SkipLine()
+{
+  char char_crap[100];
+  fgets(char_crap, 100, mesh_file_);
+}
+//****************************************************************************80
+UnstMeshReaderGMSH::file_type UnstMeshReaderGMSH::ReadHeader()
+{
+  SystemModule::cout<< "Reading Header" << std::endl;
+  file_type result;
+  //---> Read crap that is the first line
+  SkipLine();
+  realT version;
+  intT type_flag;
+  intT real_size_bytes;
+  intT icrap;
+  fscanf(mesh_file_, "%lf %d %d\n", &version, &type_flag, &real_size_bytes);
+  if(type_flag == 0){
+    SystemModule::cout << "Detected GMSH ASCII File Version:  "
+        << version << std::endl;
+    result = file_type::ASCII;
+  }
+  else if(type_flag == 1){
+    fread(&icrap, sizeof(intT), 1, mesh_file_);
+    fscanf(mesh_file_, "\n");
+    SystemModule::cout << "Detected GMSH BINARY File Version:  "
+        << version << std::endl;
+   result = file_type::BINARY;
+  }
+  else{
+    SystemModule::cout<< "ERROR: GMSH File header did not specify ASCII or BINARY." << std::endl
+        << " The type value read in is: " << type_flag << ", which should be 0 = ASCII or "
+        << " 1 = BINARY. The file name is: " << UnstMeshReader::filename_
+        << std::endl;
+    SystemModule::my_exit();
+  }
+
+  return result;
+}
+//****************************************************************************80
+void UnstMeshReaderGMSH::ReadNodesASCII(read_mode mode)
+{
+
+  intT nnode;
+  switch (mode) {
+    case UnstMeshReaderGMSH::STORE :
+    //---> Read number of nodes
+    fscanf(mesh_file_, "%d \n", &nnode);
+    UnstMeshReader::nnode_= nnode;
+
+    x_.initialize(nnode, 3);
+    for(intT n = 0; n < nnode; n++){
+      intT node;
+      realT x;
+      realT y;
+      realT z;
+      fscanf(mesh_file_, "%d %lf %lf %lf\n", &node, &x, &y, &z);
+      x_(node - 1,0) = x;
+      x_(node - 1,1) = y;
+      x_(node - 1,2) = z;
+    }
+    break;
+    case UnstMeshReaderGMSH::SKIP :
+      //---> Read number of nodes;
+      fscanf(mesh_file_, "%d \n", &nnode);
+      for(intT n = 0; n < nnode; n++){
+        intT node;
+        realT x;
+        realT y;
+        realT z;
+        fscanf(mesh_file_, "%d %lf %lf %lf\n", &node, &x, &y, &z);
+      }
+      break;
+  }
+
+}// End Function ReadNodesASCII
+//****************************************************************************80
+void UnstMeshReaderGMSH::ReadNodesBinary(read_mode mode)
+{
+
+  intT nnode;
+  realT xyz[3];
+  switch (mode) {
+    case UnstMeshReaderGMSH::STORE :
+      //---> Read number of nodes
+      fscanf(mesh_file_, "%d \n", &nnode);
+      UnstMeshReader::nnode_= nnode;
+      x_.initialize(nnode,3);
+      for(intT n = 0; n < nnode; n++){
+        intT node;
+        fread(&node, sizeof(intT), 1, mesh_file_);
+        fread(xyz, sizeof(realT), 3, mesh_file_);
+        x_(node - 1,0) = xyz[0];
+        x_(node - 1,1) = xyz[1];
+        x_(node - 1,2) = xyz[2];
+      }
+
+      break;
+    case UnstMeshReaderGMSH::SKIP :
+      //---> Read number of nodes;
+      fscanf(mesh_file_, "%d \n", &nnode);
+      for(intT n = 0; n < nnode; n++){
+        intT node;
+        fread(&node, sizeof(intT), 1, mesh_file_);
+        fread(xyz, sizeof(realT), 3, mesh_file_);
+      }
+      break;
+  }
+  fscanf(mesh_file_, "\n");
+}// End Function ReadNodesBindary
+//****************************************************************************80
+void UnstMeshReaderGMSH::CountElementsASCII()
+{
+  //---> Read Elements
+  fscanf(mesh_file_, "%d \n", &nentity_);
+
+  entity_type_.initialize(nentity_);
+  entity_id_.initialize(nentity_);
+  Array1D<intT> nnode_per_entity(nentity_);
+
+  for(intT e = 0; e < nentity_; e++){ // Element Loop
+    intT elem;
+    intT type;
+    intT ntag;
+    intT id;
+    intT icrap;
+    fscanf(mesh_file_,"%d %d %d %d", &elem, &type, &ntag, &id);
+    //---> Skip 1 to ntag -1 columns
+    entity_type_(elem - 1) = type;
+    entity_id_(elem - 1) = id;
+    for(intT i = 1; i < ntag; i++){fscanf(mesh_file_,"%d",&icrap);}
+    intT n;
+    switch(gmsh_type_map_[type]) {
+      case ElementTopology::element_types::BAR :
+        n = ElementTopology::Bar::nNode;
+        break;
+      case ElementTopology::element_types::TRI :
+        n = ElementTopology::Triangle::nNode;
+        break;
+      case ElementTopology::element_types::QUAD :
+        n = ElementTopology::Quadrilateral::nNode;
+        break;
+      case ElementTopology::element_types::TET :
+        n = ElementTopology::Tetrahedron::nNode;
+        break;
+      case ElementTopology::element_types::PRISM :
+        n = ElementTopology::Prism::nNode;
+        break;
+      case ElementTopology::element_types::PYR :
+        n = ElementTopology::Pyramid::nNode;
+        break;
+      case ElementTopology::element_types::HEX :
+        n = ElementTopology::Hexahedron::nNode;
+        break;
+    }
+    for(intT i = 0; i < n; i++){fscanf(mesh_file_,"%d",&icrap);}
+    fscanf(mesh_file_,"\n");
+
+    nnode_per_entity(elem-1) = n;
+    if(gmsh_id_is_bc_[id]){
+      UnstMeshReader::nbc_face_++;
+    }
+    if(gmsh_id_is_region_[id]){
+      UnstMeshReader::nelement_++;
+    }
+
+  }// End Element Loop
+
+  entity2node_.initialize(nnode_per_entity);
+  bc_face2entity_.initialize(UnstMeshReader::nbc_face_);
+  elem2entity_.initialize(UnstMeshReader::nelement_);
+} // End  UnstMeshReaderGMSH::CountElementsASCII()
+//****************************************************************************80
+void UnstMeshReaderGMSH::ReadElementsASCII()
+{
+  //---> Read Elements
+  intT icrap;
+  fscanf(mesh_file_, "%d \n", &icrap);
+
+  intT ielem = 0;
+  intT ibc_face = 0;
+  for(intT e = 0; e < nentity_; e++){ // Element Loop
+    intT elem;
+    intT type;
+    intT ntag;
+    intT id;
+    fscanf(mesh_file_,"%d %d %d %d", &elem, &type, &ntag, &id);
+
+    for(intT i = 1; i < ntag; i++){fscanf(mesh_file_,"%d",&icrap);}
+
+    intT n = entity2node_.get_ncol(elem-1);
+
+    for(intT i = 0; i < n; i++){
+      fscanf(mesh_file_,"%d",&icrap);
+      entity2node_(elem - 1, i) = icrap - 1;
+    }
+
+    fscanf(mesh_file_,"\n");
+    if(gmsh_id_is_bc_[id]){
+      bc_face2entity_(ibc_face) = elem - 1;
+      ibc_face++;
+    }
+    if(gmsh_id_is_region_[id]){
+      elem2entity_(ielem) = elem - 1;
+      ielem++;
+    }
+  }// End Element Loop
+}// End UnstMeshReaderGMSH::ReadElementsASCII()
+//****************************************************************************80
+void UnstMeshReaderGMSH::CountElementsBinary()
+{
+  //---> Read Elements
+  fscanf(mesh_file_, "%d \n", &nentity_);
+
+  entity_type_.initialize(nentity_);
+  entity_id_.initialize(nentity_);
+  Array1D<intT> nnode_per_entity(nentity_);
+
+  intT ientity = 0;
+  while(ientity < nentity_){
+    int elem_header[3]={0,100,200};
+    fread(elem_header, sizeof(intT), 3, mesh_file_);
+
+    intT type = elem_header[0];
+    ientity += elem_header[1];
+    intT ntag = elem_header[2];
+    intT n;
+    switch(gmsh_type_map_[type]) {
+      case ElementTopology::element_types::BAR :
+        n = ElementTopology::Bar::nNode;
+        break;
+      case ElementTopology::element_types::TRI :
+        n = ElementTopology::Triangle::nNode;
+        break;
+      case ElementTopology::element_types::QUAD :
+        n = ElementTopology::Quadrilateral::nNode;
+        break;
+      case ElementTopology::element_types::TET :
+        n = ElementTopology::Tetrahedron::nNode;
+        break;
+      case ElementTopology::element_types::PRISM :
+        n = ElementTopology::Prism::nNode;
+        break;
+      case ElementTopology::element_types::PYR :
+        n = ElementTopology::Pyramid::nNode;
+        break;
+      case ElementTopology::element_types::HEX :
+        n = ElementTopology::Hexahedron::nNode;
+        break;
+    }
+
+    intT ndata = 1 + ntag + n;
+    intT elem_data[ndata];
+    for(intT i = 0; i < elem_header[1]; i++){ // Element Loop
+      fread(elem_data, sizeof(intT), ndata, mesh_file_);
+
+      intT elem = elem_data[0];
+      intT id = elem_data[1];
+      //---> Skip 1 to ntag -1 columns
+      entity_type_(elem - 1) = type;
+      entity_id_(elem - 1) = id;
+      nnode_per_entity(elem - 1) = n;
+      if(gmsh_id_is_bc_[id]){
+
+        UnstMeshReader::nbc_face_++;
+      }
+      if(gmsh_id_is_region_[id]){
+
+        UnstMeshReader::nelement_++;
+      }
+
+    }// End Element Loop
+
+
+  } // End While
+
+  entity2node_.initialize(nnode_per_entity);
+  bc_face2entity_.initialize(UnstMeshReader::nbc_face_);
+  elem2entity_.initialize(UnstMeshReader::nelement_);
+}
+//****************************************************************************80
+void UnstMeshReaderGMSH::ReadElementsBinary()
+{
+  //---> Read Elements
+  fscanf(mesh_file_, "%d \n", &nentity_);
+
+  intT ientity = 0;
+  intT ibc_face = 0;
+  intT ielem = 0;
+  int elem_header[3];
+  while(ientity < nentity_){
+    fread(elem_header, sizeof(intT), 3, mesh_file_);
+
+    intT type = elem_header[0];
+    ientity += elem_header[1];
+    intT ntag = elem_header[2];
+    intT n;
+    switch(gmsh_type_map_[type]) {
+      case ElementTopology::element_types::BAR :
+        n = ElementTopology::Bar::nNode;
+        break;
+      case ElementTopology::element_types::TRI :
+        n = ElementTopology::Triangle::nNode;
+        break;
+      case ElementTopology::element_types::QUAD :
+        n = ElementTopology::Quadrilateral::nNode;
+        break;
+      case ElementTopology::element_types::TET :
+        n = ElementTopology::Tetrahedron::nNode;
+        break;
+      case ElementTopology::element_types::PRISM :
+        n = ElementTopology::Prism::nNode;
+        break;
+      case ElementTopology::element_types::PYR :
+        n = ElementTopology::Pyramid::nNode;
+        break;
+      case ElementTopology::element_types::HEX :
+        n = ElementTopology::Hexahedron::nNode;
+        break;
+    }
+
+    intT ndata = 1 + ntag + n;
+    intT elem_data[ndata];
+    for(intT i = 0; i < elem_header[1]; i++){ // Element Loop
+      fread(elem_data, sizeof(intT), ndata, mesh_file_);
+
+      intT elem = elem_data[0];
+      intT id = elem_data[1];
+      for(intT j = 0; j < n; j++){
+        entity2node_(elem-1,j) = elem_data[1 + ntag + j] - 1;
+      }
+      if(gmsh_id_is_bc_[id]){
+        bc_face2entity_(ibc_face) = elem - 1;
+        ibc_face++;
+      }
+      if(gmsh_id_is_region_[id]){
+        elem2entity_(ielem) = elem - 1;
+        ielem++;
+      }
+
+    }// End Element Loop
+
+
+  } // End While
+
+}

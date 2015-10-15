@@ -68,14 +68,23 @@ private:
   std::unordered_map<intT, bool> gmsh_id_is_bc_;
   std::unordered_map<intT, bool> gmsh_id_is_region_;
   Array1D<intT> gmsh_id_;//!< Mapping an index to a gmsh_id
-
-
+  enum file_type {BINARY, ASCII};
+  enum read_mode {STORE, SKIP};
   //---> Reads file if it's ASCII
-  void ReadASCII();
+  void ReadFileASCII();
   //---> Reads file it it's BINARY
-  void ReadBinary();
+  void ReadFileBinary();
   //---> Read the IDMAP file
   void ReadIdMap(const std::string& idmap_filename);
+
+  file_type ReadHeader();
+  void SkipLine();//!< Function to skip line of GMSH File
+  void ReadNodesASCII(read_mode mode);
+  void ReadNodesBinary(read_mode mode);
+  void CountElementsASCII();
+  void CountElementsBinary();
+  void ReadElementsASCII();
+  void ReadElementsBinary();
   UnstMeshReaderGMSH() = delete;
 };
 
