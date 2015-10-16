@@ -18,7 +18,7 @@ ENDIF ()
 
 # set flags for debug mode
 IF (CMAKE_BUILD_TYPE MATCHES "Debug")
-  SET (CMAKE_CXX_FLAGS_DEBUG "-g -O0 -finline -w3 -diag-error 1599,3280")
+  SET (CMAKE_CXX_FLAGS_DEBUG "-g -O0 -inline-forceinline -finline-limit=300 -no-inline-min-size -no-inline-max-per-compile -qopt-report=4 -w3 -diag-error 1599,3280")
   IF (ICC_WITH_REMARKS_SUPPRESSION)
     SET(CMAKE_CXX_FLAGS_DEBUG  
       "${CMAKE_CXX_FLAGS_DEBUG} -diag-disable 383,981,2547,424,1572")
@@ -38,7 +38,7 @@ ENDIF ()
 
 # set flags for release mode
 IF (CMAKE_BUILD_TYPE MATCHES "Release")
-  SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -finline-limit=300 -no-inline-min-size -no-inline-max-per-compile")
+  SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -inline-forceinline -finline-limit=300 -no-inline-min-size -no-inline-max-per-compile")
 # may generate intel advanced vector extensions 2 instructions
   ENABLE_FLAG_IF_SUPPORTED(CMAKE_CXX_FLAGS_RELEASE "-axCORE-AVX2")
 ENDIF ()
