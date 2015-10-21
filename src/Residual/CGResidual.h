@@ -1,6 +1,6 @@
 //-*-c++-*-
-#ifndef GLSRESIDUAL_H
-#define GLSRESIDUAL_H
+#ifndef CGRESIDUAL_H
+#define CGRESIDUAL_H
 
 #include "my_incl.h"
 #include "consts.h"
@@ -28,7 +28,7 @@
 //! \tparam PDET Partial differential equation type 
 //****************************************************************************80
 template<class PDET>
-class GLSResidual {
+class CGResidual {
 
 private:
   PDET& PDE; /*!< Reference to PDE class already instantiated */
@@ -46,12 +46,12 @@ private:
 //! \date $Date$
 //!
 //****************************************************************************80
-  GLSResidual() : PDE(NULL), grid(NULL), soln(NULL) {}
+  CGResidual() = delete;
 public: 
 
 //****************************************************************************80
 //!
-//! \brief GLSResidual : Constructor taking PDE, grid and soln references
+//! \brief CGResidual : Constructor taking PDE, grid and soln references
 //! \details
 //! \nick 
 //! \version $Rev$
@@ -60,9 +60,8 @@ public:
 //! \param[in] grid_ref The reference to the grid class
 //! \param[in] soln_ref The reference to the soln class
 //****************************************************************************80
-  GLSResidual(PDET & PDE_ref, UnstGrid<intT, realT>& grid_ref,
-	 Solution<intT, realT>& soln_ref) : PDE(PDE_ref), grid(grid_ref),
-					    soln(soln_ref) 
+  CGResidual(PDET & PDE_ref, CGMesh& grid_ref) :
+      PDE(PDE_ref), grid(grid_ref)
   {
     //---> Set global order local variable
     intT pg = soln.get_pg();
@@ -82,37 +81,27 @@ public:
       Array2D<realT> xmap(PDE.get_ndim(), grid.get_nnode_on_element(e));
       
       for (intT d = 0; d < PDE.get_ndim(); d++){ // xmap
-	for (intT n = 0; n < grid.get_nnode_on_element(e); n++) {  
-	  xmap(d, n) = grid.get_node_coord(grid.get_node_on_element(e, n), d);
-	} 
+        for (intT n = 0; n < grid.get_nnode_on_element(e); n++) {
+          xmap(d, n) = grid.get_node_coord(grid.get_node_on_element(e, n), d);
+        }
       } // End xmap
       
-      switch(grid.get_element_type(e)) { // Select element type
-      case 0:
-      	grid.set_element_vol(e, bar.volume(xmap));
-      	break;
-      case 1:
-      	grid.set_element_vol(e, tri.volume(xmap));
-      	break;
-      case 3:
-      	grid.set_element_vol(e, tet.volume(xmap));
-      	break;
-      } // end select element type
+
     
     }// End element loop 
 
-  } // End GLSResidual
+  } // End CGResidual
 
 //****************************************************************************80
 //!
-//! \brief GLSResid : Computes and returns the volume residual
+//! \brief CGResid : Computes and returns the volume residual
 //! \details
 //! \nick 
 //! \version $Rev$
 //! \date $Date$
 //! \param[out] resid The reference to the residual array
 //****************************************************************************80
-  void GLSResid(Array2D<realT>& resid) 
+  void CalcResidual(Array2D<realT>& resid)
   {
     //---> Set global order local variable
     intT pg = soln.get_pg();
@@ -125,6 +114,8 @@ public:
     TetElement<intT, realT> tet;
     tet.initialize(pg, pg, 2*pg);
     resid.set_value(0.0);
+
+
     //------------------------------- Volume Loop ------------------------------
     for (intT e = 0; e < grid.nelement; e++) { // Element Resid Loop
       //---> Local Element Data
@@ -219,11 +210,11 @@ public:
     
     }// End BC Face Loop 
 
-  } // End GLSResid
+  } // End CGResid
   
 //****************************************************************************80
 //!
-//! \brief GLSJac : Computes the Galerkin Least Square discretization
+//! \brief CGJac : Computes the Galerkin Least Square discretization
 //!                 residual and Jacobian.
 //! \details
 //! \nick 
@@ -232,7 +223,7 @@ public:
 //! \param[out] resid The residual
 //! \param[out] jac The jacobian
 //****************************************************************************80
-  void GLSJac(Array2D<realT>& resid)
+  void CGJac(Array2D<realT>& resid)
   {
   //---> Set global order local variable
     intT pg = soln.get_pg();
@@ -345,7 +336,7 @@ public:
     }// End BC Face Loop 
     
 
-  } //End GLSJac 
+  } //End CGJac
 
 //****************************************************************************80
 //!

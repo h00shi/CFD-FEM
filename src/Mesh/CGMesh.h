@@ -9,6 +9,7 @@
 #define CGMESH_H_
 #include "Mesh/UnstMesh.h"
 #include "DataStructures/Graph.h"
+#include "DataStructures/Array1D.h"
 #include "IO/UnstMeshReader.h"
 //****************************************************************************80
 //! \class CGMesh
@@ -35,8 +36,11 @@ public:
 //****************************************************************************80
   ~CGMesh();
   inline const Graph& get_Graph() const {return *graph_;}
+  inline const Array1D<intT>& get_ElemOrder() const {return elem_p_;}
+
 private:
   Graph* graph_;
+  Array1D<intT> elem_p_;
 //****************************************************************************80
 //! \brief Forms the graph for CGMeshes, which is just the node2node
 //!        connectivity

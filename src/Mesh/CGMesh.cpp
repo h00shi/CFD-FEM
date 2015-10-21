@@ -10,6 +10,8 @@ CGMesh::CGMesh(UnstMeshReader& mesh_reader) : UnstMesh::UnstMesh(mesh_reader)
 {
   UnstMesh::mesh_bc_faces_.FormBcFace2Element(UnstMesh::mesh_elements_);
   FormGraph();
+  elem_p_.initialize(UnstMesh::mesh_elements_.get_nelement());
+  elem_p_.set_value(1);
 }
 //****************************************************************************80
 CGMesh::~CGMesh()

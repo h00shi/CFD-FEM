@@ -13,5 +13,5 @@ IF (MPI_CXX_FOUND)
   MARK_AS_ADVANCED(CLEAR MPIEXEC)
 ELSE ()
   MESSAGE(FATAL_ERROR 
-    "CMAKE did not find an MPI distribution. Please make sure that an MPI disctrubtion is compiled and in your PATH and LD_LIBRARY_PATH environment variables.")
+    "CMAKE did not find an MPI distribution. Please make sure that an MPI disct#rubtion is compiled and in your PATH and LD_LIBRARY_PATH environment variables.")
 ENDIF ()

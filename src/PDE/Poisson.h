@@ -21,10 +21,10 @@ class Poisson {
 
 private:
 //++++++++++++++++++++++++++++++++ PRIVATE STUFF +++++++++++++++++++++++++++++++
-  realT D; /*!< Diffusion coefficient */
+
   
 public:
-  
+static const intT nfld = 1;
 //****************************************************************************80
 //!
 //! \brief Poisson : The constructor for this class
@@ -34,9 +34,9 @@ public:
 //! \date $Date$
 //! 
 //****************************************************************************80
-  Poisson() {
-    //---> Set Diffusion coefficient to 1 by default
-    D = 1.0;
+  Poisson()
+  {
+
   }// End Poisson
   
 //****************************************************************************80
@@ -48,37 +48,56 @@ public:
 //! \date $Date$
 //! 
 //****************************************************************************80
-  ~Poisson() {
+  ~Poisson()
+  {
     //---> Nothing to destroy yet
   } // End ~Poisson 
 
+  template<class qtype>
+  void CalcAccumulation(const Array1D<qtype>& q,
+                        const qtype& Vr,
+                        Array1D<qtype>& accum)
+  {
+    for (intT f = 0; f < Poisson::nfld; f++){// Field_Loop
+      accum(f) = q(f)*Vr;
+    }
+  }
+
 //****************************************************************************80
 //!
-//! \brief cg_vol_res : Computes a continuous Galerkin volume residual for
-//!                     Poisson's equation. 
+//! \brief CalcNormFlux : Compute flux in normal direction F(c,D,q,dq)\dotn
 //! \details
 //! \nick 
 //! \version $Rev$
 //! \date $Date$
 //! \param[in] ndim The number of physical dimensions
-//! \param[in] nfld The number of Poisson equations we are solving
-//! \param[in] q The solution 
+//! \param[in] norm The normal direction
+//! \param[in]       Convection Speed is not required
 //! \param[in] dq The solution gradient
 //! \param[out] flux The flux flux vector
-//! \param[out] src The source term vector 
 //****************************************************************************80
-  void cg_vol_res(const int& ndim, const int& nfld, const Array1D<realT>&,
-	     const Array2D<realT>& dq, Array2D<realT>& flux,
-	     Array1D<realT>& src) {
+  template<class qtype>
+  void CalcNormFlux(const intT ndim,
+                    const Array1D<realT>& norm,
+                    const Array1D<realT>& c,
+                    const Array2D<realT>& D,
+                    const Array1D<qtype>& q,
+                    const Array2D<qtype>& dq,
+                    Array1D<realT>& flux)
+  {
 
-    //---> Assemble the 
-    for (intT f = 0; f < nfld; f++){//PDE_loop
-      for(intT d = 0; d < ndim; d++){//DIM_loop
-	flux(d,f) = D*dq(d,f);
-	src(f) = 2.0;
-      }// End DIM_loop
-    }// End PDE_loop
-    
+      flux(0) = 0.0;
+
+      for(intT id = 0; id < ndim; id++){
+        flux(0) += 0.0*q(0)*c(id)*norm(id);
+      }
+
+      for(intT id = 0; id < ndim; id++){//Out Dim Loop
+        for(intT jd = 0; jd < ndim; jd++){// Inner Dim Loop
+          flux(0) -= D(id,jd)*dq(jd,0)*norm(id);
+        }// End DIM_loop
+      }// End Outer DIMM
+
   }// End cg_vol_res 
 
 }; // End class Poisson
