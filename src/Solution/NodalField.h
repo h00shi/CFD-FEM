@@ -12,33 +12,34 @@
 #include "DataStructures/Array1D.h"
 #include "DataStructures/Array2D.h"
 #include "Solution/MeshField.h"
- //****************************************************************************80
-  //! \class NodalField
-  //! \brief And interpretation of a MeshField as a field over the nodes of the
-  //!        mesh.
-  //! \nick
-  //! \version $Rev$
-  //! \date $Date$
-  //!
-  //****************************************************************************80
+//****************************************************************************80
+//! \class NodalField
+//! \brief And interpretation of a MeshField as a field over the nodes of the
+//!        mesh.  This field is naturally continuous at all element boundaries
+//! \nick
+//! \version $Rev$
+//! \date $Date$
+//!
+//****************************************************************************80
 class NodalField : public MeshField
 {
 public:
-  //****************************************************************************80
-  //! \brief Constructor
-  //! \nick
-  //! \version $Rev$
-  //! \date $Date$
-  //!
-  //****************************************************************************80
+//****************************************************************************80
+//! \brief Constructor
+//! \nick
+//! \version $Rev$
+//! \date $Date$
+//! \param[in] mesh The mesh on which we are defining the field
+//! \param[in] nvar The number of variables per node
+//****************************************************************************80
   NodalField(const UnstMesh& mesh, const Array1D<intT>& nvar);
-  //****************************************************************************80
-  //! \brief Destructor
-  //! \nick
-  //! \version $Rev$
-  //! \date $Date$
-  //!
-  //****************************************************************************80
+//****************************************************************************80
+//! \brief Destructor
+//! \nick
+//! \version $Rev$
+//! \date $Date$
+//!
+//****************************************************************************80
   ~NodalField();
 //****************************************************************************80
 //! \brief Provides access to the data indexing array.
@@ -49,6 +50,7 @@ public:
 //! \param[out] data The output as an Array1D.
 //****************************************************************************80
   inline const Array1D<intT>& get_DataIndex() const {return data_index_;}
+  inline const Array1D<intT>& get_Nvar() const {return nvar_;}
 //****************************************************************************80
 //! \brief Operator for getting data for node n and variable j
 //! \nick
