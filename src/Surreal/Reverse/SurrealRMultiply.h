@@ -1,63 +1,63 @@
-#ifndef SURREALMULTIPLY_H
-#define SURREALMULTIPLY_H
+#ifndef SURREALRMULTIPLY_H
+#define SURREALRMULTIPLY_H
 
-#include "SurrealBase.h"
+#include "Surreal/Reverse/SurrealRBase.h"
+#include <type_traits>
+
 //----------------------------- Surreal * Surreal ------------------------------
 //****************************************************************************80
-//! \brief SurrealMultiply : A class template to represent automatic
+//! \brief SurrealRMultiply : A class template to represent automatic
 //!                     differentiation of the multiplication operator
-//!                     on two arbitrary (Surreal) types
+//!                     on two arbitrary (SurrealR) types
 //! \details
 //! \nick
 //! \tparam LHSType Type used for the arguments on the left hand side of *
 //! \tparam RHSType Type used for the arguments on the right hand side of *
 //****************************************************************************80
-template<class LHSType, class RHSType, int N>
-class SurrealMultiply :
-  public SurrealBase<SurrealMultiply<LHSType, RHSType, N>, N>
+template<class LHSType, class RHSType>
+class SurrealRMultiply :
+  public SurrealRBase<SurrealRMultiply<LHSType, RHSType>,
+                       typename RHSType::realT_, RHSType::N_>
 {
 private:
-  const LHSType& lhs_; //!< Reference to constant object on left hand side
-  const RHSType& rhs_; //!< Reference to constant object on right hand side
+  typedef typename RHSType::realT_ realT;  //get ease of use
+  LHSType const& lhs_; //!< Reference to object on left hand side
+  RHSType const& rhs_; //!< Reference to object on right hand side
 public:
-  typedef typename LHSType::realT_ realT; //get fundamental real type from left
-  typedef realT realT_; //store real type
-
 //****************************************************************************80
 //! \brief Constructor for constructing multiply operation from reference to
-//!        constant left and right sides.
+//!        left and right sides.
 //! \details
 //! \nick
-//! \param[in] lhs_in The reference to constant object on left side of *
-//! \param[in] rhs_in The reference to constant object on right side of *
+//! \param[in] lhs_in The reference to object on left side of *
+//! \param[in] rhs_in The reference to object on right side of *
 //****************************************************************************80
-  SurrealMultiply(const LHSType& lhs_in, const RHSType& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
+  SurrealRMultiply(LHSType const& lhs_in, RHSType const& rhs_in) :
+    lhs_(lhs_in), rhs_(rhs_in) {
+    static_assert(std::is_same<typename LHSType::realT_,
+                  typename RHSType::realT_>::value,
+                  "Surreal binary operations require the same floating-point "
+                  "data type on left and right sides");
+    static_assert(LHSType::N_ == RHSType::N_,
+                  "Surreal binary operations require the same number of "
+                  "derivatives on left and right sides");
 
-//****************************************************************************80
-//! \brief Value : Returns the value of the multiplication between left and
-//!                right hand sides
-//! \details Value of (Surreal1 * Surreal2) =
-//!                   Surreal1.Value() * Surreal2.Value()
-//! \nick
-//! \return Multiplication of lhs.Value() and rhs.Value()
-//****************************************************************************80
-  inline realT Value() const {
-    return(lhs_.Value() * rhs_.Value());
+    this->value_ = lhs_.GetValue() * rhs_.GetValue();
   }
 
 //****************************************************************************80
-//! \brief Deriv : Returns the derivative of the multiplication between left and
-//!                right hand sides
-//! \details Derivative of (Surreal1 * Surreal2) =
-//!                         Surreal1.Deriv() * Surreal2.Value() +
-//!                         Surreal1.Value() * Surreal2.Deriv()
+//! \brief Diff : Calculate adjoints of left and right sides for the
+//!               multiplication operator and calls Diff on both sides
+//! \details
 //! \nick
-//! \param[in] i The index of the derivative you wish to compute
-//! \return ith Derivative of (Surreal1 * Surreal2)
 //****************************************************************************80
-  inline realT Deriv(const int& i) const {
-    return(lhs_.Deriv(i)*rhs_.Value() + lhs_.Value()*rhs_.Deriv(i));
+  void Diff(realT adjoint,
+            realT (&deriv)[RHSType::N_], int (&deriv_ix)[RHSType::N_],
+            int (&ix)[RHSType::N_], unsigned int & count) const {
+    lhs_.Diff(adjoint*rhs_.GetValue(),
+              deriv, deriv_ix, ix, count);
+    rhs_.Diff(adjoint*lhs_.GetValue(),
+              deriv, deriv_ix, ix, count);
   }
 }; // End class SurrealMultiply
 
@@ -70,14 +70,17 @@ public:
 //! \nick
 //! \tparam RHSType Type used for the argument on the right hand side of *
 //****************************************************************************80
-template<class RHSType, int N>
-class SurrealMultiply<typename RHSType::realT_, RHSType, N> :
-  public SurrealBase<SurrealMultiply<typename RHSType::realT_, RHSType, N>, N>
+template<class RHSType>
+class SurrealRMultiply<typename RHSType::realT_, RHSType> :
+  public SurrealRBase<SurrealRMultiply<typename RHSType::realT_, RHSType>,
+                       typename RHSType::realT_, RHSType::N_>
 {
-public:
+private:
   typedef typename RHSType::realT_ realT;  //get fundamental real type from rght
-  typedef realT realT_;  //store real type
+  const realT lhs_; //left  hand side
+  RHSType const& rhs_;    //right hand side
 
+public:
 //****************************************************************************80
 //! \brief Constructor for constructing multiply operation from reference to
 //!        constant left and right sides.
@@ -86,34 +89,24 @@ public:
 //! \param[in] lhs_in The reference to constant real   on left side of *
 //! \param[in] rhs_in The reference to constant object on right side of *
 //****************************************************************************80
-  SurrealMultiply(const typename RHSType::realT_& lhs_in, const RHSType& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
-
-//****************************************************************************80
-//! \brief Value : Returns the value of the multiplication between left and
-//!                right hand sides
-//! \details Value of (real * Surreal) = real * Surreal.Value()
-//! \nick
-//! \return Multiplication of lhs and rhs.Value()
-//****************************************************************************80
-  inline realT Value() const {
-    return(lhs_*rhs_.Value());
+  SurrealRMultiply(const realT lhs_in, RHSType const& rhs_in) :
+    lhs_(lhs_in), rhs_(rhs_in) {
+    this->value_ = lhs_ * rhs_.GetValue();
   }
 
 //****************************************************************************80
-//! \brief Deriv : Returns the derivative of the multiplication between left and
-//!                right hand sides
-//! \details Derivative of (real * Surreal) = real * Surreal2.Deriv()
+//! \brief Diff : Calculate adjoints of right side for the
+//!               multiplication operator and calls Diff
+//! \details
 //! \nick
-//! \param[in] i The index of the derivative you wish to compute
-//! \return ith Derivative of (real * Surreal)
+//! \return ith Derivative of (Surreal1 * Surreal2)
 //****************************************************************************80
-  inline realT Deriv(const int& i) const {
-    return(lhs_*rhs_.Deriv(i));
+  void Diff(realT adjoint,
+            realT (&deriv)[RHSType::N_], int (&deriv_ix)[RHSType::N_],
+            int (&ix)[RHSType::N_], unsigned int & count) const {
+    rhs_.Diff(adjoint*lhs_, deriv, deriv_ix, ix, count);
   }
-private:
-  const typename RHSType::realT_ & lhs_; //left  hand side
-  const RHSType& rhs_;                   //right hand side
+
 }; // End class SurrealMultiply
 
 //-------------------------- MULTIPLICATION OPERATORS --------------------------
@@ -126,10 +119,14 @@ private:
 //! \param[in] rhs The object on right side of * sign
 //! \return SurrealMultiply object to represent multiplication of lhs and rhs
 //****************************************************************************80
-template<class LHSType, class RHSType, int N>
-inline SurrealMultiply<LHSType, RHSType, N>
-operator*(const SurrealBase<LHSType, N>& lhs,
-          const SurrealBase<RHSType, N>& rhs);
+template<class LHSType, class RHSType, class realT, int N>
+inline SurrealRMultiply<LHSType, RHSType>
+operator*(SurrealRBase<LHSType, realT, N> const & lhs,
+          SurrealRBase<RHSType, realT, N> const & rhs)
+{
+  return(SurrealRMultiply<LHSType,RHSType>
+         (lhs.CastToDerived(), rhs.CastToDerived()));
+}
 
 //****************************************************************************80
 //! \brief Operator * : This operator declaration declares how to multiply a
@@ -140,10 +137,14 @@ operator*(const SurrealBase<LHSType, N>& lhs,
 //! \param[in] rhs The object on right side of * sign
 //! \return SurrealMultiply object to represent multiplication of lhs and rhs
 //****************************************************************************80
-template<class RHSType, int N>
-inline SurrealMultiply<typename RHSType::realT_, RHSType, N>
-operator*
-(const typename RHSType::realT_& lhs, const SurrealBase<RHSType, N>& rhs);
+template<class RHSType>
+inline SurrealRMultiply<typename RHSType::realT_, RHSType>
+operator*(const typename RHSType::realT_ lhs,
+          SurrealRBase<RHSType, typename RHSType::realT_, RHSType::N_> const & rhs)
+{
+  return(SurrealRMultiply<typename RHSType::realT_, RHSType>
+         (lhs, rhs.CastToDerived()));
+}
 
 //****************************************************************************80
 //! \brief Operator * : This operator declaration declares how to multiply a
@@ -157,10 +158,15 @@ operator*
 //! \param[in] rhs The real number on right side of * sign
 //! \return SurrealMultiply object to represent multiplication of lhs and rhs
 //****************************************************************************80
-template<class LHSType, int N>
-inline SurrealMultiply<typename LHSType::realT_, LHSType, N>
-operator*
-(const SurrealBase<LHSType, N>& lhs, const typename LHSType::realT_& rhs);
+template<class LHSType>
+inline SurrealRMultiply<typename LHSType::realT_, LHSType>
+operator*(SurrealRBase<LHSType, typename LHSType::realT_, LHSType::N_> const & lhs,
+          const typename LHSType::realT_ rhs)
+{
+  return(SurrealRMultiply<typename LHSType::realT_, LHSType>
+         (rhs, lhs.CastToDerived()));
+}
 
-#include "SurrealMultiply_Imple.h"
+
+
 #endif

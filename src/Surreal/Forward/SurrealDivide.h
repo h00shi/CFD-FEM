@@ -1,8 +1,7 @@
-// -*-c++-*-
 #ifndef SURREALDIVIDE_H
 #define SURREALDIVIDE_H
 
-#include "Surreal/SurrealBase.h"
+#include "Surreal/Forward/SurrealBase.h"
 //----------------------------- Surreal / Surreal ------------------------------
 //****************************************************************************80
 //! \brief SurrealDivide : A class template to represent automatic
@@ -13,13 +12,17 @@
 //! \tparam LHSType Type used for the arguments on the left hand side of /
 //! \tparam RHSType Type used for the arguments on the right hand side of /
 //****************************************************************************80
-template<class LHSType, class RHSType, int N>
-class SurrealDivide : public SurrealBase< SurrealDivide<LHSType, RHSType, N>, N >
-{
-public:
-  typedef typename LHSType::realT_ realT; //get fundamental real type from left
-  typedef realT realT_; //store real type
+template<class LHSType, class RHSType>
+class SurrealDivide : public SurrealBase< SurrealDivide<LHSType, RHSType>,
+                                          typename RHSType::realT_, RHSType::N_>
 
+{
+private:
+  typedef typename RHSType::realT_ realT;  //get fundamental real type from rght
+  const LHSType& lhs_;//!< Reference to constant object on left hand side
+  const RHSType& rhs_;//!< Reference to constant object on right hand side
+
+public:
 //****************************************************************************80
 //! \brief Constructor for constructing divide operation from reference to
 //!        constant left and right sides.
@@ -29,20 +32,16 @@ public:
 //! \param[in] rhs_in The reference to constant object on right side of /
 //****************************************************************************80
   SurrealDivide(const LHSType& lhs_in, const RHSType& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
-
-//****************************************************************************80
-//! \brief Value : Returns the value of the left hand side divided by the
-//!                right hand side
-//! \details Value of (Surreal1 / Surreal2) =
-//!                   Surreal1.Value() / Surreal2.Value()
-//! \nick
-//! \return Division of lhs.Value() by rhs.Value()
-//****************************************************************************80
-  inline realT Value() const {
-    return(lhs_.Value() / rhs_.Value());
+    lhs_(lhs_in), rhs_(rhs_in) {
+    static_assert(std::is_same<typename LHSType::realT_,
+                  typename RHSType::realT_>::value,
+                  "Surreal binary operations require the same floating-point "
+                  "data type on left and right sides");
+    static_assert(LHSType::N_ == RHSType::N_,
+                  "Surreal binary operations require the same number of "
+                  "derivatives on left and right sides");
+    this->value_ = lhs_.Value() / rhs_.Value();
   }
-
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of the left hand side divided by the
 //!                right hand side
@@ -53,13 +52,10 @@ public:
 //! \param[in] i The index you of the Derivative you wish to compute
 //! \return ith Derivative of (Surreal1 / Surreal2)
 //****************************************************************************80
-  inline realT Deriv(const int& i) const {
+  inline realT Deriv(const int i) const {
     return((lhs_.Deriv(i)*rhs_.Value() - lhs_.Value()*rhs_.Deriv(i))
            / (rhs_.Value() * rhs_.Value()));
   }
-private:
-  const LHSType& lhs_; //!< Reference to constant object on left hand side
-  const RHSType& rhs_; //!< Reference to constant object on right hand side
 }; // End class SurrealDivide
 
 //----------------------------- Real / Surreal -------------------------------
@@ -71,14 +67,17 @@ private:
 //! \nick
 //! \tparam RHSType Type used for the argument on the right hand side of /
 //****************************************************************************80
-template<class RHSType, int N>
-class SurrealDivide<typename RHSType::realT_, RHSType, N> :
-  public SurrealBase<SurrealDivide<typename RHSType::realT_, RHSType, N>, N>
+template<class RHSType>
+class SurrealDivide<typename RHSType::realT_, RHSType> :
+  public SurrealBase<SurrealDivide<typename RHSType::realT_, RHSType>,
+                     typename RHSType::realT_, RHSType::N_>
 {
-public:
-  typedef typename RHSType::realT_ realT; //get fundamental real type from right
-  typedef realT realT_; //store real type
+private:
+  typedef typename RHSType::realT_ realT;  //get fundamental real type from rght
+  const realT lhs_;    //left hand side
+  const RHSType& rhs_; //right hand side
 
+public:
 //****************************************************************************80
 //! \brief Constructor for constructing divide operation from reference to
 //!        constant left and right sides.
@@ -87,20 +86,10 @@ public:
 //! \param[in] lhs_in The reference to constant real   on left side of /
 //! \param[in] rhs_in The reference to constant object on right side of /
 //****************************************************************************80
-  SurrealDivide(const typename RHSType::realT_& lhs_in, const RHSType& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
-
-//****************************************************************************80
-//! \brief Value : Returns the value of the left hand side divided by the
-//!                right hand side
-//! \details Value of (real / Surreal) = real / Surreal.Value()
-//! \nick
-//! \return Division of lhs by rhs.Value()
-//****************************************************************************80
-  inline realT Value() const {
-    return(lhs_/rhs_.Value());
+  SurrealDivide(const realT lhs_in, const RHSType& rhs_in) :
+    lhs_(lhs_in), rhs_(rhs_in) {
+    this->value_ = lhs_/rhs_.Value();
   }
-
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of the left hand side divided by the
 //!                right hand side
@@ -110,12 +99,9 @@ public:
 //! \param[in] i The index you of the Derivative you wish to compute
 //! \return ith Derivative of (real / Surreal)
 //****************************************************************************80
-  inline realT Deriv(const int& i) const {
+  inline realT Deriv(const int i) const {
     return(-lhs_ / (rhs_.Value() * rhs_.Value()) * rhs_.Deriv(i));
   }
-private:
-  const typename RHSType::realT_ & lhs_; //left  hand side
-  const RHSType& rhs_;                   //right hand side
 }; // End class SurrealDivide
 
 //----------------------------- Surreal / real -------------------------------
@@ -127,14 +113,17 @@ private:
 //! \nick
 //! \tparam LHSType Type used for the argument on the left hand side of /
 //****************************************************************************80
-template<class LHSType, int N>
-class SurrealDivide<LHSType, typename LHSType::realT_, N> :
-  public SurrealBase<SurrealDivide<LHSType, typename LHSType::realT_,N>, N>
-{
-public:
-  typedef typename LHSType::realT_ realT; //get fundamental real type from left
-  typedef realT realT_; //store real type
+template<class LHSType>
+class SurrealDivide<LHSType, typename LHSType::realT_> :
+  public SurrealBase<SurrealDivide<LHSType, typename LHSType::realT_>,
+                     typename LHSType::realT_, LHSType::N_>
 
+{
+private:
+  typedef typename LHSType::realT_ realT; //get fundamental real type from left
+  const LHSType& lhs_; //left  hand side
+  const realT rhs_;    //right hand side
+public:
 //****************************************************************************80
 //! \brief Constructor for constructing divide operation from reference to
 //!        constant left and right sides.
@@ -143,20 +132,10 @@ public:
 //! \param[in] lhs_in The reference to constant object on left side of /
 //! \param[in] rhs_in The reference to constant real   on right side of /
 //****************************************************************************80
-  SurrealDivide(const LHSType& lhs_in, const typename LHSType::realT_& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
-
-//****************************************************************************80
-//! \brief Value : Returns the value of the left hand side divided by the
-//!                right hand side
-//! \details Value of (Surreal / real) = Surreal.Value() / real
-//! \nick
-//! \return Division of lhs.Value() by rhs
-//****************************************************************************80
-  inline realT Value() const {
-    return(lhs_.Value() /rhs_);
+  SurrealDivide(const LHSType& lhs_in, const realT rhs_in) :
+    lhs_(lhs_in), rhs_(rhs_in) {
+    this->value_ = lhs_.Value() /rhs_;
   }
-
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of the left hand side divided by the
 //!                right hand side
@@ -165,12 +144,9 @@ public:
 //! \param[in] i The index you of the derivative you wish to compute
 //! \return ith Derivative of (Surreal / real)
 //****************************************************************************80
-  inline realT Deriv(const int& i) const {
+  inline realT Deriv(const int i) const {
     return( lhs_.Deriv(i) / rhs_);
   }
-private:
-  const LHSType& lhs_;                   //left  hand side
-  const typename LHSType::realT_ & rhs_; //right hand side
 }; // End class SurrealDivide
 
 //-------------------------- DIVISION OPERATORS --------------------------------
@@ -183,10 +159,14 @@ private:
 //! \param[in] rhs The object on right side of / sign
 //! \return SurrealDivide object to represent division of lhs by rhs
 //****************************************************************************80
-template<class LHSType, class RHSType, int N>
-inline SurrealDivide<LHSType, RHSType, N>
-operator /(const SurrealBase< LHSType, N>& lhs,
-           const SurrealBase< RHSType, N>& rhs);
+template<class LHSType, class RHSType, class realT, int N>
+inline SurrealDivide<LHSType, RHSType>
+operator /(const SurrealBase< LHSType, realT, N>& lhs,
+           const SurrealBase< RHSType, realT, N>& rhs)
+{
+  return(SurrealDivide<LHSType,RHSType>
+         (lhs.CastToDerived(), rhs.CastToDerived()));
+}
 
 //****************************************************************************80
 //! \brief Operator / : This operator declaration declares how to divide a
@@ -197,10 +177,15 @@ operator /(const SurrealBase< LHSType, N>& lhs,
 //! \param[in] rhs The object on right side of / sign
 //! \return SurrealDivide object to represent division of lhs by rhs
 //****************************************************************************80
-template<class RHSType, int N>
-inline SurrealDivide<typename RHSType::realT_, RHSType, N>
+template<class RHSType>
+inline SurrealDivide<typename RHSType::realT_, RHSType>
 operator/
-(const typename RHSType::realT_& lhs, const SurrealBase< RHSType,N >& rhs);
+(const typename RHSType::realT_ lhs,
+ const SurrealBase< RHSType, typename RHSType::realT_,  RHSType::N_>& rhs)
+{
+  return(SurrealDivide<typename RHSType::realT_,RHSType>
+         (lhs, rhs.CastToDerived()));
+}
 
 //****************************************************************************80
 //! \brief Operator / : This operator declaration declares how to divide a
@@ -211,10 +196,14 @@ operator/
 //! \param[in] rhs The real number on right side of / sign
 //! \return SurrealDivide object to represent division of lhs by rhs
 //****************************************************************************80
-template<class LHSType, int N>
-inline SurrealDivide<LHSType, typename LHSType::realT_, N>
+template<class LHSType>
+inline SurrealDivide<LHSType, typename LHSType::realT_>
 operator/
-(const SurrealBase<LHSType, N>& lhs, const typename LHSType::realT_& rhs);
+(const SurrealBase<LHSType, typename LHSType::realT_, LHSType::N_>& lhs,
+ const typename LHSType::realT_ rhs)
+{
+  return(SurrealDivide<LHSType, typename LHSType::realT_>
+         (lhs.CastToDerived(), rhs));
+}
 
-#include "SurrealDivide_Imple.h"
 #endif

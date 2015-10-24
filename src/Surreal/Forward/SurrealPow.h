@@ -1,8 +1,8 @@
-// -*-c++-*-
 #ifndef SURREALPOW_H
 #define SURREALPOW_H
 
-#include "Surreal/SurrealBase.h"
+#include "Surreal/Forward/SurrealBase.h"
+#include <cmath>
 
 //----------------------------- SurrealPow -------------------------------------
 //---> pow(Surreal, Surreal)
@@ -15,13 +15,15 @@
 //! \tparam LHSType Type used for the argument on the left hand side of pow
 //! \tparam RHSType Type used for the argument on the right hand side of pow
 //****************************************************************************80
-template<class LHSType, class RHSType, int N>
-class SurrealPow :  public SurrealBase<SurrealPow<LHSType, RHSType, N>, N>
+template<class LHSType, class RHSType>
+class SurrealPow :  public SurrealBase<SurrealPow<LHSType, RHSType>,
+                                       typename RHSType::realT_, RHSType::N_>
 {
+private:
+  typedef typename RHSType::realT_ realT;  //get fundamental real type from rght
+  const LHSType& lhs_;//!< Reference to constant object on left hand side
+  const RHSType& rhs_;//!< Reference to constant object on right hand side
 public:
-  typedef typename LHSType::realT_ realT; //get fundamental real type from left
-  typedef realT realT_; //store real type
-
 //****************************************************************************80
 //! \brief Constructor for constructing pow operation from reference to
 //!        constant left and right sides.
@@ -31,18 +33,15 @@ public:
 //! \param[in] rhs_in The reference to const object on "right hand side" of pow
 //****************************************************************************80
   SurrealPow(const LHSType& lhs_in, const RHSType& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
-
-//****************************************************************************80
-//! \brief Value : Returns the value of the power operator on the left and
-//!                right hand sides
-//! \details Value of pow(Surreal1, Surreal2) =
-//!                std::pow(Surreal1.value(), Surreal2.Value())
-//! \nick
-//! \return pow(lhs.Value(), rhs.Value())
-//****************************************************************************80
-  inline realT Value() const {
-    return(std::pow(lhs_.Value(), rhs_.Value()));
+    lhs_(lhs_in), rhs_(rhs_in) {
+    static_assert(std::is_same<typename LHSType::realT_,
+                  typename RHSType::realT_>::value,
+                  "Surreal binary operations require the same floating-point "
+                  "data type on left and right sides");
+    static_assert(LHSType::N_ == RHSType::N_,
+                  "Surreal binary operations require the same number of "
+                  "derivatives on left and right sides");
+    this->value_ = std::pow(lhs_.Value(), rhs_.Value());
   }
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of pow(lhs,rhs)
@@ -51,14 +50,11 @@ public:
 //! \param[in] i The index of the derivative you wish to compute
 //! \return Derivative of pow(lhs,rhs)
 //****************************************************************************80
- inline realT Deriv(const int& i) const {
+ inline realT Deriv(const int i) const {
    return(std::pow(lhs_.Value(), rhs_.Value())*
           ( rhs_.Deriv(i) * std::log(lhs_.Value()) +
             rhs_.Value()/lhs_.Value() * lhs_.Deriv(i) ) );
  }
-private:
-  const LHSType & lhs_; //!< Reference to constant object on left hand side
-  const RHSType & rhs_; //!< Reference to constant object on right hand side
 };
 
 //---> pow(real, Surreal)
@@ -70,13 +66,16 @@ private:
 //! \nick
 //! \tparam RHSType Type used for the argument on the "right hand side" of pow
 //****************************************************************************80
-template<class RHSType, int N>
-class SurrealPow<typename RHSType::realT_, RHSType, N> :
-  public SurrealBase<SurrealPow<typename RHSType::realT_, RHSType, N>, N>
+template<class RHSType>
+class SurrealPow<typename RHSType::realT_, RHSType> :
+  public SurrealBase<SurrealPow<typename RHSType::realT_, RHSType>,
+                     typename RHSType::realT_, RHSType::N_>
 {
+private:
+  typedef typename RHSType::realT_ realT;  //get fundamental real type from rght
+  const realT lhs_;    //left hand side
+  const RHSType& rhs_; //right hand side
 public:
-  typedef typename RHSType::realT_ realT;  //get fundamental real type
-  typedef realT realT_;  //store real type
 //****************************************************************************80
 //! \brief Constructor for constructing add operation from reference to
 //!        constant left and right sides.
@@ -85,19 +84,9 @@ public:
 //! \param[in] lhs_in The reference to const real   on "left hand side" of pow
 //! \param[in] rhs_in The reference to const object on "right hand side" of pow
 //****************************************************************************80
-  SurrealPow(const typename RHSType::realT_& lhs_in, const RHSType& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
-
-//****************************************************************************80
-//! \brief Value : Returns the value of the power operator on the left and
-//!                right hand sides
-//! \details Value of pow(real, Surreal) =
-//!                std::pow(real,Surreal.Value())
-//! \nick
-//! \return pow(lhs, rhs.Value())
-//****************************************************************************80
-  inline realT Value() const {
-    return(std::pow(lhs_,rhs_.Value()));
+  SurrealPow(const realT lhs_in, const RHSType& rhs_in) :
+    lhs_(lhs_in), rhs_(rhs_in) {
+    this->value_ = std::pow(lhs_,rhs_.Value());
   }
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of pow(lhs,rhs)
@@ -107,12 +96,9 @@ public:
 //! \param[in] i The index of the derivative you wish to compute
 //! \return Derivative of pow(lhs,rhs)
 //****************************************************************************80
- inline realT Deriv(const int& i) const {
-   return rhs_.Value()*std::log(lhs_)*rhs_.Deriv(i);
+ inline realT Deriv(const int i) const {
+   return std::pow(lhs_,rhs_.Value()) *std::log(lhs_)*rhs_.Deriv(i);
  }
-private:
-  const typename RHSType::realT_ & lhs_; //left  hand side
-  const RHSType& rhs_;                   //right hand side
 };
 
 //---> pow(Surreal, real)
@@ -123,14 +109,17 @@ private:
 //! \nick
 //! \tparam LHSType Type used for the argument on the "left hand side" of pow
 //****************************************************************************80
-template<class LHSType, int N>
-class SurrealPow<LHSType, typename LHSType::realT_, N> :
-  public SurrealBase<SurrealPow<LHSType, typename LHSType::realT_,N>,N>
-{
-public:
-  typedef typename LHSType::realT_ realT;  //get fundamental real type
-  typedef realT realT_;  //store real type
+template<class LHSType>
+class SurrealPow<LHSType, typename LHSType::realT_> :
+  public SurrealBase<SurrealPow<LHSType, typename LHSType::realT_>,
+                     typename LHSType::realT_, LHSType::N_>
 
+{
+private:
+  typedef typename LHSType::realT_ realT; //get fundamental real type from left
+  const LHSType& lhs_; //left  hand side
+  const realT rhs_;    //right hand side
+public:
 //****************************************************************************80
 //! \brief Constructor for constructing add operation from reference to
 //!        constant left and right sides.
@@ -139,19 +128,9 @@ public:
 //! \param[in] lhs_in The reference to const object on "left hand side" of pow
 //! \param[in] rhs_in The reference to const real   on "right hand side" of pow
 //****************************************************************************80
-  SurrealPow(const LHSType& lhs_in, const typename LHSType::realT_& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
-
-//****************************************************************************80
-//! \brief Value : Returns the value of the power operator on the left and
-//!                right hand sides
-//! \details Value of pow(Surreal, real) =
-//!                   pow(Surreal.Value(), real)
-//! \nick
-//! \return pow(lhs.Value(), rhs.Value())
-//****************************************************************************80
-  inline realT Value() const {
-    return(std::pow(lhs_.Value(), rhs_));
+  SurrealPow(const LHSType& lhs_in, const realT rhs_in) :
+    lhs_(lhs_in), rhs_(rhs_in) {
+    this->value_ = std::pow(lhs_.Value(), rhs_);
   }
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of pow(lhs,rhs)
@@ -161,12 +140,9 @@ public:
 //! \param[in] i The index of the derivative you wish to compute
 //! \return Derivative of pow(lhs,rhs)
 //****************************************************************************80
- inline realT Deriv(const int& i) const {
+ inline realT Deriv(const int i) const {
       return rhs_*std::pow(lhs_.Value(), rhs_-1)*lhs_.Deriv(i);
  }
-private:
-  const LHSType & lhs_;                   //left  hand side
-  const typename LHSType::realT_  & rhs_; //right hand side
 };
 
 //------------------------------ POW OPERATORS --------------------------------
@@ -179,9 +155,13 @@ private:
 //! \param[in] rhs The object on the "right hand side" of pow
 //! \return SurrealPow object to represent pow(lhs,rhs)
 //****************************************************************************80
-template<class LHSType, class RHSType, int N>
-inline SurrealPow<LHSType, RHSType, N>
-pow(const SurrealBase<LHSType,N>& lhs, const SurrealBase<RHSType, N>& rhs);
+template<class LHSType, class RHSType, class realT, int N>
+inline SurrealPow<LHSType, RHSType>
+pow(const SurrealBase<LHSType, realT, N>& lhs,
+    const SurrealBase<RHSType, realT, N>& rhs){
+  return(SurrealPow<LHSType,RHSType>
+         (lhs.CastToDerived(), rhs.CastToDerived()));
+}
 
 //****************************************************************************80
 //! \brief pow : This operator declaration declares how to raise a real
@@ -192,9 +172,13 @@ pow(const SurrealBase<LHSType,N>& lhs, const SurrealBase<RHSType, N>& rhs);
 //! \param[in] rhs The object on the "right hand side" of pow
 //! \return SurrealPow object to represent pow(lhs,rhs)
 //****************************************************************************80
-template<class RHSType, int N>
-inline SurrealPow<typename RHSType::realT_, RHSType, N>
-pow(const typename RHSType::realT_& lhs, const SurrealBase<RHSType, N>& rhs);
+template<class RHSType>
+inline SurrealPow<typename RHSType::realT_, RHSType>
+pow(const typename RHSType::realT_ lhs,
+    const SurrealBase<RHSType, typename RHSType::realT_, RHSType::N_>& rhs){
+  return(SurrealPow<typename RHSType::realT_,RHSType>
+         (lhs, rhs.CastToDerived()));
+}
 
 //****************************************************************************80
 //! \brief pow : This operator declaration declares how to raise a surreal
@@ -205,10 +189,13 @@ pow(const typename RHSType::realT_& lhs, const SurrealBase<RHSType, N>& rhs);
 //! \param[in] rhs The real number on the "right hand side" of pow
 //! \return SurrealPow object to represent pow(lhs,rhs)
 //****************************************************************************80
-template<class LHSType, int N>
-inline SurrealPow<LHSType, typename LHSType::realT_, N>
-pow(const SurrealBase<LHSType, N>& lhs, const typename LHSType::realT_ & rhs);
+template<class LHSType>
+inline SurrealPow<LHSType, typename LHSType::realT_>
+pow(const SurrealBase<LHSType, typename LHSType::realT_, LHSType::N_>& lhs,
+    const typename LHSType::realT_ rhs){
+  return(SurrealPow<LHSType, typename LHSType::realT_>
+         (lhs.CastToDerived(), rhs));
+}
 
-#include "SurrealPow_Imple.h"
 #endif
 

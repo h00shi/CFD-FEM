@@ -1,8 +1,8 @@
-//-*-c++-*-
-#ifndef SURREALADD_H
-#define SURREALADD_H
+#ifndef SURREALRADD_H
+#define SURREALRADD_H
 
-#include "Surreal/SurrealBase.h"
+#include "Surreal/Reverse/SurrealRBase.h"
+#include <type_traits>
 
 //----------------------------- Surreal + Surreal ------------------------------
 //****************************************************************************80
@@ -14,13 +14,16 @@
 //! \tparam LHSType Type used for the argument on the left hand side of +
 //! \tparam RHSType Type used for the argument on the right hand side of +
 //****************************************************************************80
-template<class LHSType, class RHSType, int N>
-class SurrealAdd : public SurrealBase<SurrealAdd<LHSType, RHSType, N>, N>
+template<class LHSType, class RHSType>
+class SurrealRAdd : public SurrealRBase<SurrealRAdd<LHSType,RHSType>,
+                                          typename RHSType::realT_, RHSType::N_>
 {
-public:
-  typedef typename LHSType::realT_ realT; //get fundamental real type from left
-  typedef realT realT_; //store real type
+private:
+  typedef typename RHSType::realT_ realT;  //get fundamental real type from rght
+  LHSType const& lhs_; //!< Reference to object on left hand side
+  RHSType const& rhs_; //!< Reference to object on right hand side
 
+public:
 //****************************************************************************80
 //! \brief Constructor for constructing add operation from reference to
 //!        constant left and right sides.
@@ -29,35 +32,31 @@ public:
 //! \param[in] lhs_in The reference to constant object on left side of +
 //! \param[in] rhs_in The reference to constant object on right side of +
 //****************************************************************************80
-  SurrealAdd(const LHSType& lhs_in, const RHSType& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
+  SurrealRAdd(LHSType const & lhs_in, RHSType const & rhs_in) :
+    lhs_(lhs_in), rhs_(rhs_in) {
 
-//****************************************************************************80
-//! \brief Value : Returns the value of the addition between left and right hand
-//!                sides
-//! \details Value of (Surreal1 + Surreal2) =
-//!                    Surreal1.Value() + Surreal2.Value()
-//! \nick
-//! \return Addition of lhs.Value() and rhs.Value()
-//****************************************************************************80
-  inline realT Value() const {
-    return(lhs_.Value() + rhs_.Value());
+    static_assert(std::is_same<typename LHSType::realT_,
+                  typename RHSType::realT_>::value,
+                  "Surreal binary operations require the same floating-point "
+                  "data type on left and right sides");
+    static_assert(LHSType::N_ == RHSType::N_,
+                  "Surreal binary operations require the same number of "
+                  "derivatives on left and right sides");
+    this->value_ = lhs_.GetValue() + rhs_.GetValue();
   }
 
 //****************************************************************************80
-//! \brief Deriv : Returns the Derivative of lhs + rhs
-//! \details Derivative of (Surreal1 + Surreal2) =
-//!                         Surreal1.Deriv() + Surreal2.Deriv()
+//! \brief Diff : Calculate adjoints of left and right sides for the
+//!               addition operator and calls Diff on both sides
+//! \details
 //! \nick
-//! \param[in] i The index of the derivative you wish to compute
-//! \return Addition of lhs.Deriv(i) and rhs.Deriv(i)
 //****************************************************************************80
-  inline realT Deriv(const int& i) const {
-    return(lhs_.Deriv(i) + rhs_.Deriv(i));
+  void Diff(realT adjoint,
+            realT (&deriv)[RHSType::N_], int (&deriv_ix)[RHSType::N_],
+            int (&ix)[RHSType::N_], unsigned int & count) const {
+    rhs_.Diff(adjoint, deriv, deriv_ix, ix, count);
+    lhs_.Diff(adjoint, deriv, deriv_ix, ix, count);
   }
-private:
-  const LHSType& lhs_;//!< Reference to constant object on left hand side
-  const RHSType& rhs_;//!< Reference to constant object on right hand side
 }; // End class SurrealAdd
 
 //----------------------------- Real + Surreal ---------------------------------
@@ -69,49 +68,40 @@ private:
 //! \nick
 //! \tparam RHSType Type used for the argument on the right hand side of +
 //****************************************************************************80
-template<class RHSType, int N>
-class SurrealAdd<typename RHSType::realT_, RHSType, N> :
-  public SurrealBase<SurrealAdd<typename RHSType::realT_, RHSType, N>, N>
+template<class RHSType>
+class SurrealRAdd<typename RHSType::realT_, RHSType> :
+  public SurrealRBase<SurrealRAdd<typename RHSType::realT_, RHSType>,
+                       typename RHSType::realT_, RHSType::N_>
 {
+private:
+  typedef typename RHSType::realT_ realT;  //get fundamental real type from rght
+  const realT lhs_; //left  hand side
+  RHSType const & rhs_;    //right hand side
 public:
-  typedef typename RHSType::realT_ realT; //get fundamental real type from right
-  typedef realT realT_; //store real type
-
 //****************************************************************************80
 //! \brief Constructor for constructing add operation from reference to
 //!        constant left and right sides.
 //! \details
 //! \nick
 //! \param[in] lhs_in The reference to constant real   on left side of +
-//! \param[in] rhs_in The reference to constant object on right side of +
+//! \param[in] rhs_in The reference to object on right side of +
 //****************************************************************************80
-  SurrealAdd(const typename RHSType::realT_& lhs_in, const RHSType& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
-
-//****************************************************************************80
-//! \brief Value : Returns the value of the addition between left and right hand
-//!                sides
-//! \details  Value of (real + Surreal) = real + Surreal.Value()
-//! \nick
-//! \return Addition of lhs and rhs.Value()
-//****************************************************************************80
-  inline realT Value() const {
-    return(lhs_ + rhs_.Value());
+  SurrealRAdd(const realT lhs_in, RHSType const& rhs_in) :
+    lhs_(lhs_in), rhs_(rhs_in) {
+    this->value_ = lhs_ + rhs_.GetValue();
   }
 
 //****************************************************************************80
-//! \brief Deriv : Returns the Derivative of lhs + rhs
-//! \details  Derivative of (real + Surreal) = Surreal.Deriv()
+//! \brief Diff : Calculate adjoints of right side for the
+//!               addition operator and calls right side Diff
+//! \details
 //! \nick
-//! \param[in] i The index of the derivative you wish to compute
-//! \return rhs.Deriv(i)
 //****************************************************************************80
-  inline realT Deriv(const int& i) const {
-    return(rhs_.Deriv(i));
+  void Diff(realT adjoint,
+            realT (&deriv)[RHSType::N_], int (&deriv_ix)[RHSType::N_],
+            int (&ix)[RHSType::N_], unsigned int & count) const {
+    rhs_.Diff(adjoint, deriv, deriv_ix, ix, count);
   }
-private:
-  const typename RHSType::realT_ & lhs_; //left  hand side
-  const RHSType& rhs_;                   //right hand side
 }; // End class SurrealAdd
 
 //----------------------------- ADDITION OPERATORS -----------------------------
@@ -124,10 +114,14 @@ private:
 //! \param[in] rhs The object on right side of + sign
 //! \return SurrealAdd object to represent addition of lhs + rhs
 //****************************************************************************80
-template<class LHSType, class RHSType, int N>
-inline SurrealAdd<LHSType, RHSType, N>
-operator+(const SurrealBase< LHSType, N>& lhs,
-          const SurrealBase< RHSType, N>& rhs);
+template<class LHSType, class RHSType, class realT, int N>
+inline SurrealRAdd<LHSType, RHSType>
+operator+(SurrealRBase<LHSType, realT, N> const &  lhs,
+          SurrealRBase<RHSType, realT, N> const & rhs)
+{
+  return(SurrealRAdd<LHSType, RHSType>
+         (lhs.CastToDerived(), rhs.CastToDerived()));
+}
 
 //****************************************************************************80
 //! \brief Operator + : This operator declaration declares how to add a real
@@ -138,10 +132,16 @@ operator+(const SurrealBase< LHSType, N>& lhs,
 //! \param[in] rhs The object on right side of + sign
 //! \return SurrealAdd object to represent addition of lhs + rhs
 //****************************************************************************80
-template<class RHSType, int N>
-inline SurrealAdd<typename RHSType::realT_, RHSType, N>
+template<class RHSType>
+inline SurrealRAdd<typename RHSType::realT_, RHSType>
 operator+
-(const typename RHSType::realT_& lhs, const SurrealBase<RHSType, N>& rhs);
+(const typename RHSType::realT_ lhs,
+ SurrealRBase<RHSType, typename RHSType::realT_, RHSType::N_> const & rhs)
+{
+  return(SurrealRAdd<typename RHSType::realT_, RHSType>
+         (lhs, rhs.CastToDerived()));
+}
+
 
 //****************************************************************************80
 //! \brief Operator + : This operator declaration declares how to add a
@@ -155,10 +155,14 @@ operator+
 //! \param[in] rhs The real number on right side of + sign
 //! \return SurrealAdd object to represent addition of lhs + rhs
 //****************************************************************************80
-template<class LHSType, int N>
-inline SurrealAdd<typename LHSType::realT_, LHSType, N>
+template<class LHSType>
+inline SurrealRAdd<typename LHSType::realT_, LHSType>
 operator+
-(const SurrealBase<LHSType, N>& lhs, const typename LHSType::realT_& rhs);
-
-#include "SurrealAdd_Imple.h"
+(SurrealRBase<LHSType, typename LHSType::realT_, LHSType::N_> const & lhs,
+ const typename LHSType::realT_ rhs)
+{
+  return(SurrealRAdd<typename LHSType::realT_, LHSType>
+         (rhs, lhs.CastToDerived()));
+}
 #endif
+

@@ -1,8 +1,7 @@
-//-*-c++-*-
 #ifndef SURREALSUBTRACT_H
 #define SURREALSUBTRACT_H
 
-#include "Surreal/SurrealBase.h"
+#include "Surreal/Forward/SurrealBase.h"
 //----------------------------- Surreal - Surreal ------------------------------
 //****************************************************************************80
 //! \brief SurrealSubtract : A class template to represent automatic
@@ -13,14 +12,16 @@
 //! \tparam LHSType Type used for the argument on the left hand side of -
 //! \tparam RHSType Type used for the argument on the right hand side of -
 //****************************************************************************80
-template<class LHSType, class RHSType, int N>
+template<class LHSType, class RHSType>
 class SurrealSubtract :
-  public SurrealBase<SurrealSubtract<LHSType, RHSType, N>, N>
+  public SurrealBase<SurrealSubtract<LHSType, RHSType>,
+                     typename RHSType::realT_, RHSType::N_>
 {
+private:
+  typedef typename RHSType::realT_ realT;  //get fundamental real type from rght
+  const LHSType& lhs_;//!< Reference to constant object on left hand side
+  const RHSType& rhs_;//!< Reference to constant object on right hand side
 public:
-  typedef typename LHSType::realT_ realT; //get fundamental real type from left
-  typedef realT realT_; //store real type
-
 //****************************************************************************80
 //! \brief Constructor for constructing subtraction operation from reference to
 //!        constant left and right sides.
@@ -30,20 +31,16 @@ public:
 //! \param[in] rhs_in The reference to constant object on right side of -
 //****************************************************************************80
   SurrealSubtract(const LHSType& lhs_in, const RHSType& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
-
-//****************************************************************************80
-//! \brief Value : Returns the value of the left hand side minus the right hand
-//!                side
-//! \details Value of (Surreal1 - Surreal2) =
-//!                    Surreal1.Value() - Surreal2.Value()
-//! \nick
-//! \return Value of lhs minus rhs
-//****************************************************************************80
-  inline realT Value() const {
-    return(lhs_.Value() - rhs_.Value());
+    lhs_(lhs_in), rhs_(rhs_in) {
+    static_assert(std::is_same<typename LHSType::realT_,
+                  typename RHSType::realT_>::value,
+                  "Surreal binary operations require the same floating-point "
+                  "data type on left and right sides");
+    static_assert(LHSType::N_ == RHSType::N_,
+                  "Surreal binary operations require the same number of "
+                  "derivatives on left and right sides");
+    this->value_ = lhs_.Value() - rhs_.Value();
   }
-
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of lhs - rhs
 //! \details Derivative of (Surreal1 - Surreal2) =
@@ -52,12 +49,9 @@ public:
 //! \param[in] i The index of the derivative you wish to compute
 //! \return ith derivative of lhs minus rhs
 //****************************************************************************80
-   inline realT Deriv(const int& i) const {
+   inline realT Deriv(const int i) const {
     return(lhs_.Deriv(i) - rhs_.Deriv(i));
   }
-private:
-  const LHSType& lhs_;//!< Reference to constant object on left hand side
-  const RHSType& rhs_;//!< Reference to constant object on right hand side
 }; // End class SurrealSubtract
 
 //----------------------------- Real - Surreal -------------------------------
@@ -69,14 +63,16 @@ private:
 //! \nick
 //! \tparam RHSType Type used for the argument on the right hand side of -
 //****************************************************************************80
-template<class RHSType, int N>
-class SurrealSubtract<typename RHSType::realT_, RHSType, N> :
-  public SurrealBase<SurrealSubtract<typename RHSType::realT_, RHSType, N>, N>
+template<class RHSType>
+class SurrealSubtract<typename RHSType::realT_, RHSType> :
+  public SurrealBase<SurrealSubtract<typename RHSType::realT_, RHSType>,
+                     typename RHSType::realT_, RHSType::N_>
 {
-public:
+private:
   typedef typename RHSType::realT_ realT;  //get fundamental real type from rght
-  typedef realT realT_;  //store real type
-
+  const realT lhs_;    //left hand side
+  const RHSType& rhs_; //right hand side
+public:
 //****************************************************************************80
 //! \brief Constructor for constructing subtraction operation from reference to
 //!        constant left and right sides.
@@ -85,22 +81,10 @@ public:
 //! \param[in] lhs_in The reference to constant real   on left side of -
 //! \param[in] rhs_in The reference to constant object on right side of -
 //****************************************************************************80
-  SurrealSubtract
-  (const typename RHSType::realT_& lhs_in, const RHSType& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
-
-//****************************************************************************80
-//! \brief Value : Returns the value of the left hand side minus the right hand
-//!                side
-//! \details Value of (real - Surreal) =
-//!                    real - Surreal.Value()
-//! \nick
-//! \return Value of lhs minus rhs
-//****************************************************************************80
-  inline realT Value() const {
-    return(lhs_ - rhs_.Value());
+  SurrealSubtract(const realT lhs_in, const RHSType& rhs_in) :
+    lhs_(lhs_in), rhs_(rhs_in) {
+    this->value_ = lhs_ - rhs_.Value();
   }
-
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of lhs - rhs
 //! \details Derivative of (real - Surreal) =
@@ -109,12 +93,9 @@ public:
 //! \param[in] i The index of the derivative you wish to compute
 //! \return -rhs.Deriv(i)
 //****************************************************************************80
-  inline realT Deriv(const int& i) const {
+  inline realT Deriv(const int i) const {
     return(-rhs_.Deriv(i));
   }
-private:
-  const typename RHSType::realT_& lhs_; //left hande side
-  const RHSType& rhs_;                  //right hand side
 }; // End class SurrealSubtract
 
 //----------------------------- Surreal - Real ---------------------------------
@@ -126,14 +107,16 @@ private:
 //! \nick
 //! \tparam LHSType Type used for the argument on the left hand side of -
 //****************************************************************************80
-template<class LHSType, int N>
-class SurrealSubtract<LHSType, typename LHSType::realT_, N> :
-  public SurrealBase<SurrealSubtract<LHSType, typename LHSType::realT_, N>, N>
+template<class LHSType>
+class SurrealSubtract<LHSType, typename LHSType::realT_> :
+  public SurrealBase<SurrealSubtract<LHSType, typename LHSType::realT_>,
+                     typename LHSType::realT_, LHSType::N_>
 {
-public:
+private:
   typedef typename LHSType::realT_ realT; //get fundamental real type from left
-  typedef realT realT_; //store real type
-
+  const LHSType& lhs_; //left  hand side
+  const realT rhs_;    //right hand side
+public:
 //****************************************************************************80
 //! \brief Constructor for constructing subtraction operation from reference to
 //!        constant left and right sides.
@@ -143,21 +126,10 @@ public:
 //! \param[in] rhs_in The reference to constant object on right side of -
 //****************************************************************************80
   SurrealSubtract
-  (const LHSType& lhs_in, const typename LHSType::realT_& rhs_in) :
-    lhs_(lhs_in), rhs_(rhs_in) {}
-
-//****************************************************************************80
-//! \brief Value : Returns the value of the left hand side minus the right hand
-//!                side
-//! \details Value of (Surreal - real) =
-//!                    Surreal.Value() - real
-//! \nick
-//! \return Value of lhs minus rhs
-//****************************************************************************80
-  inline realT Value() const {
-    return(lhs_.Value() - rhs_);
+  (const LHSType& lhs_in, const realT rhs_in) :
+    lhs_(lhs_in), rhs_(rhs_in) {
+    this->value_ = lhs_.Value() - rhs_;
   }
-
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of lhs - rhs
 //! \details Derivative of (Surreal - real) =
@@ -166,12 +138,9 @@ public:
 //! \param[in] i The index you of the derivative you wish to compute
 //! \return lhs.Deriv(i)
 //****************************************************************************80
-  inline realT Deriv(const int& i) const {
+  inline realT Deriv(const int i) const {
     return(lhs_.Deriv(i));
   }
-private:
-  const LHSType& lhs_;                  //left  hand side
-  const typename LHSType::realT_& rhs_; //right hand side
 }; // End class SurrealSubtract
 
 //-------------------------- SUBTRACTION OPERATORS -----------------------------
@@ -184,10 +153,13 @@ private:
 //! \param[in] rhs The object on right side of - sign
 //! \return SurrealSubtract object to represent subtraction of lhs - rhs
 //****************************************************************************80
-template<class LHSType, class RHSType, int N>
-inline SurrealSubtract<LHSType, RHSType, N>
-operator-(const SurrealBase<LHSType, N>& lhs,
-          const SurrealBase<RHSType, N>& rhs);
+template<class LHSType, class RHSType, class realT, int N>
+inline SurrealSubtract<LHSType, RHSType>
+operator-(const SurrealBase<LHSType, realT, N>& lhs,
+          const SurrealBase<RHSType, realT, N>& rhs){
+  return(SurrealSubtract<LHSType,RHSType>
+         (lhs.CastToDerived(), rhs.CastToDerived()));
+}
 
 //****************************************************************************80
 //! \brief Operator - : This operator declaration declares how to subtract a
@@ -198,23 +170,30 @@ operator-(const SurrealBase<LHSType, N>& lhs,
 //! \param[in] rhs The object on right side of - sign
 //! \return SurrealSubtract object to represent subtraction of lhs - rhs
 //****************************************************************************80
-template<class RHSType, int N>
-inline SurrealSubtract<typename RHSType::realT_, RHSType, N>
+template<class RHSType>
+inline SurrealSubtract<typename RHSType::realT_, RHSType>
 operator-
-(const typename RHSType::realT_& lhs, const SurrealBase<RHSType, N>& rhs);
+(const typename RHSType::realT_ lhs,
+ const SurrealBase<RHSType, typename RHSType::realT_, RHSType::N_>& rhs){
+  return(SurrealSubtract<typename RHSType::realT_,RHSType>
+         (lhs, rhs.CastToDerived()));
+}
 
 //****************************************************************************80
 //! \brief Operator - : This operator declaration declares how to subtract a
 //!                     real from a SurrealBase type
-//! \details SurrealSubtract = real - SurrealBase
+//! \details SurrealSubtract = SurrealBase - real
 //! \nick
 //! \param[in] lhs The object on left side of - sign
 //! \param[in] rhs The real number on right side of - sign
 //! \return SurrealSubtract object to represent subtraction of lhs - rhs
 //****************************************************************************80
-template<class LHSType, int N>
-inline SurrealSubtract<LHSType, typename LHSType::realT_, N>
+template<class LHSType>
+inline SurrealSubtract<LHSType, typename LHSType::realT_>
 operator-
-(const SurrealBase<LHSType, N>& lhs, const typename LHSType::realT_& rhs);
-#include "SurrealSubtract_Imple.h"
+(const SurrealBase<LHSType, typename LHSType::realT_, LHSType::N_>& lhs,
+ const typename LHSType::realT_ rhs){
+  return(SurrealSubtract<LHSType, typename LHSType::realT_>
+         (lhs.CastToDerived(), rhs));
+}
 #endif

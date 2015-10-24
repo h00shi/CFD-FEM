@@ -15,12 +15,13 @@
 //!                       creating a base class.
 //! \tparam N           The number of derivatives you want to take
 //****************************************************************************80
-template<class DerivedType, int N>
+template<class DerivedType, class realT, int N>
 class SurrealBase
 {
-  //---> There are no private data members
-
 public:
+  typedef realT realT_;
+  static const int N_=N;
+
 //****************************************************************************80
 //! \brief CastToDerived : A method to cast the current instance of
 //!                        SurrealBase to a reference to a constant
@@ -35,5 +36,30 @@ public:
   {
     return static_cast<DerivedType const &> (*this);
   } // End CastToDerived
+//****************************************************************************80
+//!
+//! \brief Value : Get the reference to the value...modifiable
+//! \details
+//! \nick
+//! \version $Rev$
+//****************************************************************************80
+  inline realT& Value() {
+    //---> Return value to user
+    return(value_);
+  }// End Value
+
+//****************************************************************************80
+//!
+//! \brief Value : Get the value const correct version to return to const
+//! \details
+//! \nick
+//! \version $Rev$
+//****************************************************************************80
+  inline realT Value() const {
+    //---> Return value to user
+    return(value_);
+  }// End Value
+protected:
+  realT value_;   /*!< The value of the number. */
 }; // End class SurrealBase
 #endif
