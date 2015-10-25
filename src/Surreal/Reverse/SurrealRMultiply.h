@@ -42,7 +42,9 @@ public:
                   "Surreal binary operations require the same number of "
                   "derivatives on left and right sides");
 
-    this->value_ = lhs_.GetValue() * rhs_.GetValue();
+    SurrealRBase<SurrealRMultiply<LHSType, RHSType>,
+    typename RHSType::realT_, RHSType::N_>::value_ =
+        lhs_.GetValue() * rhs_.GetValue();
   }
 
 //****************************************************************************80
@@ -91,7 +93,10 @@ public:
 //****************************************************************************80
   SurrealRMultiply(const realT lhs_in, RHSType const& rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = lhs_ * rhs_.GetValue();
+
+    SurrealRBase<SurrealRMultiply<typename RHSType::realT_, RHSType>,
+    typename RHSType::realT_, RHSType::N_>::value_ = lhs_ * rhs_.GetValue();
+
   }
 
 //****************************************************************************80

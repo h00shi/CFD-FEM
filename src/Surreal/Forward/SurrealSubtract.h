@@ -32,14 +32,19 @@ public:
 //****************************************************************************80
   SurrealSubtract(const LHSType& lhs_in, const RHSType& rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
+
     static_assert(std::is_same<typename LHSType::realT_,
                   typename RHSType::realT_>::value,
                   "Surreal binary operations require the same floating-point "
                   "data type on left and right sides");
+
     static_assert(LHSType::N_ == RHSType::N_,
                   "Surreal binary operations require the same number of "
                   "derivatives on left and right sides");
-    this->value_ = lhs_.Value() - rhs_.Value();
+
+    SurrealBase<SurrealSubtract<LHSType, RHSType>,
+         typename RHSType::realT_, RHSType::N_>::value_ =
+               lhs_.Value() - rhs_.Value();
   }
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of lhs - rhs
@@ -83,7 +88,9 @@ public:
 //****************************************************************************80
   SurrealSubtract(const realT lhs_in, const RHSType& rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = lhs_ - rhs_.Value();
+    SurrealBase<SurrealSubtract<typename RHSType::realT_, RHSType>,
+         typename RHSType::realT_, RHSType::N_>::value_ =
+             lhs_ - rhs_.Value();
   }
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of lhs - rhs
@@ -128,7 +135,9 @@ public:
   SurrealSubtract
   (const LHSType& lhs_in, const realT rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = lhs_.Value() - rhs_;
+    SurrealBase<SurrealSubtract<LHSType, typename LHSType::realT_>,
+             typename LHSType::realT_, LHSType::N_>::value_ =
+                     lhs_.Value() - rhs_;
   }
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of lhs - rhs

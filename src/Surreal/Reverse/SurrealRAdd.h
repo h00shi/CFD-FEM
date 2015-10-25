@@ -39,10 +39,14 @@ public:
                   typename RHSType::realT_>::value,
                   "Surreal binary operations require the same floating-point "
                   "data type on left and right sides");
+
     static_assert(LHSType::N_ == RHSType::N_,
                   "Surreal binary operations require the same number of "
                   "derivatives on left and right sides");
-    this->value_ = lhs_.GetValue() + rhs_.GetValue();
+
+    SurrealRBase<SurrealRAdd<LHSType,RHSType>,
+    typename RHSType::realT_, RHSType::N_>::value_ =
+    lhs_.GetValue() + rhs_.GetValue();
   }
 
 //****************************************************************************80
@@ -88,7 +92,10 @@ public:
 //****************************************************************************80
   SurrealRAdd(const realT lhs_in, RHSType const& rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = lhs_ + rhs_.GetValue();
+
+    SurrealRBase<SurrealRAdd<typename RHSType::realT_, RHSType>,
+       typename RHSType::realT_, RHSType::N_>::value_ = lhs_ + rhs_.GetValue();
+
   }
 
 //****************************************************************************80

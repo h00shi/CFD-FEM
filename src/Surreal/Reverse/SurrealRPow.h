@@ -45,7 +45,9 @@ public:
                   "Surreal binary operations require the same number of "
                   "derivatives on left and right sides");
 
-    this->value_ = std::pow(lhs_.GetValue(), rhs_.GetValue());
+    SurrealRBase<SurrealRPow<LHSType, RHSType>,
+    typename RHSType::realT_, RHSType::N_>::value_ =
+        std::pow(lhs_.GetValue(), rhs_.GetValue());
   }
 
 //****************************************************************************80
@@ -94,7 +96,9 @@ public:
 //****************************************************************************80
   SurrealRPow(const typename RHSType::realT_ lhs_in, RHSType const& rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = std::pow(lhs_, rhs_.GetValue());
+    SurrealRBase<SurrealRPow<typename RHSType::realT_, RHSType>,
+   typename RHSType::realT_, RHSType:: N_>::value_ =
+       std::pow(lhs_, rhs_.GetValue());
   }
 //****************************************************************************80
 //! \brief Diff : Calculate adjoints of right side for the
@@ -140,7 +144,11 @@ public:
 //****************************************************************************80
   SurrealRPow(LHSType const & lhs_in, const typename LHSType::realT_ rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = std::pow(lhs_.GetValue(), rhs_);
+
+    SurrealRBase<SurrealRPow<LHSType, typename LHSType::realT_>,
+    typename LHSType::realT_, LHSType::N_>::value_ =
+          std::pow(lhs_.GetValue(), rhs_);
+
   }
 
 //****************************************************************************80

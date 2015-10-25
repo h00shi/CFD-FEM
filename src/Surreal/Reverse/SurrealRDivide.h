@@ -41,7 +41,9 @@ public:
     static_assert(LHSType::N_ == RHSType::N_,
                   "Surreal binary operations require the same number of "
                   "derivatives on left and right sides");
-    this->value_ = lhs_.GetValue() / rhs_.GetValue();
+    SurrealRBase< SurrealRDivide<LHSType, RHSType>,
+    typename RHSType::realT_, RHSType::N_>::value_ =
+        lhs_.GetValue() / rhs_.GetValue();
   }
 
 //****************************************************************************80
@@ -89,7 +91,8 @@ public:
 //****************************************************************************80
   SurrealRDivide(const realT lhs_in, RHSType const& rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = lhs_/rhs_.GetValue();
+    SurrealRBase<SurrealRDivide<typename RHSType::realT_, RHSType>,
+         typename RHSType::realT_, RHSType::N_>::value_ = lhs_/rhs_.GetValue();
 }
 //****************************************************************************80
 //! \brief Diff : Calculate adjoints of right side for the
@@ -135,7 +138,9 @@ public:
 //****************************************************************************80
   SurrealRDivide(LHSType const& lhs_in, const typename LHSType::realT_ rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = lhs_.GetValue() /rhs_;
+    SurrealRBase<SurrealRDivide<LHSType, typename LHSType::realT_>,
+    typename LHSType::realT_, LHSType::N_>::value_ =
+        lhs_.GetValue() /rhs_;
   }
 
 //****************************************************************************80

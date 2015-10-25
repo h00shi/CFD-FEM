@@ -41,7 +41,9 @@ public:
     static_assert(LHSType::N_ == RHSType::N_,
                   "Surreal binary operations require the same number of "
                   "derivatives on left and right sides");
-    this->value_ = lhs_.GetValue() - rhs_.GetValue();
+    SurrealRBase<SurrealRSubtract<LHSType, RHSType>,
+   typename RHSType::realT_, RHSType::N_>::value_ =
+       lhs_.GetValue() - rhs_.GetValue();
   }
 
 //****************************************************************************80
@@ -87,7 +89,8 @@ public:
 //****************************************************************************80
   SurrealRSubtract(const realT lhs_in, RHSType const& rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = lhs_ - rhs_.GetValue();
+    SurrealRBase<SurrealRSubtract<typename RHSType::realT_, RHSType>,
+   typename RHSType::realT_, RHSType::N_>::value_ = lhs_ - rhs_.GetValue();
   }
 
 //****************************************************************************80
@@ -133,7 +136,8 @@ public:
   SurrealRSubtract
   (LHSType const& lhs_in, const realT rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = lhs_.GetValue() - rhs_;
+    SurrealRBase<SurrealRSubtract<LHSType, typename LHSType::realT_>,
+   typename LHSType::realT_, LHSType::N_>::value_ = lhs_.GetValue() - rhs_;
   }
 
 //****************************************************************************80

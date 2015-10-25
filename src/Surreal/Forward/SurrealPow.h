@@ -41,7 +41,9 @@ public:
     static_assert(LHSType::N_ == RHSType::N_,
                   "Surreal binary operations require the same number of "
                   "derivatives on left and right sides");
-    this->value_ = std::pow(lhs_.Value(), rhs_.Value());
+    SurrealBase<SurrealPow<LHSType, RHSType>,
+    typename RHSType::realT_, RHSType::N_>::value_ =
+        std::pow(lhs_.Value(), rhs_.Value());
   }
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of pow(lhs,rhs)
@@ -86,7 +88,9 @@ public:
 //****************************************************************************80
   SurrealPow(const realT lhs_in, const RHSType& rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = std::pow(lhs_,rhs_.Value());
+    SurrealBase<SurrealPow<typename RHSType::realT_, RHSType>,
+       typename RHSType::realT_, RHSType::N_>::value_ =
+             std::pow(lhs_,rhs_.Value());
   }
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of pow(lhs,rhs)
@@ -130,7 +134,9 @@ public:
 //****************************************************************************80
   SurrealPow(const LHSType& lhs_in, const realT rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = std::pow(lhs_.Value(), rhs_);
+    SurrealBase<SurrealPow<LHSType, typename LHSType::realT_>,
+     typename LHSType::realT_, LHSType::N_>::value_ =
+         std::pow(lhs_.Value(), rhs_);
   }
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of pow(lhs,rhs)

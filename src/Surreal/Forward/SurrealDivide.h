@@ -33,14 +33,19 @@ public:
 //****************************************************************************80
   SurrealDivide(const LHSType& lhs_in, const RHSType& rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
+
     static_assert(std::is_same<typename LHSType::realT_,
                   typename RHSType::realT_>::value,
                   "Surreal binary operations require the same floating-point "
                   "data type on left and right sides");
+
     static_assert(LHSType::N_ == RHSType::N_,
                   "Surreal binary operations require the same number of "
                   "derivatives on left and right sides");
-    this->value_ = lhs_.Value() / rhs_.Value();
+
+    SurrealBase< SurrealDivide<LHSType, RHSType>,
+    typename RHSType::realT_, RHSType::N_>::value_ =
+          lhs_.Value() / rhs_.Value();
   }
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of the left hand side divided by the
@@ -88,7 +93,10 @@ public:
 //****************************************************************************80
   SurrealDivide(const realT lhs_in, const RHSType& rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = lhs_/rhs_.Value();
+
+    SurrealBase<SurrealDivide<typename RHSType::realT_, RHSType>,
+           typename RHSType::realT_, RHSType::N_>::value_ = lhs_/rhs_.Value();
+
   }
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of the left hand side divided by the
@@ -134,7 +142,10 @@ public:
 //****************************************************************************80
   SurrealDivide(const LHSType& lhs_in, const realT rhs_in) :
     lhs_(lhs_in), rhs_(rhs_in) {
-    this->value_ = lhs_.Value() /rhs_;
+
+    SurrealBase<SurrealDivide<LHSType, typename LHSType::realT_>,
+           typename LHSType::realT_, LHSType::N_>::value_ = lhs_.Value() /rhs_;
+
   }
 //****************************************************************************80
 //! \brief Deriv : Returns the derivative of the left hand side divided by the
