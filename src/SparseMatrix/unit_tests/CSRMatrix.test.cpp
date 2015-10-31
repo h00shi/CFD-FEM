@@ -147,6 +147,17 @@ TEST(CSRMatrix, ThreeFields) {
     }
     EXPECT_EQ(nnz, nnz_node(i));
   }
+
+  //---> Check row
+  row = 0;
+  for(intT i = 0; i < mesh.get_MeshGeom().get_nnode(); i++)
+  {
+    for(intT j = 0; j < nfld(i); j++){
+      EXPECT_EQ(row, csr_matrix.Row(i,j));
+      row ++;
+    }
+  }
+
   csr_matrix.Diagnostic(std::cout);
 }
 
@@ -198,6 +209,12 @@ TEST(CSRMatrix, Tridiag){
     EXPECT_DOUBLE_EQ(-1.0, matrix(i,0,0,0));
     EXPECT_DOUBLE_EQ(-2.0, matrix(i,1,0,0));
     EXPECT_DOUBLE_EQ(1.0, matrix(i,2,0,0));
+  }
+
+  //---> Check ro
+  for(intT i = 0; i < N; i++)
+  {
+    EXPECT_EQ(i, matrix.Row(i,0));
   }
 
 }

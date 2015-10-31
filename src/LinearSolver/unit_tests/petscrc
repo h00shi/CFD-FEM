@@ -1,0 +1,54 @@
+##petscoptions.txt####
+
+########################################
+###Choose Preconditioner Typ e##
+## direct solve: -pc_type lu -pc_factor_mat_slolver_package mumps/superlu_dist #
+## simple precond: -pc_type jacobi sor #
+## Algebraic Multigrid: -pc_type mg/ml/hypre (-pc_hypre_type boomeramg); # 
+
+#-pc_type lu -pc_factor_mat_slolver_package superlu_dist
+#-pc_type sor
+#-pc_type mg
+
+########################################
+##Choose Iterative Scheme ##
+## -ksp_type gmres/bcgs #
+
+#-ksp_type gmres
+
+
+########################################
+### Setup Iteration Tolerance ##
+
+#-ksp_atol 1e-15
+#-ksp_rtol 1e-15
+
+########################################
+### use hypre preconditioner ##
+
+-ksp_type preonly
+-pc_type hypre
+-pc_hypre_type boomeramg
+#-pc_hypre_boomeramg_cycle_type V
+#-pc_hypre_boomeramg_max_levels 25
+#-pc_hypre_boomeramg_max_iter 1
+#-pc_hypre_boomeramg_print_statistics
+
+########################################
+### Monitor the solution ##
+## -ksp_view/-ksp_monitor/-ksp_converged_reason
+
+#-ksp_monitor
+
+########################################
+## View the Matrix ##
+## -mat_view, -mat_view draw, -draw_pause #
+
+#-mat_view
+#-mat_view draw 
+#-draw_pause 2
+
+#########################################
+## Want to have more options ? ##
+
+#-help

@@ -113,7 +113,7 @@ public:
 //! \version $Rev: 5 $
 //! \return 0 We always begin at zero
 //****************************************************************************8
-  inline intT NeighborBegin(const intT&)
+  inline intT NeighborBegin(const intT&) const
   {
     return 0;
   }// End NeighborBegin
@@ -127,7 +127,7 @@ public:
 //! \date $Date$ 
 //! \return n The node who's neighbors you want to access
 //****************************************************************************80
-  inline intT NeighborEnd(const intT& n)
+  inline intT NeighborEnd(const intT& n) const
   {
     return adj_.get_ncol(n);
   } // End NeighborLast

@@ -1,0 +1,18 @@
+cl__1 = 0.1;
+Point(1) = {0, 0, 0, 0.1};
+Point(2) = {1, 0, 0, 0.1};
+Point(3) = {1, 1, 0, 0.1};
+Point(4) = {0, 1, 0, 0.1};
+Line(1) = {1, 2};
+Transfinite Line {1} = 10Using Progression 1;
+Line(2) = {2, 3};
+Transfinite Line {2} = 10Using Progression 1;
+Line(3) = {3, 4};
+Transfinite Line {3} = 10Using Progression 1;
+Line(4) = {4, 1};
+Transfinite Line {4} = 10Using Progression 1;
+Line Loop(6) = {1, 2, 3, 4};
+Plane Surface(6) = {6};
+Transfinite Surface {6};
+Physical Line(7) = {1, 2, 3, 4};
+Physical Surface(8) = {6};

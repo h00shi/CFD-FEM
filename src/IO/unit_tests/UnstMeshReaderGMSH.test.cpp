@@ -6,9 +6,10 @@
  */
 #include "gtest/gtest.h"
 #include "IO/UnstMeshReaderGMSH.h"
-
+#include "ParallelComm/Communication.h"
 TEST(GMSH_Reader, Read2D_ASCII)
 {
+  Communication::Initialize();
   UnstMeshReaderGMSH mesh_reader("Circle.msh", "Circle.idmap");
   EXPECT_EQ(694, mesh_reader.ReadNnode());
   EXPECT_EQ(1287, mesh_reader.ReadNelement());
@@ -393,5 +394,5 @@ TEST(GMSH_Reader, Mixed_3D_BINARY)
   EXPECT_EQ(1012, mesh_reader.ReadNnode());
   EXPECT_EQ(1686, mesh_reader.ReadNelement()+ mesh_reader.ReadNbcFace());
   EXPECT_EQ(1, mesh_reader.ReadNbcID());
-
+Communication::Finalize();
 }

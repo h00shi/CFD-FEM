@@ -17,7 +17,7 @@
 #include "DataStructures/Array2D.h"
 #include "DataStructures/Array3D.h"
 #include "DataStructures/Array4D.h"
-#include "Surreal/Surreal.h"
+#include "Surreal/Forward/Surreal.h"
 #include "DataStructures/SquareMatrix.h"
 #include "PDE/Equation.h"
 

@@ -1,5 +1,6 @@
 SET(Unit_Tests 
   MKLDSS.test
+  PetscSolver.test
 )
 
 FOREACH(Unit ${Unit_Tests})
@@ -8,6 +9,7 @@ FOREACH(Unit ${Unit_Tests})
     SparseMatrix 
     DataStructures 
     LinearSolver
+    IO
     ${GTEST_LIB} 
     ${GTEST_MAIN_LIB})
   INSTALL(TARGETS ${Unit}.unit DESTINATION "{CMAKE_INSTALL_PREFIX}/test")
@@ -15,3 +17,6 @@ FOREACH(Unit ${Unit_Tests})
 ENDFOREACH()
 # Files to copy for unit tests
 FILE (COPY "../../Mesh/unit_tests/Square.grid" DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
+FILE (COPY "petscrc" DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
+FILE (COPY "Square_quad.msh" DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
+FILE (COPY "Square_quad.idmap" DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)

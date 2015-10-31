@@ -1,27 +1,32 @@
+/*
+ * PetscSolver.test.cpp
+ *
+ *  Created on: Oct 30, 2015
+ *      Author: rabbit
+ */
 #include "gtest/gtest.h"
-#include "SparseMatrix/CSRMatrix.h"
-#include "DataStructures/Graph.h"
-#include "LinearSolver/MKLDSS.h"
+#include "LinearSolver/PetscSolver.h"
 #include "Mesh/CGMesh.h"
 #include "IO/UnstMeshReaderGMSH.h"
 
-TEST(MKLDSS, Tridiag){
+TEST(PetscSolver, Tridiag){
+  Communication::Initialize();
   const intT N = 10;
-  //---> Setup the adjacency and 
+  //---> Setup the adjacency and
   List2D<intT> adj(N, (N-2)*3 + 2 + 2);
   Array1D<intT> ncol(N);
   Array2D<intT> edge2node(N-1,2);
   Array1D<intT> nfld(N);
-  
+  Array1D<intT> local2global(N);
   nfld.set_value(1);
-    
+
   ncol(0) = 2;
   for(intT i = 1; i < N-1; i++){
     ncol(i) = 3;
   }
   ncol(N - 1) = 2;
   adj.set_ncol(ncol);
- 
+
   adj(0,0) = 0;
   adj(0,1) = 1;
   for(intT i = 1; i < N-1; i++){
@@ -32,7 +37,7 @@ TEST(MKLDSS, Tridiag){
 
   adj(N-1,0) = N-2;
   adj(N-1,1) = N-1;
-  
+
   for(intT i = 0; i < N-1; i++){
     edge2node(i,0) = i;
     edge2node(i,1) = i + 1;
@@ -40,7 +45,7 @@ TEST(MKLDSS, Tridiag){
 
   Graph graph(adj);
   CSRMatrix<realT> matrix(graph, nfld);
-  
+
   List2D<realT> b(N,N);
   List2D<realT> x(N,N);
   b.set_ncol(nfld);
@@ -59,10 +64,12 @@ TEST(MKLDSS, Tridiag){
   matrix(N-1,1,0,0) = -2.0;
   b(N-1,0) = -1.0;
 
-  MKLDSS mkl_dss_solver(matrix);
-  mkl_dss_solver.Factorize();
-  mkl_dss_solver.Solve(b,x);
-  
+  PetscSolver solver(matrix,100);
+  solver.Factorize();
+  for(intT i = 0; i < 1; i++){
+    solver.Solve(b,x);
+  }
+  solver.DestroyPetscObjects();
   Array1D<double> matlab_ans(10);
 
   matlab_ans(0) = 1.909090909090909;
@@ -74,29 +81,31 @@ TEST(MKLDSS, Tridiag){
   matlab_ans(6) = 1.363636363636363;
   matlab_ans(7) = 1.272727272727272;
   matlab_ans(8) = 1.181818181818182;
-  matlab_ans(9) = 1.090909090909091; 
+  matlab_ans(9) = 1.090909090909091;
 
   for(int e = 0; e < N; e++){
     EXPECT_DOUBLE_EQ(matlab_ans(e),x(e,0));
   }
+
 }
-TEST(MKLDSS, Tridiag_2_Field){
+
+TEST(PetscSolver, Tridiag_2_Field){
   const intT N = 10;
-  //---> Setup the adjacency and 
+  //---> Setup the adjacency and
   List2D<intT> adj(N, (N-2)*3 + 2 + 2);
   Array1D<intT> ncol(N);
   Array2D<intT> edge2node(N-1,2);
   Array1D<intT> nfld(N);
-  
+
   nfld.set_value(2);
-    
+
   ncol(0) = 2;
   for(intT i = 1; i < N-1; i++){
     ncol(i) = 3;
   }
   ncol(N - 1) = 2;
   adj.set_ncol(ncol);
- 
+
   adj(0,0) = 0;
   adj(0,1) = 1;
   for(intT i = 1; i < N-1; i++){
@@ -107,7 +116,7 @@ TEST(MKLDSS, Tridiag_2_Field){
 
   adj(N-1,0) = N-2;
   adj(N-1,1) = N-1;
-  
+
   for(intT i = 0; i < N-1; i++){
     edge2node(i,0) = i;
     edge2node(i,1) = i + 1;
@@ -115,7 +124,7 @@ TEST(MKLDSS, Tridiag_2_Field){
 
   Graph graph(adj);
   CSRMatrix<realT> matrix(graph, nfld);
-  
+
   List2D<realT> b(N,N*2);
   List2D<realT> x(N,N*2);
   b.set_ncol(nfld);
@@ -145,11 +154,15 @@ TEST(MKLDSS, Tridiag_2_Field){
 
   b(N-1,0) = -1.0;
   b(N-1,1) = -2.0;
+  Array1D<intT> local2global(N);
+  for(intT i = 0; i < N; i++){ local2global(i) = i;}
+  PetscSolver solver(matrix, 100);
+  solver.Factorize();
+  for(intT i = 0; i < 1; i++){
+    solver.Solve(b,x);
+  }
+  solver.DestroyPetscObjects();
 
-  MKLDSS mkl_dss_solver(matrix);
-  mkl_dss_solver.Factorize();
-  mkl_dss_solver.Solve(b,x);
-  
   Array1D<double> matlab_ans(10);
 
   matlab_ans(0) = 1.909090909090909;
@@ -161,8 +174,8 @@ TEST(MKLDSS, Tridiag_2_Field){
   matlab_ans(6) = 1.363636363636363;
   matlab_ans(7) = 1.272727272727272;
   matlab_ans(8) = 1.181818181818182;
-  matlab_ans(9) = 1.090909090909091; 
-  
+  matlab_ans(9) = 1.090909090909091;
+
   Array1D<double> matlab_ans2(10);
   matlab_ans2(0) = 4.636363636363636;
   matlab_ans2(1) = 4.272727272727272;
@@ -178,8 +191,9 @@ TEST(MKLDSS, Tridiag_2_Field){
     EXPECT_DOUBLE_EQ(matlab_ans(e),x(e,0));
     EXPECT_DOUBLE_EQ(matlab_ans2(e),x(e,1));
   }
+
 }
-TEST(MKLDSS, Solve2D_2){
+TEST(PetscSolver, Solve2D_2){
 
   //---> Initialize grid
   UnstMeshReaderGMSH reader("Square_quad.msh","Square_quad.idmap");
@@ -192,7 +206,7 @@ TEST(MKLDSS, Solve2D_2){
    //---> MulticolorGS requires a MatrixBSR object reference
    CSRMatrix<double> csr(grid.get_Graph(), nvar );
 
-   MKLDSS solver(csr);
+   PetscSolver solver(csr,100);
 
    List2D<double> x(nvar);
    List2D<double> b(nvar);
@@ -228,6 +242,8 @@ TEST(MKLDSS, Solve2D_2){
    //---> Factorize the matrix;
    solver.Factorize();
    solver.Solve(b, x);
+   solver.DestroyPetscObjects();
 
-   std::cout << std::setprecision(16) << x << std::endl;
+  //---> Finalize the MPI communicator
+   Communication::Finalize();
 }

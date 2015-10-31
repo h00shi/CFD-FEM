@@ -2,7 +2,9 @@
 #include "Mesh/CGMesh.h"
 #include "IO/UnstMeshWriterVTK.h"
 #include "IO/UnstMeshReaderGMSH.h"
+#include "ParallelComm/Communication.h"
 TEST(VTK, Write){
+  Communication::Initialize();
   UnstMeshReaderNKBGrid grid_reader("Square.grid");
   CGMesh mesh(grid_reader);
   mesh.Diagnostic(std::cout);
@@ -29,5 +31,5 @@ TEST(VTK, Write_3D){
   UnstMeshWriterVTK writer(mesh);
 
   writer.Write("Test_Mixed_3D");
-
+  Communication::Finalize();
 }

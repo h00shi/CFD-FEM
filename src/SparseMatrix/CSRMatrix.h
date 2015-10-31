@@ -23,6 +23,8 @@ protected:
                                   for a graph node. NOTE: For block matricies 
                                   each row within a node has the same number
                                   of non-zero columns. */ 
+  Array1D<intT> node2row_start_;//!< For each node give the starting row index
+
 public:
 
 //****************************************************************************80
@@ -43,29 +45,32 @@ public:
     intT nnz   = SparseMatrix<dataT>::nnz_;
     intT nnode = SparseMatrix<dataT>::nnode_;
     const List2D<intT>& adjacency = SparseMatrix<dataT>::graph_.get_GraphAdj();
-    
+
     //---> Initialize indexing arrays for CSR
     row_offset_.initialize(nrow + 1);
     column_idx_.initialize(nrow, nnz);
     adj_data_offset_.initialize_copy_pattern(SparseMatrix<dataT>::
                                              graph_.get_GraphAdj());
     nnz_node_.initialize(nnode);
+    node2row_start_.initialize(nnode);
     row_offset_(0) = 0;
     intT row = 0;
-    for(intT n = 0; n < nnode; n++){// Node loop 
+    for(intT n = 0; n < nnode; n++){// Node loop
+      //---> Tag Starting row of node n
+      node2row_start_(n) = row;
       //---> Count up number of columns
       intT ncol = 0;
       for(intT j = 0; j < adjacency.get_ncol(n); j++){ // Neighbor loop 
-	ncol += nrow_per_node(adjacency(n,j));
+        ncol += nrow_per_node(adjacency(n,j));
       }// End Neighbor loop 
-      
+
       //---> Now form offset for rows irow to irow + nrow_per_node(n);
       for(intT v = 0; v < nrow_per_node(n); v++){ // Row var
         //---> Set row_offset
         row_offset_(row + 1) = row_offset_(row) + ncol;
         //---> Set the number of non-zero columns for this row
         column_idx_.set_ncol(row, ncol);
-               
+
         //---> Form column_idx_
         intT col = 0;
         intT node_start = 0;
@@ -74,12 +79,12 @@ public:
         for(intT j = 0; j < adjacency.get_ncol(n); j++){// Neighbor loop
           //---> Find all zero columns in this row up to first neighbor
           intT node_end = adjacency(n,j) - 1;
-	 
+
           //---> Loop over node indices that are zeros in this row
           for(intT k = node_start; k <= node_end; k++){
             col += nrow_per_node(k);
           }
-	  //---> Loop over the number of variables for the adjacent node
+          //---> Loop over the number of variables for the adjacent node
           for(intT k = 0; k < nrow_per_node(adjacency(n,j)); k++){
             column_idx_(row,icol) = col;
             col++;
@@ -87,35 +92,35 @@ public:
           }
 
           node_start = adjacency(n,j) + 1;
-          
+
         } // neighbor_loop 
-	//---> increment row counter
+        //---> increment row counter
         row++;
 
       } // End Row var
       nnz_node_(n) = row_offset_(row) - row_offset_(row - 1);
     } // End node loop 
-    
+
     //---> Setup the adj_data_offset_
-    
+
     intT index = 0;
     for(intT n = 0; n < nnode; n++){// Node Loop 
       //---> Cycle through neighbors of this node
       for (intT j = 0; j < adjacency.get_ncol(n); j++) {
-	adj_data_offset_(n,j) = index;
-	index += nrow_per_node(adjacency(n,j));
+        adj_data_offset_(n,j) = index;
+        index += nrow_per_node(adjacency(n,j));
       }
       /*---> Account for all rows between first row of node n and 
 	first row of node n+1.  */
       for (intT j = 0; j < adjacency.get_ncol(n); j++) {
-	index += (nrow_per_node(n)-1)*nrow_per_node(adjacency(n,j));
+        index += (nrow_per_node(n)-1)*nrow_per_node(adjacency(n,j));
       }
-      
+
     }// End Node Loop 
 
     SparseMatrix<dataT>::mem_ +=
-      row_offset_.get_mem() + column_idx_.get_mem();
-      
+        row_offset_.get_mem() + column_idx_.get_mem();
+
   } // End CSRMatrix
 
 //****************************************************************************80
@@ -149,7 +154,7 @@ public:
 //! \nick 
 //! \version $Rev$ 
 //! \date $Date$ 
-//! \param[in] node The graph node where you want to acess matrix
+//! \param[in] node The graph node where you want to access matrix
 //! \param[in] j_neighbor The local neighbor index of neighbor 
 //!            you want to access
 //! \param[in] block_row Row of block you want
@@ -247,6 +252,21 @@ public:
     intT jneighbor = SparseMatrix<dataT>::graph_.EdgeAdjIndex(edge,side);
     return this->operator()(node, jneighbor, block_row, block_col);
   }// End OffDiagonal
+//****************************************************************************80
+//! \brief Row : Given a node and variable this will give you the row number
+//!              in O(1) lookup time.
+//! \details
+//! \nick
+//! \version $Rev$
+//! \date $Date$
+//! \param[in] node The node that you want to know the row from
+//! \param[in] ivar
+//****************************************************************************80
+ inline intT Row(const intT& node, const intT& ivar)
+ {
+   return (node2row_start_(node) + ivar);
+
+ } //End Row
 
 //****************************************************************************80
 //! \brief get_row_offset() : Returns the row_offset array;

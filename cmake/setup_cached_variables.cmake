@@ -36,5 +36,5 @@ OPTION(ICC_WITH_REMARKS_SUPPRESSION "ICC build with flag -diag-disable 383,981,2
 OPTION(BUILD_SHARED_LIBS "Create shared libraries. Default is OFF." OFF)
 
 OPTION(BUILD_WITH_LATEX "Build with latex support. Default is ON." ON) 
-
-OPTION(BUILD_WITH_PETSC "Build with petsc library. Default is OFF." OFF)
+OPTION(BUILD_WITH_PETSC "Build with petsc library. Default is ON." ON)
+OPTION(BUILD_WITH_MPI "Build for Parallel Execution with MPI. Default is ON." ON)

@@ -5,6 +5,7 @@
 #include "my_incl.h"
 #include "SystemUtils/SystemModule.h"
 #include "SparseMatrix/CSRMatrix.h"
+#include "LinearSolver/LinearSolver.h"
 #ifdef MKL_DSS
 #include "mkl_types.h"
 #include "mkl_dss.h"
@@ -20,7 +21,7 @@
 //! \tparam intT Template parameter for type of integer
 //! \tparam dataT Template parameter for type of data_
 //****************************************************************************80
-class MKLDSS{
+class MKLDSS : public LinearSolver{
 
 public:
 //****************************************************************************80

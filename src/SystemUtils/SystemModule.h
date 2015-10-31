@@ -69,17 +69,16 @@ namespace SystemModule {
     mem = bytes*((realT) size)/1000000.0;
     return(mem);
   }
-
-//****************************************************************************80
-//! \brief  VarMemoryPrint : For a specified variable print it's size  and 
-//!         memory used.  
-//! \details 
-//! \nick 
-//! \version $Rev$ 
-//! \date $Date$ 
-//! \param[in] var_name The name of the variable
-//! \param[in] var The variable to print the diago
-//****************************************************************************80
+  //****************************************************************************80
+  //!
+  //! \brief print_stacktrace : Prints stack trace!
+  //! \details Wrapper function for backtrace + demangling
+  //! \jun copied from interwebs
+  //! \version
+  //!
+  //****************************************************************************80
+  /** Print a demangled stack backtrace of the caller function to FILE* out. */
+  void PrintStacktrace(FILE *out = stderr, unsigned int max_frames = 63);
 
 } //End namespace 
 

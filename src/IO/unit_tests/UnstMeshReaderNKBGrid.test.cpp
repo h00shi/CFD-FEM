@@ -1,7 +1,9 @@
 #include "IO/UnstMeshReaderNKBGrid.h"
 #include "gtest/gtest.h"
+#include "ParallelComm/Communication.h"
 TEST(UnstMeshReaderNKBGrid, ReadIn)
 {
+  Communication::Initialize();
   UnstMeshReaderNKBGrid grid_reader("Square.grid");
 
   Array2D<realT> x = grid_reader.ReadNodes();
@@ -59,5 +61,5 @@ TEST(UnstMeshReaderNKBGrid, ReadIn)
   for(intT i = 0; i < bc_face_type.get_size(0); i++){
     EXPECT_EQ(ElementTopology::face_types::FACE_BAR, bc_face_type(i));
   }
-
+  Communication::Finalize();
 }

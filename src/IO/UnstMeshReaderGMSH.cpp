@@ -70,6 +70,34 @@ void UnstMeshReaderGMSH::ReadFileASCII()
   ReadElementsASCII();
 
 }// End ReadASCII
+
+//****************************************************************************80
+void UnstMeshReaderGMSH::ReadFileBinary()
+{
+  //---> Two lines of Crap
+  SkipLine();
+  SkipLine();
+  ReadNodesBinary(read_mode::STORE);
+  SkipLine();
+  SkipLine();
+
+  //---> Read Elements
+  CountElementsBinary();
+
+  //---> Rewind file to read in element connecitivity
+  rewind(mesh_file_);
+  ReadHeader();
+  SkipLine();
+  SkipLine();
+  ReadNodesBinary(read_mode::SKIP);
+  //---> Two more lines of crap
+  SkipLine();
+  SkipLine();
+  ReadElementsBinary();
+
+  return;
+}
+
 //****************************************************************************80
 void UnstMeshReaderGMSH::ReadIdMap(const std::string& idmap_filename)
 {
@@ -151,32 +179,6 @@ void UnstMeshReaderGMSH::ReadIdMap(const std::string& idmap_filename)
   fclose(idmap_file_);
 }// End UnstMeshReaderGMSH::ReadIdMap
 
-//****************************************************************************80
-void UnstMeshReaderGMSH::ReadFileBinary()
-{
-  //---> Two lines of Crap
-  SkipLine();
-  SkipLine();
-  ReadNodesBinary(read_mode::STORE);
-  SkipLine();
-  SkipLine();
-
-  //---> Read Elements
-  CountElementsBinary();
-
-  //---> Rewind file to read in element connecitivity
-  rewind(mesh_file_);
-  ReadHeader();
-  SkipLine();
-  SkipLine();
-  ReadNodesBinary(read_mode::SKIP);
-  //---> Two more lines of crap
-  SkipLine();
-  SkipLine();
-  ReadElementsBinary();
-
-  return;
-}
 //****************************************************************************80
 Array2D<realT> UnstMeshReaderGMSH::ReadNodes()
 {
