@@ -4,7 +4,9 @@
 #include "LinearSolver/MKLDSS.h"
 #include "Mesh/CGMesh.h"
 #include "IO/UnstMeshReaderGMSH.h"
-
+#include "IO/DataStructureWriter.h"
+#include "IO/DataStructureReader.h"
+#include <fstream>
 TEST(MKLDSS, Tridiag){
   const intT N = 10;
   //---> Setup the adjacency and 
@@ -229,5 +231,18 @@ TEST(MKLDSS, Solve2D_2){
    solver.Factorize();
    solver.Solve(b, x);
 
-   std::cout << std::setprecision(16) << x << std::endl;
+//   std::cout << std::setprecision(16) << x << std::endl;
+//   std::ofstream outfile("Answer.bin", std::ios::out | std::ios::binary);
+//
+//   DataStructureWriter writer;
+//   writer.WriteList2D(outfile, DataStructureIO::IOMode::BINARY, x);
+//   outfile.close();
+   DataStructureReader ans_reader;
+   std::ifstream ansfile("Answer-Solve2D_2_MKL.bin",std::ios::binary);
+   List2D<realT> ans = ans_reader.ReadList2D<realT>(ansfile,
+                                         DataStructureReader::IOMode::BINARY);
+   for(intT i = 0; i < x.get_total_size(); i++){
+     EXPECT_DOUBLE_EQ(ans(i),x(i));
+   }
+
 }

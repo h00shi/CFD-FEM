@@ -2,6 +2,8 @@ SET(Unit_Tests
     UnstMeshWriterVTK.test
     UnstMeshReaderNKBGrid.test
     UnstMeshReaderGMSH.test
+    DataStructureWriter.test
+    DataStructureReader.test
 )
 
 FOREACH(Unit ${Unit_Tests})

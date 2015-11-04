@@ -4,17 +4,17 @@
 
 #include "my_incl.h"
 #include "consts.h"
-#include "Equation.h"
-#include "Array1D.h"
-#include "Array2D.h"
-#include "Array3D.h"
-#include "CGMesh.h"
-#include "Solution.h"
-#include "Element.h"
-#include "BarElement.h"
-#include "TriElement.h"
-#include "TetElement.h"
-#include "system_module.h"
+#include "PDE/Equation.h"
+#include "DataStructures/Array1D.h"
+#include "DataStructures/Array2D.h"
+#include "DataStructures/Array3D.h"
+#include "Mesh/CGMesh.h"
+#include "Solution/NodalField.h"
+#include "Elements/Element.h"
+#include "Elements/BarElement.h"
+#include "Elements/TriElement.h"
+#include "Elements/TetElement.h"
+#include "SystemUtils/SystemModule.h"
 
 //****************************************************************************80
 //!
@@ -28,7 +28,7 @@
 //! \tparam PDET Partial differential equation type 
 //****************************************************************************80
 template<class PDET>
-class CGResidual {
+class CGResidual : public Residual{
 
 private:
   PDET& PDE; /*!< Reference to PDE class already instantiated */

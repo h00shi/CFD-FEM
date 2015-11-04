@@ -26,7 +26,10 @@ namespace Communication {
   inline void Initialize()
   {
 #ifdef HAVE_MPI
-    MPI::Init();
+    bool flag = MPI::Is_initialized();
+    if(!flag){
+      MPI::Init();
+    }
 #endif
     return;
   }// End Communication::Initialize
@@ -39,9 +42,13 @@ namespace Communication {
 //****************************************************************************80
   inline void Finalize()
   {
-  #ifdef HAVE_MPI
-    MPI::Finalize();
-  #endif
+#ifdef HAVE_MPI
+
+    bool flag = MPI::Is_initialized();
+    if(flag){
+      MPI::Finalize();
+    }
+#endif
     return;
   }// End Communication::Finalize
 //****************************************************************************80
@@ -54,12 +61,9 @@ namespace Communication {
   inline void Abort()
   {
 #ifdef HAVE_MPI
-    int flag = static_cast<int>(true);
-    MPI_Initialized(&flag);
+    bool flag = MPI::Is_initialized();
     if (flag){
-      int my_rank;
-      MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+      MPI::COMM_WORLD.Abort(EXIT_FAILURE);
     }else{
       exit(EXIT_FAILURE);
     }
@@ -78,7 +82,13 @@ namespace Communication {
   inline intT GetCommRank()
   {
 #ifdef HAVE_MPI
-    return MPI::COMM_WORLD.Get_rank();
+    bool flag = MPI::Is_initialized();
+    if(flag){
+      return MPI::COMM_WORLD.Get_rank();
+    }
+    else{
+      return 0;
+    }
 #else
     return 0;
 #endif
@@ -90,14 +100,20 @@ namespace Communication {
 //! \version $Rev$
 //! \date $Date$
 //****************************************************************************80
- inline intT GetCommSize()
- {
+  inline intT GetCommSize()
+  {
 #ifdef HAVE_MPI
-   return MPI::COMM_WORLD.Get_size();
+    bool flag = MPI::Is_initialized();
+    if(flag){
+      return MPI::COMM_WORLD.Get_size();
+    }
+    else{
+      return 1;
+    }
 #else
-   return 1;
+    return 1;
 #endif
- }// End Communication::GetCommRank
+  }// End Communication::GetCommRank
 //****************************************************************************80
 //! \brief AllGather : Method whereby each process gathers all specified
 //!                    data from other processes

@@ -237,61 +237,62 @@ public:
 //! \param[out] DetJ \f$ Det\left(\frac{d x}{d \xi}\left(\xi_{qp}\right)\right) \f$
 //****************************************************************************80
   void ComputeJinv(const intT& qp, const Array2D<realT>& xcoeff, 
-		Array2D<realT>& Jinv, realT& DetJ)
+                   Array2D<realT>& Jinv, realT& DetJ)
   {
     //---> Local Variables
     Array2D<realT> J;
     //---> Allocate and initialize J matrix
     J.initialize(ndim_, ndim_);
     J.set_value(0.0);
-    
+
     for (intT dr = 0; dr < ndim_; dr++) { //pde_loop 
       for(intT dc = 0; dc < ndim_; dc++) {//dimension_loop
-	for(intT i = 0; i < ndof_map_; i++) { //mode_loop 
-	  J(dr,dc) += xcoeff(dc,i)*dphi_map_(qp,dr,i);
-	} // End dimension_loop
+        for(intT i = 0; i < ndof_map_; i++) { //mode_loop
+          J(dr,dc) += xcoeff(dc,i)*dphi_map_(qp,dr,i);
+        } // End dimension_loop
       } // End pde_loop
     } // mode_loop
- 
-    switch (ndim_) {// Determinant computation
-    case 1: //---> 1-D
-      DetJ = J(0,0);
-      Jinv(0,0) = 1.0/J(0,0);
-      break;
-    case 2: //---> 2-D
-      DetJ = J(0,0)*J(1,1) - J(1,0)*J(0,1);
-      //---> Row 0
-      Jinv(0,0) = J(1,1)/DetJ;
-      Jinv(0,1) = -J(0,1)/DetJ;
 
-      //---> Row 1
-      Jinv(1,0) = -J(1,0)/DetJ;
-      Jinv(1,1) = J(0,0)/DetJ;
-      break;
-    case 3:
-      DetJ = J(0,0)*(J(1,1)*J(2,2) - J(2,1)*J(1,2)) - 
-	J(0,1)*(J(1,0)*J(2,2) - J(1,2)*J(2,0)) + 
-	J(0,2)*(J(1,0)*J(2,1) - J(1,1)*J(2,0));
-            
-      //---> Row 0 
-      Jinv(0,0) = (J(1,1)*J(2,2) - J(2,1)*J(1,2))/DetJ;
-      Jinv(0,1) = (J(0,2)*J(2,1) - J(2,2)*J(0,1))/DetJ;
-      Jinv(0,2) = (J(0,1)*J(1,2) - J(1,1)*J(0,2))/DetJ;
-      
-      //---> Row 1
-      Jinv(1,0) = (J(1,2)*J(2,0) - J(2,2)*J(1,0))/DetJ;
-      Jinv(1,1) = (J(0,0)*J(2,2) - J(2,0)*J(0,2))/DetJ;
-      Jinv(1,2) = (J(0,2)*J(1,0) - J(1,2)*J(0,0))/DetJ;
-      
-      //---> Row 2
-      Jinv(2,0) = (J(1,0)*J(2,1) - J(2,0)*J(1,1))/DetJ;
-      Jinv(2,1) = (J(0,1)*J(2,0) - J(2,1)*J(0,0))/DetJ;
-      Jinv(2,2) = (J(0,0)*J(1,1) - J(1,0)*J(0,1))/DetJ;
-      
-      break;
-    default :
-      DetJ = -1.0;
-      break;
+    switch (ndim_) {// Determinant computation
+      case 1: //---> 1-D
+        DetJ = J(0,0);
+        Jinv(0,0) = 1.0/J(0,0);
+        break;
+      case 2: //---> 2-D
+        DetJ = J(0,0)*J(1,1) - J(1,0)*J(0,1);
+        //---> Row 0
+        Jinv(0,0) = J(1,1)/DetJ;
+        Jinv(0,1) = -J(0,1)/DetJ;
+
+        //---> Row 1
+        Jinv(1,0) = -J(1,0)/DetJ;
+        Jinv(1,1) = J(0,0)/DetJ;
+        break;
+      case 3:
+        DetJ =
+            J(0,0)*(J(1,1)*J(2,2) - J(2,1)*J(1,2)) -
+            J(0,1)*(J(1,0)*J(2,2) - J(1,2)*J(2,0)) +
+            J(0,2)*(J(1,0)*J(2,1) - J(1,1)*J(2,0));
+
+        //---> Row 0
+        Jinv(0,0) = (J(1,1)*J(2,2) - J(2,1)*J(1,2))/DetJ;
+        Jinv(0,1) = (J(0,2)*J(2,1) - J(2,2)*J(0,1))/DetJ;
+        Jinv(0,2) = (J(0,1)*J(1,2) - J(1,1)*J(0,2))/DetJ;
+
+        //---> Row 1
+        Jinv(1,0) = (J(1,2)*J(2,0) - J(2,2)*J(1,0))/DetJ;
+        Jinv(1,1) = (J(0,0)*J(2,2) - J(2,0)*J(0,2))/DetJ;
+        Jinv(1,2) = (J(0,2)*J(1,0) - J(1,2)*J(0,0))/DetJ;
+
+        //---> Row 2
+        Jinv(2,0) = (J(1,0)*J(2,1) - J(2,0)*J(1,1))/DetJ;
+        Jinv(2,1) = (J(0,1)*J(2,0) - J(2,1)*J(0,0))/DetJ;
+        Jinv(2,2) = (J(0,0)*J(1,1) - J(1,0)*J(0,1))/DetJ;
+
+        break;
+      default :
+        DetJ = -1.0;
+        break;
     }// End Determinant computation
 
     return;

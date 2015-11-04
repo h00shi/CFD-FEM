@@ -37,7 +37,7 @@ BarElement::BarElement() : Element::Element()
   mode2p_map(10) = 10;
     
   /* Initialize the array that keeps track of how many points required to 
-     integrate a polynomail of degree ( ) */
+     integrate a polynomial of degree ( ) */
   p2nqp.initialize(22);
     
   p2nqp(0) = 1;
@@ -95,7 +95,7 @@ realT BarElement::BarH1(const intT& k, const realT& xi)
   case  0: // User is asking for mode 0
     l = L0;
     break;
-  case 1: // Unser is asking for mode 1
+  case 1: // User is asking for mode 1
     l = L1;
     break;
   default: // User is asking for mode > 1
@@ -106,7 +106,7 @@ realT BarElement::BarH1(const intT& k, const realT& xi)
     break;
   }// end func_select
   
-  //---> Resturn result of fuction 
+  //---> Return result of function
   return(l);
   
 } // End BarH1
@@ -137,7 +137,7 @@ realT BarElement::BarH1D(const intT& k, const realT& xi)
   case  0: // User is asking for mode 0
     dl = dL0dxi;
     break;
-  case 1: // Unser is asking for mode 1
+  case 1: // User is asking for mode 1
     dl = dL1dxi;
     break;
   default: // User is asking for mode > 1
@@ -148,7 +148,7 @@ realT BarElement::BarH1D(const intT& k, const realT& xi)
     //dL0dxi*L1*psi + L0*dL1dxi*psi + half*L1*dpsi;
   }
   
-  //---> Return the derivate to user
+  //---> Return the derivative to user
   return(dl);
 }// end BarH1D
 
@@ -156,7 +156,7 @@ realT BarElement::BarH1D(const intT& k, const realT& xi)
 void BarElement::BarGaussPoints(const intT& n, Array2D<realT>& xiq,
 				Array1D<realT>& wq)
 {
-  //---> Use a switch case block to tablulate the gauss points
+  //---> Use a switch case block to tabulate the Gauss points
   switch (n) { // gauss_point_select
   case 1:
     //---> Points

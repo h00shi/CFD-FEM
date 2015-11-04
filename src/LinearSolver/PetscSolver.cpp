@@ -42,7 +42,7 @@ bool PetscSolver::Factorize()
    MatAssemblyBegin(Amat_, MAT_FINAL_ASSEMBLY);
    MatAssemblyEnd(Amat_, MAT_FINAL_ASSEMBLY);
 
-  MatView(Amat_, PETSC_VIEWER_STDOUT_WORLD);
+   //MatView(Amat_, PETSC_VIEWER_STDOUT_WORLD);
 
 #endif
 

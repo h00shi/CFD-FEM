@@ -8,7 +8,8 @@
 #include "LinearSolver/PetscSolver.h"
 #include "Mesh/CGMesh.h"
 #include "IO/UnstMeshReaderGMSH.h"
-
+#include "IO/DataStructureReader.h"
+#include <fstream>
 TEST(PetscSolver, Tridiag){
   Communication::Initialize();
   const intT N = 10;
@@ -200,50 +201,57 @@ TEST(PetscSolver, Solve2D_2){
   CGMesh grid(reader);
   intT nnode = grid.get_MeshGeom().get_nnode();
 
-   Array1D<int> nvar(nnode);
-   nvar.set_value(1);
+  Array1D<int> nvar(nnode);
+  nvar.set_value(1);
 
-   //---> MulticolorGS requires a MatrixBSR object reference
-   CSRMatrix<double> csr(grid.get_Graph(), nvar );
+  //---> MulticolorGS requires a MatrixBSR object reference
+  CSRMatrix<double> csr(grid.get_Graph(), nvar );
 
-   PetscSolver solver(csr,100);
+  PetscSolver solver(csr,100);
 
-   List2D<double> x(nvar);
-   List2D<double> b(nvar);
+  List2D<double> x(nvar);
+  List2D<double> b(nvar);
 
-   // Set x and b columns
-   for (int i = 0; i < nnode; i++){
-      b.set_ncol(i,1);
-   }
+  // Set x and b columns
+  for (int i = 0; i < nnode; i++){
+    b.set_ncol(i,1);
+  }
 
-   for(intT i = 0; i < nnode; i++){
-      x.set_ncol(i,1);
-   }
+  for(intT i = 0; i < nnode; i++){
+    x.set_ncol(i,1);
+  }
 
-   x.set_value(0.0);
-   b.set_value(0.0);
+  x.set_value(0.0);
+  b.set_value(0.0);
 
-   for(intT f = 0; f < grid.get_MeshBcFaces().get_nbc_face(); f++)
-   {
-     intT n1 = grid.get_MeshBcFaces().get_bc_face2node()(f,0);
-     intT n2 = grid.get_MeshBcFaces().get_bc_face2node()(f,1);
-     b(n1,0) -= 2.0;
-     b(n2,0) -= 2.0;
-   }
+  for(intT f = 0; f < grid.get_MeshBcFaces().get_nbc_face(); f++)
+  {
+    intT n1 = grid.get_MeshBcFaces().get_bc_face2node()(f,0);
+    intT n2 = grid.get_MeshBcFaces().get_bc_face2node()(f,1);
+    b(n1,0) -= 2.0;
+    b(n2,0) -= 2.0;
+  }
 
-   for (intT i = 0; i < grid.get_Graph().get_nnode(); i++){
-     for(intT j = grid.get_Graph().NeighborBegin(i);
-         j < grid.get_Graph().NeighborEnd(i); j++){
-       csr(i,j,0,0) = 1.0;
-     }
-     csr.Diagonal(i,0,0) = -8.0;
-   }
+  for (intT i = 0; i < grid.get_Graph().get_nnode(); i++){
+    for(intT j = grid.get_Graph().NeighborBegin(i);
+        j < grid.get_Graph().NeighborEnd(i); j++){
+      csr(i,j,0,0) = 1.0;
+    }
+    csr.Diagonal(i,0,0) = -8.0;
+  }
 
-   //---> Factorize the matrix;
-   solver.Factorize();
-   solver.Solve(b, x);
-   solver.DestroyPetscObjects();
+  //---> Factorize the matrix;
+  solver.Factorize();
+  solver.Solve(b, x);
+  solver.DestroyPetscObjects();
 
+  DataStructureReader ans_reader;
+  std::ifstream ansfile("Answer-Solve2D_2_MKL.bin",std::ios::binary);
+  List2D<realT> ans = ans_reader.ReadList2D<realT>(ansfile,
+                                        DataStructureReader::IOMode::BINARY);
+  for(intT i = 0; i < x.get_total_size(); i++){
+    EXPECT_DOUBLE_EQ(ans(i),x(i));
+  }
   //---> Finalize the MPI communicator
-   Communication::Finalize();
+  Communication::Finalize();
 }
