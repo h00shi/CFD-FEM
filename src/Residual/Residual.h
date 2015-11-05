@@ -33,7 +33,7 @@ public:
 //! \version $Rev$
 //! \date $Date$
 //****************************************************************************80
-  virtual ~Residual() = 0;
+  virtual ~Residual(){}
 
 //****************************************************************************80
 //! \brief Abstract interface for computing a residual
@@ -43,7 +43,8 @@ public:
 //! \date $Date$
 //! \param[out] resid Residual argument
 //****************************************************************************80
-  virtual void ComputeResidual(List2D<realT>& resid) = 0;
+  virtual void ComputeResidual(NodalField& soln_field,
+                               NodalField& resid_field) = 0;
 
 //****************************************************************************80
 //! \brief Abstract interface for computing a residual and jacobian matrix
@@ -54,9 +55,8 @@ public:
 //! \param[out] resid Residual argument
 //! \param[out] jac Jacobian matrix
 //****************************************************************************80
-  template<class MatrixType>
-  virtual void ComputeResidualJacobian(List2D<realT>& resid,
-                                       MatrixType& jac) = 0;
+//  template<class MatrixType>
+//  virtual void ComputeResidualJacobian(MatrixType& jac) = 0;
 //****************************************************************************80
 //! \brief Abstract interface for computing a residual and jacobian matrix
 //! \details
@@ -66,10 +66,11 @@ public:
 //! \param[out] v Vector to multiply by jacobian matrix
 //! \param[out] Jv Jacobian times vector result
 //****************************************************************************80
-  virtual void ComputeJacobianVectorProduct(List2D<realT>& v,
-                                            List2D<realT>& Jv) = 0;
+ // virtual void ComputeJacobianVectorProduct(List2D<realT>& v) = 0;
 
 private:
+
+
 
 };
 

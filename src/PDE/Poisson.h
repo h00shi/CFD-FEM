@@ -21,10 +21,9 @@ class Poisson {
 
 private:
 //++++++++++++++++++++++++++++++++ PRIVATE STUFF +++++++++++++++++++++++++++++++
-
   
 public:
-static const intT nfld = 1;
+static const intT nfld_ = 1;
 //****************************************************************************80
 //!
 //! \brief Poisson : The constructor for this class
@@ -54,11 +53,11 @@ static const intT nfld = 1;
   } // End ~Poisson 
 
   template<class qtype>
-  void CalcAccumulation(const Array1D<qtype>& q,
+  inline void CalcAccumulation(const Array1D<qtype>& q,
                         const qtype& Vr,
                         Array1D<qtype>& accum)
   {
-    for (intT f = 0; f < Poisson::nfld; f++){// Field_Loop
+    for (intT f = 0; f < Poisson::nfld_; f++){// Field_Loop
       accum(f) = q(f)*Vr;
     }
   }
@@ -77,7 +76,7 @@ static const intT nfld = 1;
 //! \param[out] flux The flux flux vector
 //****************************************************************************80
   template<class qtype>
-  void CalcNormFlux(const intT ndim,
+  inline void CalcNormFlux(const intT ndim,
                     const Array1D<realT>& norm,
                     const Array1D<realT>& c,
                     const Array2D<realT>& D,

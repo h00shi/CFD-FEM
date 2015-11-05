@@ -12,10 +12,10 @@
 TEST(Poisson,OneD)
 {
  Poisson poisson_equation;
- Array1D<realT> q(Poisson::nfld);
- Array2D<realT> dq(Poisson::nfld,1);
- Array1D<realT> flux(Poisson::nfld);
- Array1D<realT> accum(Poisson::nfld);
+ Array1D<realT> q(Poisson::nfld_);
+ Array2D<realT> dq(Poisson::nfld_,1);
+ Array1D<realT> flux(Poisson::nfld_);
+ Array1D<realT> accum(Poisson::nfld_);
  Array2D<realT> D(1,1);
  Array1D<realT> c(1);
  Array1D<realT> norm(1);

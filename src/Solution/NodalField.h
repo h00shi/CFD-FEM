@@ -89,6 +89,32 @@ public:
       data(i) = MeshField::data_(data_index_(n)+i);
     }
   }
+
+//****************************************************************************80
+//! \brief Provides the beginning pointer to node data
+//! \nick
+//! \version $Rev$
+//! \date $Date$
+//! \param[in] n The node that begins the data you want
+//! \return Pointer to data beginning at node n
+//****************************************************************************80
+  inline realT* NodeDataBegin(const intT& n)
+  {
+    return MeshField::data_.get_ptr(data_index_(n));
+  }
+//****************************************************************************80
+//! \brief Provides the beginning pointer to node data const version.
+//! \nick
+//! \version $Rev$
+//! \date $Date$
+//! \param[in] n The node that begins the data you want
+//! \return Pointer to data beginning at node n
+//****************************************************************************80
+  inline const realT* NodeDataBegin(const intT& n) const
+  {
+    return MeshField::data_.get_ptr(data_index_(n));
+  }
+
 //****************************************************************************80
 //! \brief Provides the data as an Array1D for an element of freedom of
 //!        the mesh.

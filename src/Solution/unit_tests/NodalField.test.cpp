@@ -86,5 +86,7 @@ TEST(NodalField, Access2)
       }
     }
   }
-
+ //---> Pointer check
+ EXPECT_DOUBLE_EQ(sol_field.NodeDataBegin(10)[0], 0.0);
+ EXPECT_DOUBLE_EQ(sol_field.NodeDataBegin(10)[1], 10.0);
 }
