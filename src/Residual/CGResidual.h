@@ -44,8 +44,8 @@ public:
 //! \param[in] soln_ref The reference to the soln class
 //****************************************************************************80
   CGResidual(PDET & PDE_ref, CGMesh& grid_ref, intT psoln, intT pmap,
-             intT pquad) :
-      PDE_(PDE_ref), grid_(grid_ref)
+             intT pquad, const Array1D<intT>& nvar) :
+      PDE_(PDE_ref), grid_(grid_ref), mesh_field_(grid_ref, nvar)
   {
 
     //---> Instantiate Elements
@@ -69,14 +69,25 @@ public:
 //! \date $Date$
 
 //****************************************************************************80
-  void ComputeResidual(NodalField& soln_field, NodalField& resid_field)
+  void ComputeResidual(List2D<realT>& state, List2D<realT>& resid_field)
   {
+    mesh_field_.set_Data(&state);
+
     Array2D<realT> qhat(3,PDET::nfld_);
+
     for(intT e = 0; e < grid_.get_MeshElements().get_nelement(); e++){
       ElementTopology::element_types etype;
       etype = grid_.get_MeshElements().get_element_type()(e);
 
-      soln_field.ElementData(e,qhat);
+      switch (etype){
+        case ElementTopology::element_types::BAR:
+     //     element->
+          break;
+        case ElementTopology::element_types::TRI:
+          break;
+        case ElementTopology::element_types::TET:
+          break;
+      }
 
 
 
@@ -105,7 +116,7 @@ private:
   PDET& PDE_; /*!< Reference to PDE class already instantiated */
   CGMesh& grid_; /*!< Reference to grid class already
         instantiated. */
-
+  NodalField mesh_field_;
 //****************************************************************************80
 //!
 //! \brief  Solver : Default constructor

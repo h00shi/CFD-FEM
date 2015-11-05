@@ -43,8 +43,8 @@ public:
 //! \date $Date$
 //! \param[out] resid Residual argument
 //****************************************************************************80
-  virtual void ComputeResidual(NodalField& soln_field,
-                               NodalField& resid_field) = 0;
+  virtual void ComputeResidual(List2D<realT>& state,
+                               List2D<realT>& resid) = 0;
 
 //****************************************************************************80
 //! \brief Abstract interface for computing a residual and jacobian matrix

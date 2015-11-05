@@ -24,8 +24,8 @@ TEST(NodalField, Access)
       sol_field(n,0) = (realT)n;
   }
 
-  EXPECT_EQ(nnode, sol_field.get_Data().get_size(0));
-  EXPECT_EQ(nnode+1, sol_field.get_DataIndex().get_size(0));
+ // EXPECT_EQ(nnode, sol_field.get_Data().get_size(0));
+//  EXPECT_EQ(nnode+1, sol_field.get_DataIndex().get_size(0));
 
   for(intT n = 0; n < nnode; n++){
     EXPECT_DOUBLE_EQ((realT)n, sol_field(n,0));
@@ -65,8 +65,8 @@ TEST(NodalField, Access2)
     }
   }
 
-  EXPECT_EQ((nnode-2)*5 + 6 + 10, sol_field.get_Data().get_size(0));
-  EXPECT_EQ(nnode+1, sol_field.get_DataIndex().get_size(0));
+  //EXPECT_EQ((nnode-2)*5 + 6 + 10, sol_field.get_Data().get_size(0));
+ // EXPECT_EQ(nnode+1, sol_field.get_DataIndex().get_size(0));
 
   for(intT n = 0; n < nnode; n++){
     for(intT f = 0; f < sol_field.get_Nvar()(n); f++) {

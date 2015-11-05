@@ -18,6 +18,6 @@ TEST(CGResidual, Construction)
 
   NodalField soln_field(mesh,nvar);
   NodalField resid_field(mesh,nvar);
-  CGResidual<Poisson> cg_resid(poisson_pde, mesh, 1, 1, 2);
+  CGResidual<Poisson> cg_resid(poisson_pde, mesh, 1, 1, 2, nvar);
 
 }

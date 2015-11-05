@@ -8,7 +8,7 @@
 #ifndef MESHFIELD_H_
 #define MESHFIELD_H_
 #include "my_incl.h"
-#include "DataStructures/Array1D.h"
+#include "DataStructures/List2D.h"
 //****************************************************************************80
 //! \brief An abstract class of a field that exists on a mesh.
 //! \nick
@@ -34,19 +34,12 @@ public:
 //****************************************************************************80
   virtual ~MeshField()=0;
 
-  inline Array1D<realT>& get_Data() {return data_;}
-  inline const Array1D<realT>& get_Data()const{return data_;}
+  inline void set_Data(List2D<realT>* data){data_ = data;};
+  inline List2D<realT>& get_Data() {return *data_;}
+  inline const List2D<realT>& get_Data()const{return *data_;}
 
 protected:
-  Array1D<realT> data_;//!< Array1D representing all data in the field over
-  //****************************************************************************80
-  //! \brief Method for initializing the class...allows use of default
-  //!        constructor in children.
-  //! \nick
-  //! \version $Rev$
-  //! \date $Date$
-  //****************************************************************************80
-  void Initialize(const intT field_size);
+  List2D<realT>* data_;//!< Array1D representing all data in the field over
 
   MeshField();
 private:
