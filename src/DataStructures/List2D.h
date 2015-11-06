@@ -15,7 +15,7 @@
 #include "DataStructures/Array1D.h"
 #include <sstream>
 template <class dataT>
-class List2D
+class List2D : public Array1D<dataT>
 {
   //+++++++++++++++++++++++++++++++ PUBLIC STUFF +++++++++++++++++++++++++++++++
 public:
@@ -28,11 +28,10 @@ public:
 //!
 //****************************************************************************80
   List2D(){
-    mem = 0.0;
-    size1 = 0;
-    size = 0;
-    index = NULL;
-    data  = NULL;
+    size1_ = 0;
+    size_ = 0;
+    index_ = nullptr;
+    mem_ = 0.0;
   } // End List2D
 
 //****************************************************************************80
@@ -46,8 +45,6 @@ public:
 //****************************************************************************80
   List2D(intT nrow, intT n): List2D(){
     this->initialize(nrow,n);
-
-
   } // End List2D
 
 //****************************************************************************80
@@ -69,21 +66,19 @@ public:
 //! \nick
 //! \param[in] other - rvalue reference that we are "moving" data from
 //****************************************************************************80
-  List2D(List2D<dataT>&& other)
+  List2D(List2D<dataT>&& other) : Array1D<dataT>(std::move(other))
   {
     //--->pilfer other's resource
-    size1 = other.size1;
-    size  = other.size;
-    index = other.index;
-    data  = other.data;
-    mem   = other.mem;
+    size1_ = other.size1_;
+    size_  = other.size_;
+    index_ = other.index_;
+    mem_ = other.mem_;
 
     //--->reset other
-    other.size1 = 0;
-    other.size  = 0;
-    other.mem   = 0.0;
-    other.index = NULL;
-    other.data  = NULL;
+    other.size1_ = 0;
+    other.size_  = 0;
+    other.index_ = NULL;
+    other.mem_ = 0.0;
   }
 
 //****************************************************************************80
@@ -96,25 +91,18 @@ public:
 //****************************************************************************80
   List2D<dataT>& operator=(List2D<dataT>&& other)
   {
-    //--->release the current object's resources
-    //--> Delete pointer to data
-    if (index !=NULL)  delete[] index;
-    if (data != NULL)  delete[] data;
-
+    Array1D<dataT>::operator=(std::move(other));
     //--->pilfer other's resource
-    size1 = other.size1;
-    size  = other.size;
-    index = other.index;
-    data  = other.data;
-    mem   = other.mem;
+    size1_ = other.size1_;
+    size_  = other.size_;
+    index_ = other.index_;
+    mem_ = other.mem_;
 
     //--->reset other
-    other.size1 = 0;
-    other.size  = 0;
-    other.mem   = 0.0;
-    other.index = NULL;
-    other.data  = NULL;
-
+    other.size1_ = 0;
+    other.size_  = 0;
+    other.index_ = nullptr;
+    other.mem_ = 0.0;
     return *this;
   }
 
@@ -128,16 +116,15 @@ public:
 //****************************************************************************80
   ~List2D(){
     //---> Delete pointer to data if it exists
-    if(index !=NULL) delete[] index;
-    if(data != NULL) delete[] data;
+    if(index_ !=NULL) delete[] index_;
 
     //---> Reset data pointer to NULL
-    index = NULL;
-    data = NULL;
+    index_ = NULL;
+
     //---> Reset the size variable
-    size1 = 0;
-    size = 0;
-    mem = 0.0;
+    size1_ = 0;
+    size_ = 0;
+    mem_ = 0.0;
   } // End ~List2D
 //****************************************************************************80
 //!
@@ -150,11 +137,11 @@ public:
   template <class otherT>
   inline void initialize_copy_pattern(const List2D<otherT>& other)
   {
-    if (this->index == NULL && this->size1 == 0){
+    if (this->index_ == NULL && this->size1_ == 0){
       //---> Call the initialize function
       this->initialize(other.get_lead_size(), other.get_total_size());
       //---> Set the number of columns to be the same
-      for(intT i = 0; i < size1; i++) {this->set_ncol(i,other.get_ncol(i));}
+      for(intT i = 0; i < size1_; i++) {this->set_ncol(i,other.get_ncol(i));}
     }
     
     else {
@@ -162,10 +149,10 @@ public:
                 << "Attemping to initalize and copy pattern for a List2D "
 		<< "that has already been intialized.  List2D data follows."
 		<< std::endl 
-                << "This List2D, nrow: " << size1 << " nnz: " << size 
+                << "This List2D, nrow: " << size1_ << " nnz: " << size_
 		<< std::endl
-		<< "Attemping to pattern from List2D, nrow: " << size1 
-		<< " nnz: " << size << std::endl;
+		<< "Attemping to pattern from List2D, nrow: " << size1_
+		<< " nnz: " << size_ << std::endl;
       SystemModule::my_exit();
       
     }
@@ -185,30 +172,20 @@ public:
   inline void initialize(intT nrow, intT n){
     /*-->only perform index initialization if the index is null
     and input row request is positive*/
-    if (index == NULL && nrow > 0){
+    if (index_ == NULL && nrow > 0){
       //---> Set the size
-      size1 = nrow;
+      size1_ = nrow;
+      size_ = n;
       //---> Allocate
-      mem += SystemModule::alloc_mem< int, int, double>(index, size1 + 1);
+      mem_ = SystemModule::alloc_mem< int, int, double>(index_, size1_ + 1);
       //---> Set up columns of each row to be zero
-      index[0] = 0;
-      for(intT i = 0; i < size1; i++){
-        index[i + 1] = index[i] + 0;
+      index_[0] = 0;
+      for(intT i = 0; i < size1_; i++){
+        index_[i + 1] = index_[i] + 0;
       }
     }// end check input sizes
 
-    /*-->only perform data initialization if the data is null
-    and input total size request is positive*/
-    if (data  == NULL && n > 0) {
-      //---> Set the size
-      size = n;
-      //---> Allocate
-      mem += SystemModule::alloc_mem< dataT, int, double>(data, size);
-      //---> Loop over data and set the value to zero;
-      for( intT i = 0; i < size; i++) {// init_loop
-        data[i] = (dataT) 0;
-      }// end init_loop
-    }// end check input sizes
+    Array1D<dataT>::initialize(size_);
   } // End initialize
 
 //****************************************************************************80
@@ -230,21 +207,6 @@ public:
   }// End List2D
 
 //****************************************************************************80
-//!
-//! \brief set_value : Sets the whole array to a value
-//! \details
-//! \nick
-//! \version $Rev: 5 $
-//! \param[in] val The value you want to set the whole array to
-//****************************************************************************80
-  inline void set_value(const dataT& val)
-  {
-    for(intT i = 0; i < size; i++) {// set_loop
-      data[i] = val;
-    }// End set_loop
-  }// End set_value
-
-//****************************************************************************80
 //! \brief setup_ncol : Set number of columns and create index array for row
 //! \details NOTE: must be called in lexigraphical order!
 //!                JKU - i think this function is scary.
@@ -258,7 +220,7 @@ public:
     this->CheckSizeIndex(row);
 #endif
 
-    index[row + 1] = index[row] + nc;
+    index_[row + 1] = index_[row] + nc;
   } // end set_ncol
 
 //****************************************************************************80
@@ -275,33 +237,33 @@ public:
   {
 #ifdef DEV_DEBUG
     //debug check - checking if size(Array1D) == nrow
-    if(ncol.get_size(0) != size1){
+    if(ncol.get_size(0) != size1_){
       std::cerr << "In List2D.h - "
                 << "ERROR: Mismatch of num rows and num of col specification."
-                << "\n Number of rows: "<< size1
+                << "\n Number of rows: "<< size1_
                 << "\n Number of ncol specs: " << ncol.get_size(0)
                 << std::endl;
       SystemModule::my_exit();
     }
 #endif
 
-    if(size1 > 0) {//check if we have columns
+    if(size1_ > 0) {//check if we have columns
       //setup index array based on ncol input
-      index[0] = 0;
-      for(intT irow = 0; irow < size1; irow++){
+      index_[0] = 0;
+      for(intT irow = 0; irow < size1_; irow++){
         //---> Index;
-        index[irow+1] = index[irow] + ncol(irow);
+        index_[irow+1] = index_[irow] + ncol(irow);
       }
 
 #ifdef DEV_DEBUG
       //debug check - checking if total num of entries <= entire size of List
-      intT targetSize = index[size1] - index[0];
+      intT targetSize = index_[size1_] - index_[0];
 
-      if(targetSize > size){
+      if(targetSize > size_){
         std::cerr << "In List2D.h - "
                   << "ERROR: Requesting too many elements."
                   << "\n Target total size of requested columns: " << targetSize
-                  << "\n Preallocated total size: " << size << std::endl;
+                  << "\n Preallocated total size: " << size_ << std::endl;
         SystemModule::my_exit();
       }
 #endif
@@ -322,7 +284,7 @@ public:
     this->CheckSizeIndex(row);
 #endif
 
-    return( index[row + 1] - index[row] );
+    return( index_[row + 1] - index_[row] );
   }// end get_ncol
 
 //****************************************************************************80
@@ -341,12 +303,12 @@ public:
 #endif
 
     //---> The return of this operator is the ith reference of data pointer
-    return (data[index[i] + j]);
+    return Array1D<dataT>::operator()(index_[i] + j);
   }
 
 //****************************************************************************80
 //!
-//! \brief () : Parenthesis operator for acessing array
+//! \brief () : Parenthesis operator for accessing array
 //! \details
 //! \nick
 //! \version $Rev: 5 $
@@ -360,7 +322,7 @@ public:
 #endif
 
     //---> The return of this operator is the ith reference of data pointer
-    return (data[index[i] + j]);
+    return Array1D<dataT>::operator()(index_[i] + j);
   } // End
 
 //****************************************************************************80
@@ -369,32 +331,33 @@ public:
 //! \details
 //! \nick
 //! \version $Rev: 5 $
-//! \param[in] i First index of the array you want to access with parenthesis
-//! \param[in] j Second index of the array you want to access with parenthesis
+//! \param[in] i The index of the array you want to acess with parenthesis
 //****************************************************************************80
   inline const dataT& operator () (intT i) const
   {
+
 #ifdef DEV_DEBUG
     this->CheckSize(i);
 #endif
 
     //---> The return of this operator is the ith reference of data pointer
-    return (data[i]);
-  }
+    return Array1D<dataT>::operator()(i);
+  } // End ()
 
 //****************************************************************************80
 //!
-//! \brief () : Parenthesis operator for accessing array with a single value
-//! \details  This accessor treats the List2D object as a 1D array.
+//! \brief () : Parenthesis operator for acessing array
+//! \details
 //! \nick
-//! \version
-//! \param[in] i Index of the array you want to access with parenthesis
+//! \version $Rev: 5 $
+//! \param[in] i The index of the array you want to acess with parenthesis
 //****************************************************************************80
   inline dataT& operator () (intT i)
   {
     //calls constant version of operator (i)
-    return const_cast<dataT&>(static_cast<const List2D &>(*this).operator()(i));
-  } // End
+    return const_cast<dataT&>(static_cast<const List2D&>(*this).
+                              operator()(i));
+  } // End ()
 
 //****************************************************************************80
 //!
@@ -405,7 +368,7 @@ public:
 //****************************************************************************80
   inline intT get_lead_size( ) const
   {
-    return((int)size1);
+    return((int)size1_);
   }// End get_lead_size
 
 //****************************************************************************80
@@ -417,7 +380,7 @@ public:
 //****************************************************************************80
   inline intT get_total_size( ) const
   {
-    return((int)size);
+    return((int)size_);
   }// End get_lead_size
 
 //****************************************************************************80
@@ -433,7 +396,7 @@ public:
   {
     /*---> Return the amount of memory used to store pointer data* to user.
       Remember we stored this in variable mem at allocation */
-    return(mem);
+    return(Array1D<dataT>::mem_ + mem_);
   } // End get_mem
 
 //****************************************************************************80
@@ -449,7 +412,7 @@ public:
   friend std::ostream& operator << (std::ostream& os, const List2D<dataT>& a)
   {
     //---> Write the data to ostream object
-    for (intT i = 0; i < a.size1; i++) {
+    for (intT i = 0; i < a.size1_; i++) {
       os << i << ": ";
       for (intT j = 0; j < a.get_ncol(i); j++){
         os << a(i,j) << " ";
@@ -473,7 +436,7 @@ public:
 #ifdef DEV_DEBUG
     this->CheckBounds(i,j);
 #endif
-    return(data + index[i] + j);
+    return Array1D<dataT>::get_ptr(index_[i] + j);
   }// End get_ptr
 
 //****************************************************************************80
@@ -491,43 +454,42 @@ public:
 #   ifdef DEV_DEBUG
     this->CheckBounds(i,j);
 #endif
-    return(data + index[i] + j);
+    return Array1D<dataT>::get_ptr(index_[i] + j);
     
   }// End get_ptr
-
 //****************************************************************************80
 //!
-//! \brief get_ptr : Allow access to pointer at specified address
+//! \brief get_ptr : Allow access to pointer at specified single address
 //! \details Constant correct version
 //! \nick
 //! \version
-//! \param[in] i The global address you want to access
+//! \param[in] i The address you want to access
 //****************************************************************************80
   inline dataT const * get_ptr(const intT& i) const
   {
 #ifdef DEV_DEBUG
     this->CheckSize(i);
 #endif
-    return (data + i);
+    return Array1D<dataT>::get_ptr(i);
   }// End get_ptr
 
 //****************************************************************************80
 //!
-//! \brief get_ptr : Allow acess to pointer at specified address
+//! \brief get_ptr : Allow access to pointer at specified single address
 //! \details
 //! \nick
 //! \version $Rev: 5 $
-//! \param[in] i The global address you want to access
+//! \param[in] i The address you want to access
 //****************************************************************************80
   inline dataT* get_ptr(const intT& i)
   {
-#ifdef DEV_DEBUG
+
+#   ifdef DEV_DEBUG
     this->CheckSize(i);
 #endif
-    return(data + i);
-    
-  }// End get_ptr
+    return Array1D<dataT>::get_ptr(i);
 
+  }// End get_ptr
 //****************************************************************************80
 //! \brief get_index_ptr : Returns the pointer to the indexing array
 //! \details
@@ -540,7 +502,7 @@ public:
 #ifdef DEV_DEBUG
     this->CheckSizeIndex(i);
 #endif
-    return(index + i);
+    return(index_ + i);
   }
 
 //****************************************************************************80
@@ -569,53 +531,8 @@ public:
 #ifdef DEV_DEBUG
     this->CheckBounds(i,j);
 #endif
-    return( index[i] + j );
+    return( index_[i] + j );
   }
-
-//****************************************************************************80
-//! \brief begin : Returns pointer to start of the list
-//! \nick
-//****************************************************************************80
-  inline dataT* begin()
-  {
-    return(data);
-  }// End begin
-
-//****************************************************************************80
-//! \brief begin : Returns pointer to start of a row of the list
-//! \nick
-//****************************************************************************80
-  inline dataT const * begin() const
-  {
-    return(data);
-  }// End begin
-
-//****************************************************************************80
-//! \brief end : Returns pointer to end of a row of the list
-//! \nick
-//****************************************************************************80
-  inline dataT* end()
-  {
-    if(index !=NULL){
-      return(data + index[size1]);
-    }else{
-      return(data);
-    }
-  }// End end
-
-//****************************************************************************80
-//!
-//! \brief end : Returns pointer to end of a row of the list
-//! \nick
-//****************************************************************************80
-  inline dataT const * end() const
-  {
-    if(index !=NULL){
-      return(data + index[size1]);
-    }else{
-      return(data);
-    }
-  }// End end
 
 //****************************************************************************80
 //! \brief RowBegin() : The index that begins a row; 
@@ -628,7 +545,7 @@ public:
 //****************************************************************************80
   inline intT RowBegin(const intT& i) 
   {
-      return index[i];
+      return index_[i];
   }// End RowBegin 
 
 //****************************************************************************80
@@ -642,7 +559,7 @@ public:
 //****************************************************************************80
   inline intT RowEnd(const intT& i) 
   {
-      return index[i+1];
+      return index_[i+1];
   }// End RowEnd
  
 //****************************************************************************80
@@ -668,12 +585,10 @@ public:
   }
 private:
   //+++++++++++++++++++++++++++++++ PRIVATE STUFF ++++++++++++++++++++++++++++++
-  intT size1; /*!< Size of the leading dimension of the list */
-  intT size; /*!< Total size of the array */
-  int* index; /*!< Index pointer that allows for addressing 2D */
-  dataT* data; /*!< Data pointer */
-  double mem; /*!< Amount of memory in megabytes specified for the array */
-
+  intT size1_; /*!< Size of the leading dimension of the list */
+  intT size_; /*!< Total size of the array */
+  intT* index_; /*!< Index pointer that allows for addressing 2D */
+  realT mem_;
 //****************************************************************************80
 //! \brief List2D : Copy constructor...private so it can't be called, which
 //!                  blocks copy construction of this class.
@@ -681,7 +596,7 @@ private:
 //!      type defined by the class.  In this case List2D is the class.
 //!      It then seeks to define operators for constructing a new instance
 //!      using the old one.  We are purposely blocking this capability by
-//!      intersting this function as a private functions with NO CODE.
+//!      defining this function as a private function with NO CODE.
 //!
 //!      NOTE: Just because this function does nothing does not make it
 //!      acceptable to omit the documentation and clear detailed commentary.
@@ -719,10 +634,10 @@ private:
 //! \param[in] i - 1D access index
 //****************************************************************************80
   void CheckSize(intT i) const{
-    if(i >= size){
+    if(i >= size_){
       std::cerr << "ERROR: In List2D.h - "
                 << "Attempting to access index "<< i
-                << ".   Number of entries is " << size << std::endl;
+                << ".   Number of entries is " << size_ << std::endl;
       SystemModule::my_exit();
     }
   }// End CheckSize
@@ -736,17 +651,17 @@ private:
 //! \param[in] i - i index
 //****************************************************************************80
   void CheckBounds(intT i, intT j) const{
-    if(i >= size1){
+    if(i >= size1_){
       std::cerr << "ERROR: In List2D.h - Over bounds on 1st index. "
 		<< "Acessing List2D::("<< i <<","<< j <<"). Size is "
-		<< "is " << size1 << ","<< get_ncol(i) << std::endl;
+		<< "is " << size1_ << ","<< get_ncol(i) << std::endl;
       SystemModule::my_exit();
       
     }
     if( j >= get_ncol(i) ) {
       std::cerr << "ERROR: In List2D.h - Over bounds on 2nd index. "
 		<< "Acessing List2D::("<< i <<","<< j <<"). Size is "
-		<< "is " << size1 << ","<< get_ncol(i) << std::endl;
+		<< "is " << size1_ << ","<< get_ncol(i) << std::endl;
       SystemModule::my_exit();
     }
   }// End CheckBounds
@@ -762,10 +677,10 @@ private:
 //! \param[in] ix - 1D access index
 //****************************************************************************80
   void CheckSizeIndex(intT i) const{
-    if(i >= size1 ){
+    if(i >= size1_ ){
       std::cerr << "ERROR: In List2D.h - "
                 << "Attempting to access index "<< i
-                << ".   Size of indexing array: " << size1 << std::endl;
+                << ".   Size of indexing array: " << size1_ << std::endl;
       SystemModule::my_exit();
     }
   }// End CheckSizeIndex

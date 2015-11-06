@@ -15,8 +15,9 @@
 #include "my_incl.h"
 #include "SystemUtils/SystemModule.h"
 #include <sstream>
+#include "DataStructures/Array1D.h"
 template <typename dataT>
-class Array2D
+class Array2D : public Array1D<dataT>
 {
   //+++++++++++++++++++++++++++++++ PUBLIC STUFF +++++++++++++++++++++++++++++++
 public:
@@ -29,10 +30,9 @@ public:
 //!
 //****************************************************************************80
   Array2D(){
-    mem = 0.0;
-    size1 = 0;
-    size2 = 0;
-    data  = NULL;
+    size1_ = 0;
+    size2_ = 0;
+
   } // End Array2D
 
 //****************************************************************************80
@@ -55,19 +55,16 @@ public:
 //! \nick
 //! \param[in] from_array - rvalue reference that we are "moving" data from
 //****************************************************************************80
-  Array2D(Array2D<dataT>&& from_array)
+  Array2D(Array2D<dataT>&& from_array) : Array1D<dataT>(std::move(from_array))
   {
     //pilfer other's resource
-    size1 = from_array.size1;
-    size2 = from_array.size2;
-    data  = from_array.data;
-    mem   = from_array.mem;
+    size1_ = from_array.size1_;
+    size2_ = from_array.size2_;
 
     //reset from_array
-    from_array.size1 = 0;
-    from_array.size2 = 0;
-    from_array.mem   = 0.0;
-    from_array.data  = NULL;
+    from_array.size1_ = 0;
+    from_array.size2_ = 0;
+
   }
 
 //****************************************************************************80
@@ -80,21 +77,14 @@ public:
 //****************************************************************************80
   Array2D<dataT>& operator=(Array2D<dataT>&& from_array)
   {
-    //--->release the current object's resources
-    //--> Delete pointer to data
-    if (data != NULL)  delete[] data;
-
+    Array1D<dataT>::operator=(std::move(from_array));
     //--->pilfer from_array's resource
-    size1 = from_array.size1;
-    size2 = from_array.size2;
-    data  = from_array.data;
-    mem   = from_array.mem;
+    size1_ = from_array.size1_;
+    size2_ = from_array.size2_;
 
     //--->reset from_array
-    from_array.size1 = 0;
-    from_array.size2 = 0;
-    from_array.mem   = 0.0;
-    from_array.data  = NULL;
+    from_array.size1_ = 0;
+    from_array.size2_ = 0;
 
     return *this;
   }
@@ -108,14 +98,10 @@ public:
 //!
 //****************************************************************************80
   virtual ~Array2D(){
-    //---> Delete pointer to data
-    if(data != NULL)  delete[] data;
-    //---> Reset data pointer to NULL
-    data = NULL;
     //---> Reset the size variable
-    size1 = 0;
-    size2 = 0;
-    mem   = 0;
+    size1_ = 0;
+    size2_ = 0;
+
   } // End ~Array2D
 
 //****************************************************************************80
@@ -130,37 +116,11 @@ public:
 //****************************************************************************80
   void initialize(intT n1, intT n2){
 
-    size1 = n1;
-    size2 = n2;
-    /*-->only perform initialization if the data is null
-    and input size request is positive*/
-    if ( data == NULL && n1*n2 > 0) { // check_size
-      //---> Set the sizes
-      size1 = n1;
-      size2 = n2;
-      //---> Allocate
-      mem = SystemModule::alloc_mem< dataT, int, double>(data, size1*size2);
-      //---> Loop over data and set the value to zero;
-      for( intT i = 0; i < size1*size2; i++) {// init_loop
-        data[i] = (dataT) 0;
-      }// end init_loop
-    } // End check_size
-  } // End initialize
+    size1_ = n1;
+    size2_ = n2;
+    Array1D<dataT>::initialize(n1*n2);
 
-//****************************************************************************80
-//!
-//! \brief set_value : Sets the whole array to a value
-//! \details
-//! \nick
-//! \version $Rev: 5 $
-//! \param[in] val The value you want to set the whole array to
-//****************************************************************************80
-  void set_value(const dataT& val)
-  {
-    for(intT i = 0; i < size1*size2; i++) {// set_loop
-      data[i] = val;
-    }// End set_loop
-  }// End set_value
+  } // End initialize
 
 //****************************************************************************80
 //!
@@ -178,7 +138,7 @@ public:
 #endif
 
     //---> The return of this operator is the ith reference of data pointer
-    return (data[i*size2 + j]);
+    return (Array1D<dataT>::operator()(i*size2_ + j));
   }
 
 //****************************************************************************80
@@ -197,7 +157,7 @@ public:
 #endif
 
     //---> The return of this operator is the ith reference of data pointer
-    return (data[i*size2 + j]);
+    return (Array1D<dataT>::operator()(i*size2_ + j));
   } // End
  
 //****************************************************************************80
@@ -213,10 +173,10 @@ public:
     //---> Check the value of dim to return the correct size
     switch (dim) { // check_dim
     case 0:
-      return(size1);
+      return(size1_);
       break;
     case 1:
-      return(size2);
+      return(size2_);
       break;
     default:
       return(-99);
@@ -231,23 +191,7 @@ public:
 //! \nick
 //! \version $Rev: 5 $
 //****************************************************************************8
-  intT get_total_size() const {return size1*size2;}
-  
-//****************************************************************************80
-//!
-//! \brief get_mem : Diagnostic routine to query how much memory the class is
-//!                  using for the data part of the class
-//! \details
-//! \nick
-//! \version $Rev: 5 $
-//!
-//****************************************************************************80
-  double get_mem( ) const
-  {
-    /*---> Return the amount of memory used to store pointer data* to user.
-      Remember we stored this in variable mem at allocation */
-    return(mem);
-  } // End get_mem
+  intT get_total_size() const {return Array1D<dataT>::get_size(0);}
 
 //****************************************************************************80
 //!
@@ -287,7 +231,7 @@ public:
 #ifdef DEV_DEBUG
     this->CheckBounds(i,j);
 #endif
-    return (data + i*size2 + j);
+    return (Array1D<dataT>::get_ptr(i*size2_ + j));
 
   }// End get_ptr
 
@@ -304,44 +248,8 @@ public:
 #ifdef DEV_DEBUG
     this->CheckBounds(i,j);
 #endif
-    return(data + i*size2 + j);
+    return(Array1D<dataT>::get_ptr(i*size2_ + j));
   }// End get_ptr
-
-//****************************************************************************80
-//! \brief begin : Returns pointer to start of the array
-//! \nick
-//****************************************************************************80
-  dataT* begin()
-  {
-    return (data);
-  }// End begin
-
-//****************************************************************************80
-//! \brief begin : Returns pointer to start of a row of the array
-//! \nick
-//****************************************************************************80
-  dataT const * begin() const
-  {
-    return (data);
-  }// End begin
-
-//****************************************************************************80
-//! \brief end : Returns pointer to end of a row of the array
-//! \nick
-//****************************************************************************80
-  dataT* end()
-  {
-    return (data + size1*size2);
-  }// End end
-
-//****************************************************************************80
-//! \brief end : Returns pointer to end of a row of the array
-//! \nick
-//****************************************************************************80
-  dataT const * end() const
-  {
-    return (data + size1*size2);
-  }// End end
 
 //****************************************************************************80
 //! \brief MemoryDiagnostic : Prints the size and memory information to user.
@@ -370,10 +278,10 @@ public:
 private:
   //+++++++++++++++++++++++++++++++ PRIVATE STUFF ++++++++++++++++++++++++++++++
 
-  intT size1; /*!< Size of dimension 1 */
-  intT size2; /*!< Size of dimension 2 */
-  dataT* data; /*!< Data pointer for 1-D array */
-  double mem; /*!< Amount of memory in megabytes specified for the array */
+  intT size1_; /*!< Size of dimension 1 */
+  intT size2_; /*!< Size of dimension 2 */
+ // dataT* data; /*!< Data pointer for 1-D array */
+  //double mem; /*!< Amount of memory in megabytes specified for the array */
 
 //****************************************************************************80
 //!
@@ -419,16 +327,16 @@ private:
 //! \param[in] i - i index
 //****************************************************************************80
   void CheckBounds(intT i, intT j) const {
-    if( i >= size1) {
+    if( i >= size1_) {
       std::cerr << "ERROR: In Array2D.h - Over bounds on 1st index. "
 		<< "Acessing Array2D::("<< i <<","<< j <<"). Size of Array2D "
-		<< "is " << size1 << ","<< size2 << std::endl;
+		<< "is " << size1_ << ","<< size2_ << std::endl;
       SystemModule::my_exit();
     }
-    if( j >= size2) {
+    if( j >= size2_) {
       std::cerr << "ERROR: In Array2D.h - Overbounds on 2nd index. "
 		<< "Acessing Array2D::("<< i <<","<< j <<"). Size of Array2D "
-		<< "is " << size1 << ","<< size2 << std::endl;
+		<< "is " << size1_ << ","<< size2_ << std::endl;
       SystemModule::my_exit();
     }
       

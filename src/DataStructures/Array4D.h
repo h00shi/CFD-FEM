@@ -13,8 +13,9 @@
 #include "my_incl.h"
 #include "SystemUtils/SystemModule.h"
 #include <sstream>
+#include "DataStructures/Array1D.h"
 template <typename dataT>
-class Array4D
+class Array4D : public Array1D<dataT>
 {
   //+++++++++++++++++++++++++++++++ PUBLIC STUFF +++++++++++++++++++++++++++++++
 public:
@@ -27,12 +28,11 @@ public:
 //!
 //****************************************************************************80
   Array4D(){
-    size1 = 0;
-    size2 = 0;
-    size3 = 0;
-    size4 = 0;
-    data  = NULL;
-    mem = 0.0;
+    size1_ = 0;
+    size2_ = 0;
+    size3_ = 0;
+    size4_ = 0;
+
   } // End Array4D
 
 //****************************************************************************80
@@ -58,23 +58,23 @@ public:
 //! \nick
 //! \param[in] from_array - rvalue reference that we are "moving" data from
 //****************************************************************************80
-  Array4D(Array4D<dataT>&& from_array)
+  Array4D(Array4D<dataT>&& from_array) :
+    Array1D<dataT>(std::move(from_array))
   {
+
     //pilfer other's resource
-    size1 = from_array.size1;
-    size2 = from_array.size2;
-    size3 = from_array.size3;
-    size4 = from_array.size4;
-    data  = from_array.data;
-    mem   = from_array.mem;
+    size1_ = from_array.size1_;
+    size2_ = from_array.size2_;
+    size3_ = from_array.size3_;
+    size4_ = from_array.size4_;
+
 
     //reset from_array
-    from_array.size1 = 0;
-    from_array.size2 = 0;
-    from_array.size3 = 0;
-    from_array.size4 = 0;
-    from_array.mem   = 0.0;
-    from_array.data  = NULL;
+    from_array.size1_ = 0;
+    from_array.size2_ = 0;
+    from_array.size3_ = 0;
+    from_array.size4_ = 0;
+
   }
 
 //****************************************************************************80
@@ -87,25 +87,19 @@ public:
 //****************************************************************************80
   Array4D<dataT>& operator=(Array4D<dataT>&& from_array)
   {
-    //--->release the current object's resources
-    //--> Delete pointer to data
-    if (data != NULL)  delete[] data;
-
+    Array1D<dataT>::operator=(std::move(from_array));
     //--->pilfer from_array's resource
-    size1 = from_array.size1;
-    size2 = from_array.size2;
-    size3 = from_array.size3;
-    size4 = from_array.size4;
-    data  = from_array.data;
-    mem   = from_array.mem;
+    size1_ = from_array.size1_;
+    size2_ = from_array.size2_;
+    size3_ = from_array.size3_;
+    size4_ = from_array.size4_;
+
 
     //--->reset from_array
-    from_array.size1 = 0;
-    from_array.size2 = 0;
-    from_array.size3 = 0;
-    from_array.size4 = 0;
-    from_array.mem   = 0.0;
-    from_array.data  = NULL;
+    from_array.size1_ = 0;
+    from_array.size2_ = 0;
+    from_array.size3_ = 0;
+    from_array.size4_ = 0;
 
     return *this;
   }
@@ -119,17 +113,11 @@ public:
 //!
 //****************************************************************************80
   ~Array4D(){
-    //---> Delete pointer to data
-    if( size1 > 0) {
-      if (data != NULL)  delete[] data;
-    }
-    //---> Reset data pointer to NULL
-    data = NULL;
     //---> Reset the size variable
-    size1 = 0;
-    size2 = 0;
-    size3 = 0;
-    size4 = 0;
+    size1_ = 0;
+    size2_ = 0;
+    size3_ = 0;
+    size4_ = 0;
   } // End ~Array4D
 
 //****************************************************************************80
@@ -146,36 +134,13 @@ public:
 //****************************************************************************80
   void initialize(intT n1, intT n2, intT n3, intT n4){
     //---> Set value
-    size1 = n1;
-    size2 = n2;
-    size3 = n3;
-    size4 = n4;
-    if ( data == NULL && size1 > 0) { // check_size
-      mem = SystemModule::alloc_mem< dataT, int, double>(data,
-                                                          size1*size2*size3*size4);
-
-      //---> Loop over data and set the value to zero;
-      for( intT i = 0; i < size1*size2*size3*size4; i++) {// init_loop
-        data[i] = (dataT) 0;
-      }// end init_loop
-    } // End check_size
+    size1_ = n1;
+    size2_ = n2;
+    size3_ = n3;
+    size4_ = n4;
+    Array1D<dataT>::initialize(n1*n2*n3*n4);
 
   } // End initialize
-
-//****************************************************************************80
-//!
-//! \brief set_value : Sets the whole array to a value
-//! \details
-//! \nick
-//! \version $Rev: 5 $
-//! \param[in] val The value you want to set the whole array to
-//****************************************************************************80
-  void set_value(const dataT& val)
-  {
-    for(intT i = 0; i < size1*size2*size3*size4; i++) {// set_loop
-      data[i] = val;
-    }// End set_loop
-  }// End set_value
 
 //****************************************************************************80
 //!
@@ -194,7 +159,7 @@ public:
     this->CheckBounds(i,j,k,l);
 #endif
     //---> The return of this operator is the ith reference of data pointer
-    return (data[ size4*(size3*(size2*i+j)+k) + l ]);
+    return Array1D<dataT>::operator()( size4_*(size3_*(size2_*i+j)+k) + l );
   } // End
 
 //****************************************************************************80
@@ -214,7 +179,8 @@ public:
     this->CheckBounds(i,j,k,l);
 #endif
     //---> The return of this operator is the ith reference of data pointer
-    return (data[ size4*(i*size3 + j*size2 + k) + l ]);
+    return const_cast<dataT&>(static_cast<const Array4D&>(*this).
+                                    operator()(i,j,k,l));
   }
 
 //****************************************************************************80
@@ -231,38 +197,22 @@ public:
     //---> Check the value of dim to return the correct size
     switch (dim) { // check_dim
     case 0:
-      return(size1);
+      return(size1_);
       break;
     case 1:
-      return(size2);
+      return(size2_);
       break;
     case 2:
-      return(size3);
+      return(size3_);
       break;
     case 3:
-      return(size4);
+      return(size4_);
       break;
     default:
       return(-99);
     } // End check_dim
 
   }// End get_size
-
-//****************************************************************************80
-//!
-//! \brief get_mem : Diagnostic routine to query how much memory the class is
-//!                  using for the data part of the class
-//! \details
-//! \nick
-//! \version $Rev: 5 $
-//!
-//****************************************************************************80
-  double get_mem( )
-  {
-    /*---> Return the amount of memory used to store pointer data* to user.
-      Remember we stored this in variable mem at allocation */
-    return(mem);
-  } // End get_mem
 
 //****************************************************************************80
 //!
@@ -282,7 +232,7 @@ public:
 #ifdef DEV_DEBUG
     this->CheckBounds(i,j,k,l);
 #endif
-    return( data + size4*(size3*(size2*i + j) + k) + l );
+    return Array1D<dataT>::get_ptr(size4_*(size3_*(size2_*i + j) + k) + l );
   }// End get_ptr
 
 //****************************************************************************80
@@ -303,44 +253,8 @@ public:
 #ifdef DEV_DEBUG
     this->CheckBounds(i,j,k,l);
 #endif
-    return( data + size4*(size3*(size2*i + j) + k) + l );
+    return Array1D<dataT>::get_ptr(size4_*(size3_*(size2_*i + j) + k) + l );
   }// End get_ptr
-
-//****************************************************************************80
-//! \brief begin : Returns pointer to start of the array
-//! \nick
-//****************************************************************************80
-  dataT* begin()
-  {
-    return (data);
-  }// End begin
-
-//****************************************************************************80
-//! \brief begin : Returns pointer to start of a row of the array
-//! \nick
-//****************************************************************************80
-  dataT const * begin() const
-  {
-    return (data);
-  }// End begin
-
-//****************************************************************************80
-//! \brief end : Returns pointer to end of a row of the array
-//! \nick
-//****************************************************************************80
-  dataT* end()
-  {
-    return (data + size1*size2*size3*size4);
-  }// End end
-
-//****************************************************************************80
-//! \brief end : Returns pointer to end of a row of the array
-//! \nick
-//****************************************************************************80
-  dataT const * end() const
-  {
-    return (data + size1*size2*size3*size4);
-  }// End end
 
 //****************************************************************************80
 //! \brief MemoryDiagnostic : Prints the size and memory information to user.
@@ -369,12 +283,10 @@ public:
 private:
   //+++++++++++++++++++++++++++++++ PRIVATE STUFF ++++++++++++++++++++++++++++++
 
-  intT size1; /*!< Size of dimension 1 */
-  intT size2; /*!< Size of dimension 2 */
-  intT size3; /*!< Size of dimension 3 */
-  intT size4; /*!< Size of dimension 4 */
-  dataT* data; /*!< Data pointer for 1-D array */
-  double mem; /*!< Amount of memory in megabytes specified for the array */
+  intT size1_; /*!< Size of dimension 1 */
+  intT size2_; /*!< Size of dimension 2 */
+  intT size3_; /*!< Size of dimension 3 */
+  intT size4_; /*!< Size of dimension 4 */
 
 //****************************************************************************80
 //!
@@ -420,36 +332,36 @@ private:
 //! \param[in] i - i index
 //****************************************************************************80
   void CheckBounds(intT i, intT j, intT k, intT l) const {
-    if( i >= size1) {
+    if( i >= size1_) {
       std::cerr << "ERROR: In Array4D.h - Over bounds on 1st index. "
 		<< "Acessing Array4D::("<< i <<","<< j <<","<< k << "," << l  
 		<< "). Size of Array4D "
-		<< "is " << size1 << ","<< size2 << "," << size3 << "," 
-		<< size4 << std::endl;
+		<< "is " << size1_ << ","<< size2_ << "," << size3_ << ","
+		<< size4_ << std::endl;
       SystemModule::my_exit();
     }
-    if( j >= size2) {
+    if( j >= size2_) {
       std::cerr << "ERROR: In Array4D.h - Over bounds on 2nd index. "
 	      	<< "Acessing Array4D::("<< i <<","<< j <<","<< k << "," << l  
 		<< "). Size of Array4D "
-		<< "is " << size1 << ","<< size2 << "," << size3 << "," 
-		<< size4 << std::endl;
+		<< "is " << size1_ << ","<< size2_ << "," << size3_ << ","
+		<< size4_ << std::endl;
       SystemModule::my_exit();
     }
-    if( k >= size3) {
+    if( k >= size3_) {
       std::cerr << "ERROR: In Array4D.h - Over bounds on 3rd index. "
 		<< "Acessing Array4D::("<< i <<","<< j <<","<< k << "," << l  
 		<< "). Size of Array4D "
-		<< "is " << size1 << ","<< size2 << "," << size3 << "," 
-		<< size4 << std::endl;
+		<< "is " << size1_ << ","<< size2_ << "," << size3_ << ","
+		<< size4_ << std::endl;
       SystemModule::my_exit();
     } 
-    if( l >= size4) {
+    if( l >= size4_) {
       std::cerr << "ERROR: In Array4D.h - Over bounds on 4th index. "
 		<< "Acessing Array4D::("<< i <<","<< j <<","<< k << "," << l  
 		<< "). Size of Array4D "
-		<< "is " << size1 << ","<< size2 << "," << size3 << "," 
-		<< size4 << std::endl;
+		<< "is " << size1_ << ","<< size2_ << "," << size3_ << ","
+		<< size4_ << std::endl;
       SystemModule::my_exit(); 
     } 
   }// End CheckBounds

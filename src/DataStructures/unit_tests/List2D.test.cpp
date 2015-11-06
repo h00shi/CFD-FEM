@@ -35,6 +35,7 @@ TEST(List2D, moveconstructor) {
   x(3,4) =-1.0;
 
   double memory_used = x.get_mem();
+ std::cout << memory_used << " " << x.get_mem();
   unsigned size1     = x.get_lead_size();
   unsigned size      = x.get_total_size();
   double* begin      = x.begin();

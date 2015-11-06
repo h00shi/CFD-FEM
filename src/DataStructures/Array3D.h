@@ -14,8 +14,9 @@
 #include "my_incl.h"
 #include "SystemUtils/SystemModule.h"
 #include <sstream>
+#include "DataStructures/Array1D.h"
 template <typename dataT>
-class Array3D
+class Array3D : public Array1D<dataT>
 {
   //+++++++++++++++++++++++++++++++ PUBLIC STUFF +++++++++++++++++++++++++++++++
 public:
@@ -28,11 +29,11 @@ public:
 //!
 //****************************************************************************80
   Array3D(){
-    mem = 0.0;
-    size1 = 0;
-    size2 = 0;
-    size3 = 0;
-    data  = NULL;
+
+    size1_ = 0;
+    size2_ = 0;
+    size3_ = 0;
+
   } // End Array3D
 
 //****************************************************************************80
@@ -57,21 +58,20 @@ public:
 //! \nick
 //! \param[in] from_array - rvalue reference that we are "moving" data from
 //****************************************************************************80
-  Array3D(Array3D<dataT>&& from_array)
+  Array3D(Array3D<dataT>&& from_array) :
+    Array1D<dataT>(std::move(from_array))
   {
     //pilfer other's resource
-    size1 = from_array.size1;
-    size2 = from_array.size2;
-    size3 = from_array.size3;
-    data  = from_array.data;
-    mem   = from_array.mem;
+    size1_ = from_array.size1_;
+    size2_ = from_array.size2_;
+    size3_ = from_array.size3_;
+
 
     //reset from_array
-    from_array.size1 = 0;
-    from_array.size2 = 0;
-    from_array.size3 = 0;
-    from_array.mem   = 0.0;
-    from_array.data  = NULL;
+    from_array.size1_ = 0;
+    from_array.size2_ = 0;
+    from_array.size3_ = 0;
+
   }
 
 //****************************************************************************80
@@ -84,23 +84,17 @@ public:
 //****************************************************************************80
   Array3D<dataT>& operator=(Array3D<dataT>&& from_array)
   {
-    //--->release the current object's resources
-    //--> Delete pointer to data
-    if (data != NULL)  delete[] data;
+    Array1D<dataT>::operator=(std::move(from_array));
 
     //--->pilfer from_array's resource
-    size1 = from_array.size1;
-    size2 = from_array.size2;
-    size3 = from_array.size3;
-    data  = from_array.data;
-    mem   = from_array.mem;
+    size1_ = from_array.size1_;
+    size2_ = from_array.size2_;
+    size3_ = from_array.size3_;
 
     //--->reset from_array
-    from_array.size1 = 0;
-    from_array.size2 = 0;
-    from_array.size3 = 0;
-    from_array.mem   = 0.0;
-    from_array.data  = NULL;
+    from_array.size1_ = 0;
+    from_array.size2_ = 0;
+    from_array.size3_ = 0;
 
     return *this;
   }
@@ -116,16 +110,10 @@ public:
 //!
 //****************************************************************************80
   ~Array3D(){
-    //---> Delete pointer to data
-    if( size1 > 0 ) {
-      if (data != NULL)  delete[] data;
-    }
-    //---> Reset data pointer to NULL
-    data = NULL;
     //---> Reset the size variable
-    size1 = 0;
-    size2 = 0;
-    size3 = 0;
+    size1_ = 0;
+    size2_ = 0;
+    size3_ = 0;
   } // End ~Array3D
 
 //****************************************************************************80
@@ -141,36 +129,12 @@ public:
 //****************************************************************************80
   void initialize(intT n1, intT n2, intT n3){
     //---> Set value
-    size1 = n1;
-    size2 = n2;
-    size3 = n3;
-    if ( data == NULL && size1*size2*size3 > 0) { // check_size
-      mem = SystemModule::alloc_mem< dataT, int, double>(data,
-                                                          size1*size2*size3);
-
-      //---> Loop over data and set the value to zero;
-      for( intT i = 0; i < size1*size2*size3; i++) {// init_loop
-        data[i] = (dataT) 0;
-      }// end init_loop
-    } // End check_size
+    size1_ = n1;
+    size2_ = n2;
+    size3_ = n3;
+    Array1D<dataT>::initialize(n1*n2*n3);
 
   } // End initialize
-
-//****************************************************************************80
-//!
-//! \brief set_value : Sets the whole array to a value
-//! \details
-//! \nick
-//! \version $Rev: 5 $
-//! \param[in] val The value you want to set the whole array to
-//****************************************************************************80
-  void set_value(const dataT& val)
-  {
-    for(intT i = 0; i < size1*size2*size3; i++) {// set_loop
-      data[i] = val;
-    }// End set_loop
-  }// End set_value
-
 
 //****************************************************************************80
 //!
@@ -189,7 +153,7 @@ public:
 #endif
 
     //---> The return of this operator is the ith reference of data pointer
-    return (data[ size3*(i*size2 + j) + k ]);
+    return Array1D<dataT>::operator()(size3_*(i*size2_ + j) + k);
   }
 
 //****************************************************************************80
@@ -209,7 +173,9 @@ public:
 #endif
 
     //---> The return of this operator is the ith reference of data pointer
-    return (data[ size3*(i*size2 + j) + k ]);
+    //calls constant version of operator (i,j,k)
+    return const_cast<dataT&>(static_cast<const Array3D&>(*this).
+                                 operator()(i,j,k));
   } // End
 
 //****************************************************************************80
@@ -226,13 +192,13 @@ public:
     //---> Check the value of dim to return the correct size
     switch (dim) { // check_dim
     case 0:
-      return(size1);
+      return(size1_);
       break;
     case 1:
-      return(size2);
+      return(size2_);
       break;
     case 2:
-      return(size3);
+      return(size3_);
       break;
     default:
       return(-99);
@@ -240,21 +206,6 @@ public:
 
   }// End get_size
 
-//****************************************************************************80
-//!
-//! \brief get_mem : Diagnostic routine to query how much memory the class is
-//!                  using for the data part of the class
-//! \details
-//! \nick
-//! \version $Rev: 5 $
-//!
-//****************************************************************************80
-  double get_mem( )
-  {
-    /*---> Return the amount of memory used to store pointer data* to user.
-      Remember we stored this in variable mem at allocation */
-    return(mem);
-  } // End get_mem
 //****************************************************************************80
 //!
 //! \brief operator << : A facility to print the Array3D class the screen
@@ -268,11 +219,11 @@ public:
   friend std::ostream& operator << (std::ostream& os, const Array3D<dataT>& a)
   {
     //---> Write the data to ostream object
-    for(intT i = 0; i < a.size1; i++){
+    for(intT i = 0; i < a.size1_; i++){
       os << i << ":" << std::endl;
-      for(intT j = 0; j < a.size2; j++) {
+      for(intT j = 0; j < a.size2_; j++) {
         os << "\t" << j << ": ";
-        for(intT k = 0; k < a.size3; k++){
+        for(intT k = 0; k < a.size3_; k++){
           os << a(i,j,k) << " ";
         }
         os << std::endl;
@@ -299,7 +250,7 @@ public:
 
 #endif
 
-    return(data + size3*(i*size2 + j) + k );
+    return Array1D<dataT>::get_ptr( size3_*(i*size2_ + j) + k );
   }// End get_ptr
 
 //****************************************************************************80
@@ -321,44 +272,9 @@ public:
 
 #endif
 
-    return(data + size3*(i*size2 + j) + k );
+    return Array1D<dataT>::get_ptr(+ size3_*(i*size2_ + j) + k );
   }// End get_ptr
 
-//****************************************************************************80
-//! \brief begin : Returns pointer to start of the array
-//! \nick
-//****************************************************************************80
-  dataT* begin()
-  {
-    return (data);
-  }// End begin
-
-//****************************************************************************80
-//! \brief begin : Returns pointer to start of a row of the array
-//! \nick
-//****************************************************************************80
-  dataT const * begin() const
-  {
-    return (data);
-  }// End begin
-
-//****************************************************************************80
-//! \brief end : Returns pointer to end of a row of the array
-//! \nick
-//****************************************************************************80
-  dataT* end()
-  {
-    return (data + size1*size2*size3);
-  }// End end
-
-//****************************************************************************80
-//! \brief end : Returns pointer to end of a row of the array
-//! \nick
-//****************************************************************************80
-  dataT const * end() const
-  {
-    return (data + size1*size2*size3);
-  }// End end
 //****************************************************************************80
 //! \brief MemoryDiagnostic : Prints the size and memory information to user.
 //!        
@@ -386,11 +302,9 @@ public:
 private:
   //+++++++++++++++++++++++++++++++ PRIVATE STUFF ++++++++++++++++++++++++++++++
 
-  intT size1; /*!< Size of dimension 1 */
-  intT size2; /*!< Size of dimension 2 */
-  intT size3; /*!< Size of dimension 3 */
-  dataT* data; /*!< Data pointer for 1-D array */
-  double mem; /*!< Amount of memory in megabytes specified for the array */
+  intT size1_; /*!< Size of dimension 1 */
+  intT size2_; /*!< Size of dimension 2 */
+  intT size3_; /*!< Size of dimension 3 */
 
 //****************************************************************************80
 //!
@@ -436,25 +350,25 @@ private:
 //! \param[in] i - i index
 //****************************************************************************80
   void CheckBounds(intT i, intT j, intT k) const {
-    if( i >= size1) {
+    if( i >= size1_) {
       std::cerr << "ERROR: In Array3D.h - Over bounds on 1st index. "
 		<< "Acessing Array3D::("<< i <<","<< j <<","<< k 
 		<< "). Size of Array3D "
-		<< "is " << size1 << ","<< size2 << "," << size3 << std::endl;
+		<< "is " << size1_ << ","<< size2_ << "," << size3_ << std::endl;
       SystemModule::my_exit();
     }
-    if( j >= size2) {
+    if( j >= size2_) {
       std::cerr << "ERROR: In Array3D.h - Over bounds on 2nd index. "
 		<< "Acessing Array3D::("<< i <<","<< j <<","<< k 
 		<< "). Size of Array3D "
-		<< "is " << size1 << ","<< size2 << "," << size3 << std::endl;
+		<< "is " << size1_ << ","<< size2_ << "," << size3_ << std::endl;
       SystemModule::my_exit();  
     }
-    if( k >= size3) {
+    if( k >= size3_) {
       std::cerr << "ERROR: In Array3D.h - Over bounds on 3rd index. "
 		<< "Acessing Array3D::("<< i <<","<< j <<","<< k 
 		<< "). Size of Array3D "
-		<< "is " << size1 << ","<< size2 << "," << size3 << std::endl;
+		<< "is " << size1_ << ","<< size2_ << "," << size3_ << std::endl;
       SystemModule::my_exit();
     } 
   }// End CheckBounds

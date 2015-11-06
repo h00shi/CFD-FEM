@@ -28,9 +28,9 @@ public:
 //!
 //****************************************************************************80
   Array1D(){
-    mem = 0.0;
-    size1 = 0;
-    data  = NULL;
+    mem_ = 0.0;
+    size1_ = 0;
+    data_  = NULL;
   } // End Array1D
 
 //****************************************************************************80
@@ -57,14 +57,14 @@ public:
 
 
     //pilfer other's resource
-    size1 = from_array.size1;
-    data  = from_array.data;
-    mem   = from_array.mem;
+    size1_ = from_array.size1_;
+    data_  = from_array.data_;
+    mem_   = from_array.mem_;
 
     //reset other
-    from_array.size1 = 0;
-    from_array.mem   = 0.0;
-    from_array.data  = NULL;
+    from_array.size1_ = 0;
+    from_array.mem_   = 0.0;
+    from_array.data_  = NULL;
   }
 
 //****************************************************************************80
@@ -79,17 +79,17 @@ public:
   {
     //--->release the current object's resources
     //--> Delete pointer to data
-    if (data != NULL)  delete[] data;
+    if (data_ != NULL)  delete[] data_;
 
     //--->pilfer from_array's resource
-    size1 = from_array.size1;
-    data  = from_array.data;
-    mem   = from_array.mem;
+    size1_ = from_array.size1_;
+    data_  = from_array.data_;
+    mem_   = from_array.mem_;
 
     //--->reset from_array
-    from_array.size1 = 0;
-    from_array.mem   = 0.0;
-    from_array.data  = NULL;
+    from_array.size1_ = 0;
+    from_array.mem_   = 0.0;
+    from_array.data_  = NULL;
 
     return *this;
   }
@@ -102,13 +102,13 @@ public:
 //! \version $Rev: 5 $
 //!
 //****************************************************************************80
-  ~Array1D(){
+  virtual ~Array1D(){
     //---> Delete pointer to data
-    if (data != NULL)  delete[] data;
+    if (data_ != NULL)  delete[] data_;
     //---> Reset data pointer to NULL
-    data = NULL;
+    data_ = NULL;
     //---> Reset the size variable
-    size1 = 0;
+    size1_ = 0;
   } // End ~Array1D
 
 //****************************************************************************80
@@ -123,14 +123,14 @@ public:
   inline void initialize(intT n){
     /*-->only perform initialization if the data is null
     and input size request is positive*/
-    if ( data == NULL && n > 0) {
+    if ( data_ == NULL && n > 0) {
       //---> Set value
-      size1 = n;
+      size1_ = n;
       //---> Allocate
-      mem = SystemModule::alloc_mem< dataT, intT, double>(data, size1);
+      mem_ = SystemModule::alloc_mem< dataT, intT, double>(data_, size1_);
       //---> Loop over data and set the value to zero;
-      for( intT i = 0; i < size1; i++) {// init_loop
-        data[i] = (dataT) 0;
+      for( intT i = 0; i < size1_; i++) {// init_loop
+        data_[i] = (dataT) 0;
       }// end init_loop
     } // End check_size
 
@@ -146,8 +146,8 @@ public:
 //****************************************************************************80
   inline void set_value(const dataT& val)
   {
-    for(intT i = 0; i < size1; i++) {// set_loop
-      data[i] = val;
+    for(intT i = 0; i < size1_; i++) {// set_loop
+      data_[i] = val;
     }// End set_loop
   }// End set_value
 
@@ -167,7 +167,7 @@ public:
 #endif
 
     //---> The return of this operator is the ith reference of data pointer
-    return (data[i]);
+    return (data_[i]);
   } // End ()
 
 //****************************************************************************80
@@ -198,10 +198,10 @@ public:
     //---> It's only a 1-D array so just give back the size
     switch (dim) {
     case 0: 
-      return(size1);
+      return(size1_);
       break;
     default :
-      return(size1);
+      return(size1_);
     }
   }// End get_size
 
@@ -218,7 +218,7 @@ public:
   {
     /*---> Return the amount of memory used to store pointer data* to user.
       Remember we stored this in variable mem at allocation */
-    return(mem);
+    return(mem_);
   } // End get_mem
 
 //****************************************************************************80
@@ -234,7 +234,7 @@ public:
   friend std::ostream& operator << (std::ostream& os, const Array1D<dataT>& a)
   {
     //---> Write the data to ostream object
-    for (intT i = 0; i < a.size1; i++) {
+    for (intT i = 0; i < a.size1_; i++) {
       os << i << ": " << a(i) << std::endl;;
     }
     return(os);
@@ -254,7 +254,7 @@ public:
     this->CheckBounds(i);
 #endif
 
-    return(data + i);
+    return(data_ + i);
   }// End get_ptr
 
 //****************************************************************************80
@@ -271,7 +271,7 @@ public:
     this->CheckBounds(i);
 #endif
     //---> Just return the point + i 
-    return(data + i);
+    return(data_ + i);
   }// End get_ptr
 
 //****************************************************************************80
@@ -280,7 +280,7 @@ public:
 //****************************************************************************80
   inline dataT* begin()
   {
-    return(data);
+    return(data_);
   }// End begin
 
 //****************************************************************************80
@@ -290,7 +290,7 @@ public:
 //****************************************************************************80
   inline dataT const * begin() const
   {
-    return(data);
+    return(data_);
   }// End begin
 
 //****************************************************************************80
@@ -300,7 +300,7 @@ public:
 //****************************************************************************80
   inline dataT* end()
   {
-    return(data + size1);
+    return(data_ + size1_);
   }// End end
 
 //****************************************************************************80
@@ -310,7 +310,7 @@ public:
 //****************************************************************************80
   inline dataT const * end() const
   {
-    return(data + size1);
+    return(data_ + size1_);
   }// End end
 
 //****************************************************************************80
@@ -335,12 +335,12 @@ public:
 
   }
 
-private:
+protected:
   //+++++++++++++++++++++++++++++++ PRIVATE STUFF ++++++++++++++++++++++++++++++
 
-  intT size1; /*!< Size of dimension 1 */
-  dataT* data; /*!< Data pointer for 1-D array */
-  double mem; /*!< Amount of memory in megabytes specified for the array */
+  intT size1_; /*!< Size of dimension 1 */
+  dataT* data_; /*!< Data pointer for 1-D array */
+  double mem_; /*!< Amount of memory in megabytes specified for the array */
 
 //****************************************************************************80
 //!
@@ -388,10 +388,10 @@ private:
 //****************************************************************************80
   void CheckBounds(intT i) const{
     
-    if(i >= size1){
+    if(i >= size1_){
       std::cerr << "ERROR: In Array1D.h - Over bounds on 1st index. "
                 << "Accessing Array1D::("<< i <<"). Size of Array1D is " 
-		<< size1 << std::endl;
+		<< size1_ << std::endl;
       SystemModule::my_exit();
     }
   } // End CheckBounds

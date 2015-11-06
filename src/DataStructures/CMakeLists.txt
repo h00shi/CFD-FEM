@@ -5,6 +5,7 @@ ADD_LIBRARY(DataStructures
   Array1D.cpp 
   Array2D.cpp 
   Array3D.cpp 
+  Array4D.cpp
   List2D.cpp 
   Heap.cpp
   SquareMatrix.cpp 
