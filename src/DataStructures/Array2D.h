@@ -159,7 +159,36 @@ public:
     //---> The return of this operator is the ith reference of data pointer
     return (Array1D<dataT>::operator()(i*size2_ + j));
   } // End
- 
+
+//****************************************************************************80
+//!
+//! \brief () : Parenthesis operator for acessing array, for const. correctness
+//! \details
+//! \nick
+//! \version $Rev: 5 $
+//! \param[in] i First index of the array you want to access with parenthesis
+//****************************************************************************80
+  const dataT& operator () (intT i) const
+  {
+
+    //---> The return of this operator is the ith reference of data pointer
+    return (Array1D<dataT>::operator()(i));
+  }
+
+//****************************************************************************80
+//!
+//! \brief () : Parenthesis operator for acessing array
+//! \details
+//! \nick
+//! \version $Rev: 5 $
+//! \param[in] i First index of the array you want to access with parenthesis
+//****************************************************************************80
+  dataT& operator () (intT i)
+  {
+    //---> The return of this operator is the ith reference of data pointer
+    return (Array1D<dataT>::operator()(i));
+  } // End
+
 //****************************************************************************80
 //!
 //! \brief get_size  : For the specified index gets the size of that dimension
@@ -206,9 +235,9 @@ public:
   friend std::ostream& operator << (std::ostream& os, const Array2D<dataT>& a)
   {
     //---> Write the data to ostream object
-    for (intT i = 0; i < a.size1; i++) {
+    for (intT i = 0; i < a.size1_; i++) {
       os << i << ": ";
-      for (intT j = 0; j < a.size2; j++){
+      for (intT j = 0; j < a.size2_; j++){
         os << a(i,j) << " ";
       }
       os << std::endl;

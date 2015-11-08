@@ -1,6 +1,7 @@
 ADD_SUBDIRECTORY(unit_tests)
 
 ADD_LIBRARY(Solution 
-			MeshField.cpp
-			NodalField.cpp)
+			Field.cpp
+			ElementalField.cpp
+			CGElementField.cpp)
 TARGET_LINK_LIBRARIES(Solution Mesh SystemUtils ParallelComm DataStructures)

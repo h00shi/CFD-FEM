@@ -4,11 +4,12 @@
  *  Created on: Oct 18, 2015
  *      Author: rabbit
  */
-#include "Solution/MeshField.h"
+#include "Solution/Field.h"
 //****************************************************************************80
-MeshField::MeshField() : data_(NULL)
+Field::Field()
 {
 
 }
 //****************************************************************************80
-MeshField::~MeshField(){}
+Field::~Field(){}
+

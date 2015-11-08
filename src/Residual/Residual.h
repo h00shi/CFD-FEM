@@ -7,7 +7,7 @@
 
 #ifndef RESIDUAL_H_
 #define RESIDUAL_H_
-
+#include "Solution/ElementalField.h"
 //****************************************************************************80
 //! \brief An abstract class to represent residual interfaces and data
 //! \details
@@ -43,7 +43,7 @@ public:
 //! \date $Date$
 //! \param[out] resid Residual argument
 //****************************************************************************80
-  virtual void ComputeResidual(List2D<realT>& state,
+  virtual void ComputeResidual(ElementalField& state_field,
                                List2D<realT>& resid) = 0;
 
 //****************************************************************************80

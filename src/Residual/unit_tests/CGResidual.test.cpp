@@ -16,8 +16,6 @@ TEST(CGResidual, Construction)
   Array1D<intT> nvar(mesh.get_MeshGeom().get_nnode());
   nvar.set_value(static_cast<intT>(Poisson::nfld_));
 
-  NodalField soln_field(mesh,nvar);
-  NodalField resid_field(mesh,nvar);
   CGResidual<Poisson> cg_resid(poisson_pde, mesh, 1, 1, 2, nvar);
 
 }

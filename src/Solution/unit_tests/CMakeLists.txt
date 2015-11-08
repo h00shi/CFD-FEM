@@ -1,5 +1,5 @@
 SET(Unit_Tests
-    NodalField.test
+    CGElementField.test
 )
 
 FOREACH(Unit ${Unit_Tests})

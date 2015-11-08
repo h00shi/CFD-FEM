@@ -9,7 +9,7 @@
 #include "DataStructures/Array2D.h"
 #include "DataStructures/Array3D.h"
 #include "Mesh/CGMesh.h"
-#include "Solution/NodalField.h"
+#include "Solution/CGElementField.h"
 #include "Elements/Element.h"
 #include "Elements/BarElement.h"
 #include "Elements/TriElement.h"
@@ -45,7 +45,7 @@ public:
 //****************************************************************************80
   CGResidual(PDET & PDE_ref, CGMesh& grid_ref, intT psoln, intT pmap,
              intT pquad, const Array1D<intT>& nvar) :
-      PDE_(PDE_ref), grid_(grid_ref), mesh_field_(grid_ref, nvar)
+      PDE_(PDE_ref), grid_(grid_ref)
   {
 
     //---> Instantiate Elements
@@ -69,31 +69,25 @@ public:
 //! \date $Date$
 
 //****************************************************************************80
-  void ComputeResidual(List2D<realT>& state, List2D<realT>& resid_field)
+  void ComputeResidual(ElementalField& state_field, List2D<realT>& resid)
   {
-    mesh_field_.set_Data(&state);
 
-    Array2D<realT> qhat(3,PDET::nfld_);
-
-    for(intT e = 0; e < grid_.get_MeshElements().get_nelement(); e++){
-      ElementTopology::element_types etype;
-      etype = grid_.get_MeshElements().get_element_type()(e);
-
-      switch (etype){
-        case ElementTopology::element_types::BAR:
-     //     element->
-          break;
-        case ElementTopology::element_types::TRI:
-          break;
-        case ElementTopology::element_types::TET:
-          break;
-      }
-
-
-
-    }
-
-
+//    Array2D<realT> qhat(3,PDET::nfld_);
+//    Array1D<realT>
+//    for(intT e = 0; e < grid_.get_MeshElements().get_nelement(); e++){
+//      ElementTopology::element_types etype;
+//      etype = grid_.get_MeshElements().get_element_type()(e);
+//
+//      switch (etype){
+//        case ElementTopology::element_types::BAR:
+//          bar.ProjectToQP(PDET::nfld, 0, qhat, q);
+//
+//          break;
+//        case ElementTopology::element_types::TRI:
+//          break;
+//        case ElementTopology::element_types::TET:
+//          break;
+//      }
 
   }// End ComputeResidual
 
@@ -116,7 +110,6 @@ private:
   PDET& PDE_; /*!< Reference to PDE class already instantiated */
   CGMesh& grid_; /*!< Reference to grid class already
         instantiated. */
-  NodalField mesh_field_;
 //****************************************************************************80
 //!
 //! \brief  Solver : Default constructor

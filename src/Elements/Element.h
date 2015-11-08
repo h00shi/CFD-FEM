@@ -116,49 +116,49 @@ public:
 //****************************************************************************80
   template<class qtype>
   void ProjectToQP(const intT& nfld, const int& qp, 
-	       const Array2D<realT>& qcoeff, Array1D<qtype>& q)
+                   const Array2D<realT>& qcoeff, Array1D<qtype>& q)
   {
-    
+
     //---> Initialize q array to zero
     q.set_value(0.0);
-    
+
     for (intT f = 0; f < nfld; f++) { // pde_loop
       for(intT dof = 0; dof < ndof_; dof++) { // mode_loop 
-	//---> Do projection as a sum
-	q(f) += qcoeff(f, dof)*phi_(qp, dof);
-	
+        //---> Do projection as a sum
+        q(f) += qcoeff(f, dof)*phi_(qp, dof);
+
       }// End pde_loop
     }// End mode_loop 
-    
+
   }// ProjectToQP
 
-//****************************************************************************80
-//!
-//! \brief ProjectGradToQP : Takes in coefficients and does a projection of the 
-//!                          gradients to the quadrature point specified
-//! \details
-//! \nick 
-//! \version $Rev: 6 $
-//! \date $Date: 2013-10-28 10:08:01 -0700 (Mon, 28 Oct 2013) $
-//! \param[in] nfld The number of fields
-//! \param[in] qp The quadrature point index
-//! \param[in] qcoeff The coefficients of 
-//! \param[out] dq The resulting graident
-//****************************************************************************80
+  //****************************************************************************80
+  //!
+  //! \brief ProjectGradToQP : Takes in coefficients and does a projection of the
+  //!                          gradients to the quadrature point specified
+  //! \details
+  //! \nick
+  //! \version $Rev: 6 $
+  //! \date $Date: 2013-10-28 10:08:01 -0700 (Mon, 28 Oct 2013) $
+  //! \param[in] nfld The number of fields
+  //! \param[in] qp The quadrature point index
+  //! \param[in] qcoeff The coefficients of
+  //! \param[out] dq The resulting gradient
+  //****************************************************************************80
   template<class qtype>
   void ProjectGradToQP(const intT& nfld, const int& qp, 
-		       const Array2D<realT>& qcoeff, Array2D<qtype>& dq)
+                       const Array2D<realT>& qcoeff, Array2D<qtype>& dq)
   {
     //---> Initialize dq array to zero
     dq.set_value(0.0);
     for (intT f = 0; f < nfld; f++) { //pde_loop 
       for(intT d = 0; d < ndim_; d++) {//dimension_loop
-	for(intT i = 0; i < ndof_; i++) { //mode_loop 
-	  dq(f,d) += qcoeff(f,i)*dphi_dxi_(qp,d,i);
-	} // End dimension_loop
+        for(intT i = 0; i < ndof_; i++) { //mode_loop
+          dq(f,d) += qcoeff(f,i)*dphi_dxi_(qp,d,i);
+        } // End dimension_loop
       } // End pde_loop
     } // mode_loop
-    
+
   }// End ProjectGradToQP
 
 //****************************************************************************80
@@ -389,46 +389,46 @@ public:
 //! \param[out] tang Face tangent vector 
 //****************************************************************************80
   void ComputeFaceVectors(const intT& side, const intT& qp, const 
-		     Array2D<realT>& xcoeff, Array1D<realT>& norm, 
-		     Array1D<realT>& tang)
+                          Array2D<realT>& xcoeff, Array1D<realT>& norm,
+                          Array1D<realT>& tang)
   {
     Array2D<realT> dxds(ndim_, ndim_ - 1);
     dxds.set_value(0.0);
     for (intT dr = 0; dr < ndim_; dr++) { //dim_loop 
       for(intT dc = 0; dc < ndim_ - 1; dc++) {//dimension_loop
-	for(intT i = 0; i < ndof_face_; i++) { //mode_loop 
-	  dxds(dr, dc) += xcoeff(dr, face_dof_map_(side, i) ) * 
-	    dphi_ds_(qp, dc, i);
-	} // End dimension_loop
+        for(intT i = 0; i < ndof_face_; i++) { //mode_loop
+          dxds(dr, dc) += xcoeff(dr, face_dof_map_(side, i) ) *
+              dphi_ds_(qp, dc, i);
+        } // End dimension_loop
       } // End pde_loop
     } // mode_loop
-  
-    switch(ndim_){ // normal, tangent
-    case 1:
-      if( side == 0 ) { norm(0) = -1.0; }
-      else if( side == 1 ){ norm(0) = 1.0; }
-      tang(0) = 0.0;
-      break;
-    case 2:
-      //---> Tangent vector
-      tang(0) = dxds(0,0);
-      tang(1) = dxds(1,0);
-      //---> Normal vector
-      norm(0) = tang(1);
-      norm(1) = -tang(0);
-      break;
-    case 3:
-      //---> Tangent vector
-      tang(0) = dxds(0,0);
-      tang(1) = dxds(1,0);
-      tang(2) = dxds(2,0);
 
-      norm(0) =  (dxds(1,0)*dxds(2,1) - dxds(2,0)*dxds(1,1));
-      norm(1) = -(dxds(0,0)*dxds(2,1) - dxds(2,0)*dxds(0,1));
-      norm(2) =  (dxds(0,0)*dxds(1,1) - dxds(1,0)*dxds(0,1));
-      break;
+    switch(ndim_){ // normal, tangent
+      case 1:
+        if( side == 0 ) { norm(0) = -1.0; }
+        else if( side == 1 ){ norm(0) = 1.0; }
+        tang(0) = 0.0;
+        break;
+      case 2:
+        //---> Tangent vector
+        tang(0) = dxds(0,0);
+        tang(1) = dxds(1,0);
+        //---> Normal vector
+        norm(0) = tang(1);
+        norm(1) = -tang(0);
+        break;
+      case 3:
+        //---> Tangent vector
+        tang(0) = dxds(0,0);
+        tang(1) = dxds(1,0);
+        tang(2) = dxds(2,0);
+
+        norm(0) =  (dxds(1,0)*dxds(2,1) - dxds(2,0)*dxds(1,1));
+        norm(1) = -(dxds(0,0)*dxds(2,1) - dxds(2,0)*dxds(0,1));
+        norm(2) =  (dxds(0,0)*dxds(1,1) - dxds(1,0)*dxds(0,1));
+        break;
     }// End normal, tangent
- 
+
   }// End ComputeFaceVectors
 
 //****************************************************************************80

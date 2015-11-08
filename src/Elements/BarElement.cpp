@@ -1,5 +1,5 @@
 //-*-c++-*-
-#include "BarElement.h"
+#include "Elements/BarElement.h"
 //****************************************************************************80
 BarElement::BarElement() : Element::Element()
 {
@@ -237,7 +237,7 @@ realT BarElement::EvalBasisD(const intT& n, const realT& xi)
 {
   //---> Evaluate the basis function derivative
   realT dphi = BarH1D(n, xi);
-  //---> Return the value of the derivate of the basis function n at point xi
+  //---> Return the value of the derivative of the basis function n at point xi
   return(dphi);
 }// End EvalBasisD
 
