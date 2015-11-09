@@ -1,5 +1,6 @@
 SET(Unit_Tests 
   Polynomials.test
+  H1BarBasis.test
 )
 
 FOREACH(Unit ${Unit_Tests})

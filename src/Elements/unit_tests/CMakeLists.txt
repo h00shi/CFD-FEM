@@ -1,7 +1,7 @@
 SET(Unit_Tests 
-  BarElement.test
-  TriElement.test
-  TetElement.test
+ # BarElement.test
+#  TriElement.test
+ # TetElement.test
 )
 
 FOREACH(Unit ${Unit_Tests})

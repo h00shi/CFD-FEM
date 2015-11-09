@@ -19,8 +19,8 @@ namespace ElementTopology
     static const intT nNode;
     static const intT nEdge;
     static const intT nFace;
-    static const intT Nodes[2];// = {0,1};
-    static const intT Edges[1][2]; //= {0,1};
+    static const intT Nodes[2]; // = {0,1};
+    static const intT Edges[1][2]; // = {0,1};
     static const StaticList2D<intT,2,2> Faces;
     
   }; // End Class Bar
